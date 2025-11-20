@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDASystem - Story Driven Analytical System</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <h1>
+                <span>📊</span>
+                SDASystem
+            </h1>
+            <div class="header-stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="statsStories">0</div>
+                    <div>Stories</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="statsNews">0</div>
+                    <div>News</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="statsActors">0</div>
+                    <div>Actors</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Left Sidebar - Stories List -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Stories</h2>
+                <div class="view-toggle">
+                    <button id="viewList" class="active">List</button>
+                    <button id="viewGraph">Graph</button>
+                </div>
+            </div>
+            <div class="stories-list" id="storiesList">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading stories...
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Panel - Story Details -->
+        <main class="main-panel" id="mainPanel">
+            <div class="loading">
+                <div class="spinner"></div>
+                Loading story details...
+            </div>
+        </main>
+
+        <!-- Right Detail Panel -->
+        <aside class="detail-panel" id="detailPanel">
+            <div class="empty-state">
+                <p>Select a news item or actor to view details</p>
+            </div>
+        </aside>
+
+        <!-- Timeline Panel -->
+        <section class="timeline-panel">
+            <div class="timeline-header">
+                <h2>Timeline</h2>
+                <div class="timeline-controls">
+                    <button id="zoomDay">Day</button>
+                    <button id="zoomWeek">Week</button>
+                    <button id="zoomMonth">Month</button>
+                </div>
+            </div>
+            <div class="timeline-content">
+                <div class="timeline-events" id="timelineEvents">
+                    <div class="loading">Select a story to view timeline</div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
