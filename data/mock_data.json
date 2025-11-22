@@ -1,7 +1,7 @@
 {
   "actors": [
     {
-      "id": "actor_2d2b458058c2",
+      "id": "actor_4b94c6a6c9ab",
       "canonical_name": "Vladimir Putin",
       "actor_type": "person",
       "aliases": [
@@ -18,12 +18,12 @@
           "type": "alias"
         }
       ],
-      "created_at": "2025-11-20 04:09:13.942129",
-      "updated_at": "2025-11-20 04:09:13.942136",
+      "created_at": "2025-11-21 18:55:38.758309",
+      "updated_at": "2025-11-21 18:55:38.758960",
       "metadata": {}
     },
     {
-      "id": "actor_10028641ef13",
+      "id": "actor_0dcf820fd335",
       "canonical_name": "Joe Biden",
       "actor_type": "person",
       "aliases": [
@@ -40,12 +40,12 @@
           "type": "alias"
         }
       ],
-      "created_at": "2025-11-20 04:09:13.942184",
-      "updated_at": "2025-11-20 04:09:13.942185",
+      "created_at": "2025-11-21 18:55:38.759058",
+      "updated_at": "2025-11-21 18:55:38.759059",
       "metadata": {}
     },
     {
-      "id": "actor_6231c8a6e434",
+      "id": "actor_451a9ddd3888",
       "canonical_name": "Xi Jinping",
       "actor_type": "person",
       "aliases": [
@@ -58,12 +58,12 @@
           "type": "alias"
         }
       ],
-      "created_at": "2025-11-20 04:09:13.942222",
-      "updated_at": "2025-11-20 04:09:13.942222",
+      "created_at": "2025-11-21 18:55:38.759088",
+      "updated_at": "2025-11-21 18:55:38.759089",
       "metadata": {}
     },
     {
-      "id": "actor_c65af2b3a8e4",
+      "id": "actor_e95c7f9d58ff",
       "canonical_name": "Ursula von der Leyen",
       "actor_type": "person",
       "aliases": [
@@ -76,12 +76,12 @@
           "type": "alias"
         }
       ],
-      "created_at": "2025-11-20 04:09:13.942240",
-      "updated_at": "2025-11-20 04:09:13.942241",
+      "created_at": "2025-11-21 18:55:38.759110",
+      "updated_at": "2025-11-21 18:55:38.759110",
       "metadata": {}
     },
     {
-      "id": "actor_9e9399a741fa",
+      "id": "actor_42e6fc0bfb91",
       "canonical_name": "Volodymyr Zelensky",
       "actor_type": "person",
       "aliases": [
@@ -94,12 +94,12 @@
           "type": "alias"
         }
       ],
-      "created_at": "2025-11-20 04:09:13.942251",
-      "updated_at": "2025-11-20 04:09:13.942251",
+      "created_at": "2025-11-21 18:55:38.759130",
+      "updated_at": "2025-11-21 18:55:38.759130",
       "metadata": {}
     },
     {
-      "id": "actor_3b96fded788c",
+      "id": "actor_7c919bb30f74",
       "canonical_name": "OpenAI",
       "actor_type": "company",
       "aliases": [
@@ -112,12 +112,12 @@
           "type": "alias"
         }
       ],
-      "created_at": "2025-11-20 04:09:13.942259",
-      "updated_at": "2025-11-20 04:09:13.942259",
+      "created_at": "2025-11-21 18:55:38.759149",
+      "updated_at": "2025-11-21 18:55:38.759150",
       "metadata": {}
     },
     {
-      "id": "actor_d03ca81757e5",
+      "id": "actor_316e09c3a0e8",
       "canonical_name": "Google",
       "actor_type": "company",
       "aliases": [
@@ -130,12 +130,12 @@
           "type": "alias"
         }
       ],
-      "created_at": "2025-11-20 04:09:13.942266",
-      "updated_at": "2025-11-20 04:09:13.942266",
+      "created_at": "2025-11-21 18:55:38.759168",
+      "updated_at": "2025-11-21 18:55:38.759169",
       "metadata": {}
     },
     {
-      "id": "actor_fe743b5bf40b",
+      "id": "actor_a9ee548b79db",
       "canonical_name": "Microsoft",
       "actor_type": "company",
       "aliases": [
@@ -148,12 +148,12 @@
           "type": "alias"
         }
       ],
-      "created_at": "2025-11-20 04:09:13.942278",
-      "updated_at": "2025-11-20 04:09:13.942278",
+      "created_at": "2025-11-21 18:55:38.759187",
+      "updated_at": "2025-11-21 18:55:38.759187",
       "metadata": {}
     },
     {
-      "id": "actor_8271b0adffc4",
+      "id": "actor_1d356d5d3604",
       "canonical_name": "Tesla",
       "actor_type": "company",
       "aliases": [
@@ -166,12 +166,12 @@
           "type": "alias"
         }
       ],
-      "created_at": "2025-11-20 04:09:13.942286",
-      "updated_at": "2025-11-20 04:09:13.942286",
+      "created_at": "2025-11-21 18:55:38.759205",
+      "updated_at": "2025-11-21 18:55:38.759205",
       "metadata": {}
     },
     {
-      "id": "actor_1dfaef0b4c85",
+      "id": "actor_f1cd635fac8d",
       "canonical_name": "Meta",
       "actor_type": "company",
       "aliases": [
@@ -184,12 +184,12 @@
           "type": "alias"
         }
       ],
-      "created_at": "2025-11-20 04:09:13.942298",
-      "updated_at": "2025-11-20 04:09:13.942299",
+      "created_at": "2025-11-21 18:55:38.759241",
+      "updated_at": "2025-11-21 18:55:38.759243",
       "metadata": {}
     },
     {
-      "id": "actor_d4d2ee269699",
+      "id": "actor_dd9672bb2b47",
       "canonical_name": "United States",
       "actor_type": "country",
       "aliases": [
@@ -210,12 +210,12 @@
           "type": "alias"
         }
       ],
-      "created_at": "2025-11-20 04:09:13.942306",
-      "updated_at": "2025-11-20 04:09:13.942306",
+      "created_at": "2025-11-21 18:55:38.759273",
+      "updated_at": "2025-11-21 18:55:38.759274",
       "metadata": {}
     },
     {
-      "id": "actor_6d9ec71b9355",
+      "id": "actor_5544d51d8dbf",
       "canonical_name": "Russia",
       "actor_type": "country",
       "aliases": [
@@ -228,12 +228,12 @@
           "type": "alias"
         }
       ],
-      "created_at": "2025-11-20 04:09:13.942313",
-      "updated_at": "2025-11-20 04:09:13.942313",
+      "created_at": "2025-11-21 18:55:38.759295",
+      "updated_at": "2025-11-21 18:55:38.759296",
       "metadata": {}
     },
     {
-      "id": "actor_d1d1dd5805d1",
+      "id": "actor_6b132aa220c8",
       "canonical_name": "China",
       "actor_type": "country",
       "aliases": [
@@ -246,12 +246,12 @@
           "type": "alias"
         }
       ],
-      "created_at": "2025-11-20 04:09:13.942319",
-      "updated_at": "2025-11-20 04:09:13.942320",
+      "created_at": "2025-11-21 18:55:38.759315",
+      "updated_at": "2025-11-21 18:55:38.759316",
       "metadata": {}
     },
     {
-      "id": "actor_4d3ab6f7b5dd",
+      "id": "actor_22a3b7738503",
       "canonical_name": "European Union",
       "actor_type": "organization",
       "aliases": [
@@ -264,12 +264,12 @@
           "type": "alias"
         }
       ],
-      "created_at": "2025-11-20 04:09:13.942326",
-      "updated_at": "2025-11-20 04:09:13.942326",
+      "created_at": "2025-11-21 18:55:38.759334",
+      "updated_at": "2025-11-21 18:55:38.759335",
       "metadata": {}
     },
     {
-      "id": "actor_dce567fca695",
+      "id": "actor_e51f343d734d",
       "canonical_name": "Ukraine",
       "actor_type": "country",
       "aliases": [
@@ -278,12 +278,12 @@
           "type": "alias"
         }
       ],
-      "created_at": "2025-11-20 04:09:13.942340",
-      "updated_at": "2025-11-20 04:09:13.942340",
+      "created_at": "2025-11-21 18:55:38.759352",
+      "updated_at": "2025-11-21 18:55:38.759353",
       "metadata": {}
     },
     {
-      "id": "actor_75b9add5da7c",
+      "id": "actor_bf2ba47a1eca",
       "canonical_name": "United Nations",
       "actor_type": "organization",
       "aliases": [
@@ -296,12 +296,12 @@
           "type": "alias"
         }
       ],
-      "created_at": "2025-11-20 04:09:13.942346",
-      "updated_at": "2025-11-20 04:09:13.942346",
+      "created_at": "2025-11-21 18:55:38.759412",
+      "updated_at": "2025-11-21 18:55:38.759412",
       "metadata": {}
     },
     {
-      "id": "actor_4d6e85e22512",
+      "id": "actor_df1d36429926",
       "canonical_name": "NATO",
       "actor_type": "organization",
       "aliases": [
@@ -310,12 +310,12 @@
           "type": "alias"
         }
       ],
-      "created_at": "2025-11-20 04:09:13.942352",
-      "updated_at": "2025-11-20 04:09:13.942352",
+      "created_at": "2025-11-21 18:55:38.759432",
+      "updated_at": "2025-11-21 18:55:38.759432",
       "metadata": {}
     },
     {
-      "id": "actor_e5d88d44a280",
+      "id": "actor_9a08311e8b83",
       "canonical_name": "European Commission",
       "actor_type": "organization",
       "aliases": [
@@ -328,12 +328,12 @@
           "type": "alias"
         }
       ],
-      "created_at": "2025-11-20 04:09:13.942359",
-      "updated_at": "2025-11-20 04:09:13.942359",
+      "created_at": "2025-11-21 18:55:38.759451",
+      "updated_at": "2025-11-21 18:55:38.759452",
       "metadata": {}
     },
     {
-      "id": "actor_9d299fb245cb",
+      "id": "actor_d11ece9c1442",
       "canonical_name": "World Health Organization",
       "actor_type": "organization",
       "aliases": [
@@ -346,27 +346,27 @@
           "type": "alias"
         }
       ],
-      "created_at": "2025-11-20 04:09:13.942365",
-      "updated_at": "2025-11-20 04:09:13.942365",
+      "created_at": "2025-11-21 18:55:38.759469",
+      "updated_at": "2025-11-21 18:55:38.759469",
       "metadata": {}
     }
   ],
   "news": [
     {
-      "id": "news_2981748be75a",
+      "id": "news_85bbc8713c79",
       "title": "EU Announces New AI Regulation Framework",
       "summary": "European Union introduces comprehensive AI safety regulations requiring transparency and risk assessment.",
       "full_text": "The European Commission announced today a new framework for artificial intelligence regulation. Ursula von der Leyen stated that the regulations will ensure AI systems are safe and respect fundamental rights. The framework includes mandatory risk assessments for high-risk AI applications.",
       "url": null,
       "source": "News Agency",
       "author": null,
-      "published_at": "2025-11-18 07:09:13.942381",
-      "created_at": "2025-11-20 04:09:13.942405",
+      "published_at": "2025-11-20 07:55:38.759491",
+      "created_at": "2025-11-21 18:55:38.759536",
       "embedding": null,
       "mentioned_actors": [
-        "actor_4d3ab6f7b5dd",
-        "actor_c65af2b3a8e4",
-        "actor_e5d88d44a280"
+        "actor_22a3b7738503",
+        "actor_e95c7f9d58ff",
+        "actor_9a08311e8b83"
       ],
       "related_news_ids": [],
       "story_id": null,
@@ -382,19 +382,19 @@
       "editorial_notes": ""
     },
     {
-      "id": "news_f9c7fdde335e",
+      "id": "news_1f493d4247fd",
       "title": "OpenAI Responds to EU AI Regulations",
       "summary": "OpenAI announces compliance plan with new European AI safety requirements.",
       "full_text": "OpenAI announced plans to comply with the new EU AI regulations. The company will implement additional safety measures and transparency requirements for ChatGPT and other AI systems operating in European markets.",
       "url": null,
       "source": "News Agency",
       "author": null,
-      "published_at": "2025-11-17 21:09:13.942431",
-      "created_at": "2025-11-20 04:09:13.942437",
+      "published_at": "2025-11-19 12:55:38.759566",
+      "created_at": "2025-11-21 18:55:38.759579",
       "embedding": null,
       "mentioned_actors": [
-        "actor_3b96fded788c",
-        "actor_4d3ab6f7b5dd"
+        "actor_7c919bb30f74",
+        "actor_22a3b7738503"
       ],
       "related_news_ids": [],
       "story_id": null,
@@ -410,21 +410,21 @@
       "editorial_notes": ""
     },
     {
-      "id": "news_6244dd24b0b4",
+      "id": "news_2a011625ec9b",
       "title": "US Considers Similar AI Safety Framework",
       "summary": "Following EU's lead, United States debates implementing AI oversight regulations.",
       "full_text": "Joe Biden administration is considering implementing AI safety regulations similar to those announced by the European Union. Tech companies including Microsoft and Google have expressed support for responsible AI governance.",
       "url": null,
       "source": "News Agency",
       "author": null,
-      "published_at": "2025-11-16 20:09:13.942444",
-      "created_at": "2025-11-20 04:09:13.942450",
+      "published_at": "2025-11-18 13:55:38.759594",
+      "created_at": "2025-11-21 18:55:38.759604",
       "embedding": null,
       "mentioned_actors": [
-        "actor_d4d2ee269699",
-        "actor_10028641ef13",
-        "actor_fe743b5bf40b",
-        "actor_d03ca81757e5"
+        "actor_dd9672bb2b47",
+        "actor_0dcf820fd335",
+        "actor_a9ee548b79db",
+        "actor_316e09c3a0e8"
       ],
       "related_news_ids": [],
       "story_id": null,
@@ -440,21 +440,21 @@
       "editorial_notes": ""
     },
     {
-      "id": "news_805f0e8c065c",
+      "id": "news_a8116c27c2be",
       "title": "Tech Giants Form AI Safety Alliance",
       "summary": "Major technology companies create coalition to develop AI safety standards.",
       "full_text": "OpenAI, Microsoft, Google, and Meta announced the formation of an AI Safety Alliance to develop industry standards for artificial intelligence. The initiative comes in response to increasing regulatory pressure from governments worldwide.",
       "url": null,
       "source": "News Agency",
       "author": null,
-      "published_at": "2025-11-16 03:09:13.942456",
-      "created_at": "2025-11-20 04:09:13.942460",
+      "published_at": "2025-11-17 07:55:38.759679",
+      "created_at": "2025-11-21 18:55:38.759748",
       "embedding": null,
       "mentioned_actors": [
-        "actor_3b96fded788c",
-        "actor_fe743b5bf40b",
-        "actor_d03ca81757e5",
-        "actor_1dfaef0b4c85"
+        "actor_7c919bb30f74",
+        "actor_a9ee548b79db",
+        "actor_316e09c3a0e8",
+        "actor_f1cd635fac8d"
       ],
       "related_news_ids": [],
       "story_id": null,
@@ -470,20 +470,20 @@
       "editorial_notes": ""
     },
     {
-      "id": "news_16e0bb685750",
+      "id": "news_89b657c89153",
       "title": "NATO Announces Additional Military Aid to Ukraine",
       "summary": "NATO members agree to provide additional military equipment and training to Ukrainian forces.",
       "full_text": "NATO announced today an expanded military support package for Ukraine. Volodymyr Zelensky thanked alliance members for their continued support. The package includes advanced defense systems and training programs.",
       "url": null,
       "source": "News Agency",
       "author": null,
-      "published_at": "2025-11-19 10:09:13.942466",
-      "created_at": "2025-11-20 04:09:13.942469",
+      "published_at": "2025-11-21 03:55:38.759799",
+      "created_at": "2025-11-21 18:55:38.759814",
       "embedding": null,
       "mentioned_actors": [
-        "actor_4d6e85e22512",
-        "actor_dce567fca695",
-        "actor_9e9399a741fa"
+        "actor_df1d36429926",
+        "actor_e51f343d734d",
+        "actor_42e6fc0bfb91"
       ],
       "related_news_ids": [],
       "story_id": null,
@@ -499,21 +499,21 @@
       "editorial_notes": ""
     },
     {
-      "id": "news_f0e4fb2e1d21",
+      "id": "news_a1810bc81ed2",
       "title": "Russia Criticizes NATO Expansion Plans",
       "summary": "Russian officials condemn NATO's military aid to Ukraine as escalation.",
       "full_text": "Vladimir Putin criticized NATO's decision to increase military support to Ukraine, calling it an escalation of the conflict. Russia warned of potential consequences for regional security.",
       "url": null,
       "source": "News Agency",
       "author": null,
-      "published_at": "2025-11-18 14:09:13.942475",
-      "created_at": "2025-11-20 04:09:13.942479",
+      "published_at": "2025-11-20 14:55:38.759835",
+      "created_at": "2025-11-21 18:55:38.759845",
       "embedding": null,
       "mentioned_actors": [
-        "actor_6d9ec71b9355",
-        "actor_2d2b458058c2",
-        "actor_4d6e85e22512",
-        "actor_dce567fca695"
+        "actor_5544d51d8dbf",
+        "actor_4b94c6a6c9ab",
+        "actor_df1d36429926",
+        "actor_e51f343d734d"
       ],
       "related_news_ids": [],
       "story_id": null,
@@ -529,20 +529,20 @@
       "editorial_notes": ""
     },
     {
-      "id": "news_9ffbeeb5acfe",
+      "id": "news_a629b91099f2",
       "title": "UN Calls for Peace Negotiations",
       "summary": "United Nations urges diplomatic solution to ongoing Ukraine conflict.",
       "full_text": "The United Nations called for immediate peace negotiations to resolve the Ukraine conflict. The organization emphasized the humanitarian impact and urged all parties to return to the negotiating table.",
       "url": null,
       "source": "News Agency",
       "author": null,
-      "published_at": "2025-11-17 18:09:13.942484",
-      "created_at": "2025-11-20 04:09:13.942490",
+      "published_at": "2025-11-19 09:55:38.759861",
+      "created_at": "2025-11-21 18:55:38.759871",
       "embedding": null,
       "mentioned_actors": [
-        "actor_75b9add5da7c",
-        "actor_dce567fca695",
-        "actor_6d9ec71b9355"
+        "actor_bf2ba47a1eca",
+        "actor_e51f343d734d",
+        "actor_5544d51d8dbf"
       ],
       "related_news_ids": [],
       "story_id": null,
@@ -558,23 +558,23 @@
       "editorial_notes": ""
     },
     {
-      "id": "news_b20b995820f6",
+      "id": "news_d1caaca6c112",
       "title": "Global Climate Summit Opens with Ambitious Goals",
       "summary": "World leaders gather to discuss climate action and emission reduction targets.",
       "full_text": "Leaders from around the world gathered today for the global climate summit. Joe Biden, Xi Jinping, and Ursula von der Leyen are among the attendees. The summit aims to establish new emission reduction commitments.",
       "url": null,
       "source": "News Agency",
       "author": null,
-      "published_at": "2025-11-18 20:09:13.942498",
-      "created_at": "2025-11-20 04:09:13.942506",
+      "published_at": "2025-11-20 18:55:38.759887",
+      "created_at": "2025-11-21 18:55:38.759896",
       "embedding": null,
       "mentioned_actors": [
-        "actor_d4d2ee269699",
-        "actor_10028641ef13",
-        "actor_d1d1dd5805d1",
-        "actor_6231c8a6e434",
-        "actor_4d3ab6f7b5dd",
-        "actor_c65af2b3a8e4"
+        "actor_dd9672bb2b47",
+        "actor_0dcf820fd335",
+        "actor_6b132aa220c8",
+        "actor_451a9ddd3888",
+        "actor_22a3b7738503",
+        "actor_e95c7f9d58ff"
       ],
       "related_news_ids": [],
       "story_id": null,
@@ -590,19 +590,19 @@
       "editorial_notes": ""
     },
     {
-      "id": "news_db80fc5a664b",
+      "id": "news_f1ccb527b48f",
       "title": "EU Pledges Carbon Neutrality by 2040",
       "summary": "European Union announces accelerated timeline for achieving carbon neutrality.",
       "full_text": "The European Union announced an ambitious plan to achieve carbon neutrality by 2040, ten years ahead of the original target. Ursula von der Leyen stated this demonstrates Europe's commitment to climate leadership.",
       "url": null,
       "source": "News Agency",
       "author": null,
-      "published_at": "2025-11-17 07:09:13.942518",
-      "created_at": "2025-11-20 04:09:13.942523",
+      "published_at": "2025-11-19 05:55:38.759921",
+      "created_at": "2025-11-21 18:55:38.759929",
       "embedding": null,
       "mentioned_actors": [
-        "actor_4d3ab6f7b5dd",
-        "actor_c65af2b3a8e4"
+        "actor_22a3b7738503",
+        "actor_e95c7f9d58ff"
       ],
       "related_news_ids": [],
       "story_id": null,
@@ -618,19 +618,19 @@
       "editorial_notes": ""
     },
     {
-      "id": "news_160a5899b7e4",
+      "id": "news_fed4e5e1f928",
       "title": "Microsoft Announces Major AI Investment",
       "summary": "Microsoft reveals multi-billion dollar investment in AI infrastructure and development.",
       "full_text": "Microsoft announced a major investment in AI infrastructure, including expanded partnerships with OpenAI. The company plans to integrate advanced AI capabilities across all product lines.",
       "url": null,
       "source": "News Agency",
       "author": null,
-      "published_at": "2025-11-14 09:09:13.942530",
-      "created_at": "2025-11-20 04:09:13.942533",
+      "published_at": "2025-11-16 14:55:38.760075",
+      "created_at": "2025-11-21 18:55:38.760086",
       "embedding": null,
       "mentioned_actors": [
-        "actor_fe743b5bf40b",
-        "actor_3b96fded788c"
+        "actor_a9ee548b79db",
+        "actor_7c919bb30f74"
       ],
       "related_news_ids": [],
       "story_id": null,
@@ -646,19 +646,19 @@
       "editorial_notes": ""
     },
     {
-      "id": "news_fa4edb214c43",
+      "id": "news_bf4b1ddf0f1d",
       "title": "Google Responds with Competing AI Strategy",
       "summary": "Google unveils comprehensive AI development roadmap to compete with Microsoft.",
       "full_text": "In response to Microsoft's AI investments, Google announced an accelerated AI development strategy. The company emphasized its long-standing AI research and development capabilities.",
       "url": null,
       "source": "News Agency",
       "author": null,
-      "published_at": "2025-11-13 05:09:13.942542",
-      "created_at": "2025-11-20 04:09:13.942545",
+      "published_at": "2025-11-15 13:55:38.760102",
+      "created_at": "2025-11-21 18:55:38.760110",
       "embedding": null,
       "mentioned_actors": [
-        "actor_d03ca81757e5",
-        "actor_fe743b5bf40b"
+        "actor_316e09c3a0e8",
+        "actor_a9ee548b79db"
       ],
       "related_news_ids": [],
       "story_id": null,
@@ -674,19 +674,19 @@
       "editorial_notes": ""
     },
     {
-      "id": "news_a153eb736fcc",
+      "id": "news_15c223d6f601",
       "title": "US Presidential Campaign Intensifies",
       "summary": "Presidential candidates increase campaign activities ahead of upcoming elections.",
       "full_text": "The United States presidential campaign entered a new phase with candidates intensifying their outreach efforts. Joe Biden outlined his vision for the next term, focusing on economic recovery and international leadership.",
       "url": null,
       "source": "News Agency",
       "author": null,
-      "published_at": "2025-11-16 16:09:13.942550",
-      "created_at": "2025-11-20 04:09:13.942554",
+      "published_at": "2025-11-18 11:55:38.760129",
+      "created_at": "2025-11-21 18:55:38.760136",
       "embedding": null,
       "mentioned_actors": [
-        "actor_d4d2ee269699",
-        "actor_10028641ef13"
+        "actor_dd9672bb2b47",
+        "actor_0dcf820fd335"
       ],
       "related_news_ids": [],
       "story_id": null,
@@ -702,21 +702,21 @@
       "editorial_notes": ""
     },
     {
-      "id": "news_dfaed7b20631",
+      "id": "news_7210327e82ac",
       "title": "Tech Leaders Discuss Election Security",
       "summary": "Major technology companies commit to enhanced election security measures.",
       "full_text": "Leaders from Microsoft, Google, and Meta met to discuss election security and misinformation prevention. The companies committed to implementing enhanced verification and transparency measures.",
       "url": null,
       "source": "News Agency",
       "author": null,
-      "published_at": "2025-11-15 07:09:13.942559",
-      "created_at": "2025-11-20 04:09:13.942562",
+      "published_at": "2025-11-17 05:55:38.760153",
+      "created_at": "2025-11-21 18:55:38.760160",
       "embedding": null,
       "mentioned_actors": [
-        "actor_fe743b5bf40b",
-        "actor_d03ca81757e5",
-        "actor_1dfaef0b4c85",
-        "actor_d4d2ee269699"
+        "actor_a9ee548b79db",
+        "actor_316e09c3a0e8",
+        "actor_f1cd635fac8d",
+        "actor_dd9672bb2b47"
       ],
       "related_news_ids": [],
       "story_id": null,

@@ -16,6 +16,7 @@ from backend.services.clustering_service import ClusteringService
 from backend.services.ner_service import NERService
 from backend.services.event_extraction_service import EventExtractionService
 from backend.services.embedding_service import EmbeddingService
+from backend.api import graph_routes
 
 
 # Initialize services
@@ -24,6 +25,63 @@ embedding_service = EmbeddingService(use_mock=True)
 ner_service = NERService()
 event_service = EventExtractionService()
 clustering_service = ClusteringService(graph_manager)
+
+# Load data on startup
+import json
+import os
+
+def load_data():
+    """Load mock data from JSON files"""
+    data_dir = "data"
+    
+    # Load actors
+    if os.path.exists(f"{data_dir}/actors.json"):
+        with open(f"{data_dir}/actors.json", 'r') as f:
+            actors_data = json.load(f)
+            for item in actors_data:
+                actor = Actor(**item)
+                graph_manager.add_actor(actor)
+            print(f"Loaded {len(actors_data)} actors")
+
+    # Load news
+    if os.path.exists(f"{data_dir}/news.json"):
+        with open(f"{data_dir}/news.json", 'r') as f:
+            news_data = json.load(f)
+            for item in news_data:
+                # Convert date string back to datetime
+                if 'published_at' in item and item['published_at']:
+                    item['published_at'] = datetime.fromisoformat(item['published_at'])
+                news = News(**item)
+                # Generate embedding if missing
+                if not news.embedding:
+                    # encode returns numpy array (n, dim), take first item and convert to list
+                    news.embedding = embedding_service.encode(news.full_text or news.summary)[0].tolist()
+                graph_manager.add_news(news)
+            print(f"Loaded {len(news_data)} news items")
+
+    # Load stories
+    if os.path.exists(f"{data_dir}/stories.json"):
+        with open(f"{data_dir}/stories.json", 'r') as f:
+            stories_data = json.load(f)
+            for item in stories_data:
+                # Convert dates
+                if 'first_seen' in item and item['first_seen']:
+                    item['first_seen'] = datetime.fromisoformat(item['first_seen'])
+                if 'last_activity' in item and item['last_activity']:
+                    item['last_activity'] = datetime.fromisoformat(item['last_activity'])
+                story = Story(**item)
+                graph_manager.add_story(story)
+            print(f"Loaded {len(stories_data)} stories")
+            
+    # Compute similarities
+    print("Computing news similarities...")
+    graph_manager.compute_news_similarities(threshold=0.6)
+
+# Execute loading
+try:
+    load_data()
+except Exception as e:
+    print(f"Error loading data: {e}")
 
 
 app = FastAPI(
@@ -40,6 +98,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include graph router
+app.include_router(graph_routes.router)
 
 
 # --- Health Check ---
@@ -313,42 +374,66 @@ async def get_news_graph(story_id: Optional[str] = None):
         nodes = [
             {
                 "id": node,
-                "label": graph_manager.news[node].title[:50] if node in graph_manager.news else node,
-                "data": subgraph.nodes[node]
+                "type": "news",
+                "title": graph_manager.news[node].title if node in graph_manager.news else node,
+                "story_id": story_id,
+                "domains": graph_manager.news[node].domains if node in graph_manager.news else []
             }
             for node in subgraph.nodes()
         ]
-        edges = [
+        links = [
             {
                 "source": u,
                 "target": v,
                 "weight": data.get('weight', 1.0),
-                "similarity": data.get('similarity', 0.0)
+                "type": "similarity"
             }
             for u, v, data in subgraph.edges(data=True)
         ]
+        stories = [{
+            "id": story_id,
+            "title": graph_manager.stories[story_id].title,
+            "news_ids": graph_manager.stories[story_id].news_ids,
+            "size": graph_manager.stories[story_id].size
+        }] if story_id in graph_manager.stories else []
     else:
-        # Get full graph (limit to connected components)
+        # Get full graph
         nodes = [
             {
                 "id": node,
-                "label": graph_manager.news[node].title[:50] if node in graph_manager.news else node,
+                "type": "news",
+                "title": graph_manager.news[node].title if node in graph_manager.news else node,
                 "story_id": graph_manager.news_graph.nodes[node].get('story_id'),
-                "domains": graph_manager.news_graph.nodes[node].get('domains', [])
+                "domains": graph_manager.news_graph.nodes[node].get('domains', []),
+                "is_pinned": graph_manager.news_graph.nodes[node].get('is_pinned', False)
             }
             for node in graph_manager.news_graph.nodes()
         ]
-        edges = [
+        links = [
             {
                 "source": u,
                 "target": v,
                 "weight": data.get('weight', 1.0),
-                "similarity": data.get('similarity', 0.0)
+                "type": "similarity"
             }
             for u, v, data in graph_manager.news_graph.edges(data=True)
         ]
+        
+        # Add stories data
+        stories = [
+            {
+                "id": story_id,
+                "title": story_data.title,
+                "news_ids": story_data.news_ids,
+                "domain": story_data.primary_domain or (story_data.domains[0] if story_data.domains else None),
+                "size": story_data.size,
+                "relevance": story_data.relevance,
+                "cohesion": story_data.cohesion
+            }
+            for story_id, story_data in graph_manager.stories.items()
+        ]
 
-    return {"nodes": nodes, "edges": edges}
+    return {"nodes": nodes, "links": links, "stories": stories}
 
 
 @app.get("/api/graph/actors")
@@ -405,13 +490,21 @@ async def initialize_system(data: Dict):
                 graph_manager.add_news(news)
 
         # Compute similarities
-        graph_manager.compute_news_similarities(threshold=0.4)
+        graph_manager.compute_news_similarities(threshold=0.6)
 
         # Boost by shared actors
         graph_manager.boost_similarity_by_shared_actors(boost_factor=0.15)
 
-        # Cluster into stories
-        stories = clustering_service.cluster_news_to_stories(min_cluster_size=2)
+        # Load stories if provided, otherwise cluster
+        stories = []
+        if "stories" in data and data["stories"]:
+            for story_data in data["stories"]:
+                story = Story(**story_data)
+                graph_manager.add_story(story)
+                stories.append(story)
+        else:
+            # Cluster into stories
+            stories = clustering_service.cluster_news_to_stories(min_cluster_size=2)
 
         # Extract events
         for news in graph_manager.news.values():

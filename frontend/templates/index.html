@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SDASystem - Story Driven Analytical System</title>
-    <link rel="stylesheet" href="/static/css/styles.css">
+    <link rel="stylesheet" href="/static/css/styles.css?v=1763754252">
+    <link rel="stylesheet" href="/static/css/graph-styles.css?v=1763756591">
 </head>
+
 <body>
     <div class="app-container">
         <!-- Header -->
@@ -33,7 +36,10 @@
         <!-- Left Sidebar - Stories List -->
         <aside class="sidebar">
             <div class="sidebar-header">
-                <h2>Stories</h2>
+                <div class="panel-header-content">
+                    <h2>Stories</h2>
+                    <button class="minimize-btn" data-panel="sidebar" title="Minimize panel">−</button>
+                </div>
                 <div class="view-toggle">
                     <button id="viewList" class="active">List</button>
                     <button id="viewGraph">Graph</button>
@@ -49,23 +55,37 @@
 
         <!-- Main Panel - Story Details -->
         <main class="main-panel" id="mainPanel">
-            <div class="loading">
-                <div class="spinner"></div>
-                Loading story details...
+            <div class="main-panel-header">
+                <button class="minimize-btn" data-panel="main" title="Minimize panel">−</button>
+            </div>
+            <div class="main-panel-content">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading story details...
+                </div>
             </div>
         </main>
 
         <!-- Right Detail Panel -->
         <aside class="detail-panel" id="detailPanel">
-            <div class="empty-state">
-                <p>Select a news item or actor to view details</p>
+            <div class="detail-panel-header">
+                <h2>Details</h2>
+                <button class="minimize-btn" data-panel="detail" title="Minimize panel">−</button>
+            </div>
+            <div class="detail-panel-content">
+                <div class="empty-state">
+                    <p>Select a news item or actor to view details</p>
+                </div>
             </div>
         </aside>
 
         <!-- Timeline Panel -->
         <section class="timeline-panel">
             <div class="timeline-header">
-                <h2>Timeline</h2>
+                <div class="panel-header-content">
+                    <h2>Timeline</h2>
+                    <button class="minimize-btn" data-panel="timeline" title="Minimize panel">−</button>
+                </div>
                 <div class="timeline-controls">
                     <button id="zoomDay">Day</button>
                     <button id="zoomWeek">Week</button>
@@ -80,6 +100,22 @@
         </section>
     </div>
 
-    <script src="/static/js/app.js"></script>
+    <!-- Utilities -->
+    <script src="/static/js/utils/helpers.js?v=1763755093"></script>
+    <script src="/static/js/utils/EventBus.js?v=1763755093"></script>
+
+    <!-- Force Graph Library -->
+    <script src="/static/js/lib/force-graph.min.js?v=1763772600"></script>
+
+    <!-- View Modules -->
+    <script src="/static/js/views/ListView.js?v=1763755093"></script>
+    <script src="/static/js/views/GraphView.js?v=1763776200"></script>
+    <script src="/static/js/views/StoryView.js?v=1763755093"></script>
+    <script src="/static/js/views/DetailsView.js?v=1763755093"></script>
+    <script src="/static/js/views/TimelineView.js?v=1763755093"></script>
+
+    <!-- Main Application -->
+    <script src="/static/js/app.js?v=1763756658"></script>
 </body>
+
 </html>

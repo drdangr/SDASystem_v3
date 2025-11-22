@@ -1,491 +1,220 @@
-// SDASystem Frontend Application
+// SDASystem Frontend Application - Refactored with Modular Views
 const API_BASE = '/api';
 
 class SDAApp {
     constructor() {
+        // Application state
         this.stories = [];
         this.currentStory = null;
         this.currentNews = null;
         this.currentActor = null;
         this.viewMode = 'list'; // 'list' or 'graph'
 
+        // Initialize EventBus for inter-module communication
+        this.eventBus = new EventBus();
+
+        // Initialize view modules
+        this.listView = new ListView('storiesList', this.eventBus);
+        this.graphView = new GraphView('storiesList', this.eventBus, API_BASE);
+        this.storyView = new StoryView('.main-panel-content', this.eventBus, API_BASE);
+        this.detailsView = new DetailsView('.detail-panel-content', this.eventBus, API_BASE);
+        this.timelineView = new TimelineView('timelineEvents', this.eventBus, API_BASE);
+
         this.init();
     }
 
-    async init() {
-        console.log('Initializing SDASystem...');
-        await this.loadData();
+    init() {
         this.setupEventListeners();
-        this.updateStats();
-        this.renderStories();
+        this.setupEventBusListeners();
+        this.restorePanelStates();
+        this.loadData();
     }
 
     async loadData() {
         try {
-            showLoading('sidebar');
-            const response = await fetch(`${API_BASE}/stories?sort_by=relevance&limit=100`);
+            const response = await fetch(`${API_BASE}/stories`);
             this.stories = await response.json();
-            console.log(`Loaded ${this.stories.length} stories`);
-            hideLoading('sidebar');
+
+            // Render stories in current view mode
+            if (this.viewMode === 'list') {
+                this.listView.render(this.stories);
+            } else {
+                this.graphView.render(this.stories);
+            }
+
+            // Select first story if available
+            if (this.stories.length > 0 && !this.currentStory) {
+                this.selectStory(this.stories[0].id);
+            }
+
+            this.updateStats();
         } catch (error) {
-            console.error('Failed to load stories:', error);
-            showError('sidebar', 'Failed to load stories');
+            console.error('Failed to load data:', error);
         }
     }
 
     setupEventListeners() {
         // View mode toggle
-        document.getElementById('viewList').addEventListener('click', () => {
+        document.getElementById('viewList')?.addEventListener('click', () => {
             this.viewMode = 'list';
             this.updateViewMode();
         });
 
-        document.getElementById('viewGraph').addEventListener('click', () => {
+        document.getElementById('viewGraph')?.addEventListener('click', () => {
             this.viewMode = 'graph';
             this.updateViewMode();
         });
 
-        // Timeline controls
-        document.getElementById('zoomDay').addEventListener('click', () => this.setTimelineZoom('day'));
-        document.getElementById('zoomWeek').addEventListener('click', () => this.setTimelineZoom('week'));
-        document.getElementById('zoomMonth').addEventListener('click', () => this.setTimelineZoom('month'));
-    }
-
-    updateViewMode() {
-        document.getElementById('viewList').classList.toggle('active', this.viewMode === 'list');
-        document.getElementById('viewGraph').classList.toggle('active', this.viewMode === 'graph');
-
-        if (this.viewMode === 'list') {
-            this.renderStories();
-        } else {
-            this.renderGraph();
-        }
-    }
-
-    renderStories() {
-        const container = document.getElementById('storiesList');
-        container.innerHTML = '';
-
-        if (this.stories.length === 0) {
-            container.innerHTML = '<div class="loading">No stories found</div>';
-            return;
-        }
-
-        this.stories.forEach(story => {
-            const item = this.createStoryItem(story);
-            container.appendChild(item);
+        // Timeline zoom controls
+        document.getElementById('zoomDay')?.addEventListener('click', () => {
+            this.timelineView.setZoom('day');
         });
 
-        // Select first story
-        if (this.stories.length > 0 && !this.currentStory) {
-            this.selectStory(this.stories[0].id);
-        }
+        document.getElementById('zoomWeek')?.addEventListener('click', () => {
+            this.timelineView.setZoom('week');
+        });
+
+        document.getElementById('zoomMonth')?.addEventListener('click', () => {
+            this.timelineView.setZoom('month');
+        });
+
+        // Panel minimization - use event delegation
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('minimize-btn')) {
+                e.stopPropagation();
+                const panel = e.target.dataset.panel;
+                if (panel) {
+                    this.togglePanel(panel);
+                }
+            }
+        });
     }
 
-    createStoryItem(story) {
-        const div = document.createElement('div');
-        div.className = 'story-item';
-        if (this.currentStory && this.currentStory.id === story.id) {
-            div.classList.add('active');
-        }
+    setupEventBusListeners() {
+        // Story selection
+        this.eventBus.on('story:selected', async (storyId) => {
+            await this.selectStory(storyId);
+        });
 
-        div.innerHTML = `
-            <h3>${escapeHtml(story.title)}</h3>
-            <div class="story-meta">
-                <span>${story.size} news</span>
-                <span>${story.top_actors.length} actors</span>
-                <span>${formatDate(story.last_activity)}</span>
-            </div>
-            <div class="story-metrics">
-                <span class="metric">R: ${(story.relevance * 100).toFixed(0)}%</span>
-                <span class="metric">F: ${(story.freshness * 100).toFixed(0)}%</span>
-                <span class="metric">C: ${(story.cohesion * 100).toFixed(0)}%</span>
-            </div>
-        `;
+        // News selection
+        this.eventBus.on('news:selected', async (newsId) => {
+            await this.selectNews(newsId);
+        });
 
-        div.addEventListener('click', () => this.selectStory(story.id));
-        return div;
+        // Actor selection
+        this.eventBus.on('actor:selected', async (actorId) => {
+            await this.selectActor(actorId);
+        });
     }
 
     async selectStory(storyId) {
-        try {
-            // Fetch full story details
-            const response = await fetch(`${API_BASE}/stories/${storyId}`);
-            this.currentStory = await response.json();
+        const story = this.stories.find(s => s.id === storyId);
+        if (!story) return;
 
-            // Update UI
-            this.renderStoryDetail();
-            this.loadStoryEvents(storyId);
-            this.updateStorySelection();
-            this.clearDetailPanel();
-        } catch (error) {
-            console.error('Failed to load story:', error);
-        }
-    }
+        this.currentStory = story;
 
-    async renderStoryDetail() {
-        const container = document.getElementById('mainPanel');
-        const story = this.currentStory;
-
-        if (!story) {
-            container.innerHTML = '<div class="loading">Select a story to view details</div>';
-            return;
+        // Update list selection
+        if (this.viewMode === 'list') {
+            this.listView.currentStoryId = storyId;
+            this.listView.updateSelection();
         }
 
-        // Fetch news for this story
-        const newsResponse = await fetch(`${API_BASE}/news?story_id=${story.id}`);
-        const newsItems = await newsResponse.json();
+        // Render story details
+        await this.storyView.render(story);
 
-        // Fetch actors
-        const actorsHtml = await this.renderActorsSection(story.top_actors);
+        // Load timeline
+        await this.timelineView.loadStoryTimeline(storyId);
 
-        container.innerHTML = `
-            <div class="story-detail">
-                <h1>${escapeHtml(story.title)}</h1>
-                <div class="meta-info">
-                    <span>${story.size} news items</span>
-                    <span>${story.top_actors.length} actors</span>
-                    <span>Updated ${formatDate(story.last_activity)}</span>
-                    <span>${story.primary_domain || 'N/A'}</span>
-                </div>
-                <div class="summary">
-                    ${escapeHtml(story.summary)}
-                </div>
-
-                <h2 class="section-title">Key Points</h2>
-                <ul class="bullets-list">
-                    ${story.bullets.map(b => `<li>${escapeHtml(b)}</li>`).join('')}
-                </ul>
-
-                <h2 class="section-title">Top Actors</h2>
-                <div class="actors-grid">
-                    ${actorsHtml}
-                </div>
-
-                <h2 class="section-title">Related News (${newsItems.length})</h2>
-                <div class="news-list">
-                    ${newsItems.map(n => this.createNewsItemHtml(n)).join('')}
-                </div>
-            </div>
-        `;
-
-        // Add event listeners to news items
-        document.querySelectorAll('.news-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const newsId = item.dataset.newsId;
-                this.selectNews(newsId);
-            });
-        });
-
-        // Add event listeners to actor chips
-        document.querySelectorAll('.actor-chip').forEach(chip => {
-            chip.addEventListener('click', () => {
-                const actorId = chip.dataset.actorId;
-                this.selectActor(actorId);
-            });
-        });
-    }
-
-    async renderActorsSection(actorIds) {
-        if (actorIds.length === 0) return '<p>No actors identified</p>';
-
-        const actorsHtml = [];
-        for (const actorId of actorIds.slice(0, 12)) { // Limit to 12
-            try {
-                const response = await fetch(`${API_BASE}/actors/${actorId}`);
-                const actor = await response.json();
-                actorsHtml.push(`
-                    <div class="actor-chip" data-actor-id="${actor.id}">
-                        ${escapeHtml(actor.canonical_name)}
-                    </div>
-                `);
-            } catch (error) {
-                console.warn(`Failed to load actor ${actorId}`);
-            }
-        }
-
-        return actorsHtml.join('');
-    }
-
-    createNewsItemHtml(news) {
-        return `
-            <div class="news-item" data-news-id="${news.id}">
-                <h4>${escapeHtml(news.title)}</h4>
-                <p>${escapeHtml(news.summary)}</p>
-                <div class="news-meta">
-                    <span>${news.source}</span> •
-                    <span>${formatDate(news.published_at)}</span>
-                </div>
-            </div>
-        `;
+        // Clear detail panel
+        this.detailsView.clear();
     }
 
     async selectNews(newsId) {
         try {
             const response = await fetch(`${API_BASE}/news/${newsId}`);
             this.currentNews = await response.json();
-            this.renderNewsDetail();
+            await this.detailsView.renderNews(this.currentNews);
         } catch (error) {
             console.error('Failed to load news:', error);
         }
-    }
-
-    async renderNewsDetail() {
-        const container = document.getElementById('detailPanel');
-        const news = this.currentNews;
-
-        if (!news) return;
-
-        // Fetch actors mentioned in this news
-        let actorsHtml = '';
-        if (news.mentioned_actors && news.mentioned_actors.length > 0) {
-            const actorsList = [];
-            for (const actorId of news.mentioned_actors.slice(0, 10)) {
-                try {
-                    const response = await fetch(`${API_BASE}/actors/${actorId}`);
-                    const actor = await response.json();
-                    actorsList.push(`
-                        <div class="actor-chip" data-actor-id="${actor.id}">
-                            ${escapeHtml(actor.canonical_name)}
-                        </div>
-                    `);
-                } catch (error) {
-                    console.warn(`Failed to load actor ${actorId}`);
-                }
-            }
-            actorsHtml = actorsList.join('');
-        }
-
-        container.innerHTML = `
-            <div class="news-detail">
-                <h2>News Details</h2>
-                <h3 style="font-size: 18px; color: #fff; margin: 15px 0;">${escapeHtml(news.title)}</h3>
-
-                <div class="detail-section">
-                    <h3>Source</h3>
-                    <p>${escapeHtml(news.source)}</p>
-                </div>
-
-                <div class="detail-section">
-                    <h3>Published</h3>
-                    <p>${formatDate(news.published_at)}</p>
-                </div>
-
-                <div class="detail-section">
-                    <h3>Summary</h3>
-                    <p style="line-height: 1.6;">${escapeHtml(news.summary)}</p>
-                </div>
-
-                ${news.full_text ? `
-                    <div class="detail-section">
-                        <h3>Full Text</h3>
-                        <p style="line-height: 1.6;">${escapeHtml(news.full_text)}</p>
-                    </div>
-                ` : ''}
-
-                ${news.mentioned_actors && news.mentioned_actors.length > 0 ? `
-                    <div class="detail-section">
-                        <h3>Mentioned Actors</h3>
-                        <div class="actors-grid">
-                            ${actorsHtml}
-                        </div>
-                    </div>
-                ` : ''}
-
-                ${news.domains && news.domains.length > 0 ? `
-                    <div class="detail-section">
-                        <h3>Domains</h3>
-                        <div class="aliases-list">
-                            ${news.domains.map(d => `<span class="alias-tag">${escapeHtml(d)}</span>`).join('')}
-                        </div>
-                    </div>
-                ` : ''}
-            </div>
-        `;
-
-        // Add event listeners to actor chips
-        document.querySelectorAll('.actor-chip').forEach(chip => {
-            chip.addEventListener('click', () => {
-                const actorId = chip.dataset.actorId;
-                this.selectActor(actorId);
-            });
-        });
     }
 
     async selectActor(actorId) {
         try {
             const response = await fetch(`${API_BASE}/actors/${actorId}`);
             this.currentActor = await response.json();
-            this.renderActorDetail();
+            await this.detailsView.renderActor(this.currentActor);
         } catch (error) {
             console.error('Failed to load actor:', error);
         }
     }
 
-    async renderActorDetail() {
-        const container = document.getElementById('detailPanel');
-        const actor = this.currentActor;
+    updateViewMode() {
+        // Update button states
+        document.getElementById('viewList')?.classList.toggle('active', this.viewMode === 'list');
+        document.getElementById('viewGraph')?.classList.toggle('active', this.viewMode === 'graph');
 
-        if (!actor) return;
-
-        // Fetch mentions
-        const mentionsResponse = await fetch(`${API_BASE}/actors/${actor.id}/mentions?limit=10`);
-        const mentions = await mentionsResponse.json();
-
-        const aliasesHtml = actor.aliases && actor.aliases.length > 0
-            ? actor.aliases.map(a => `<span class="alias-tag">${escapeHtml(a.name)}</span>`).join('')
-            : '<span class="alias-tag">No aliases</span>';
-
-        container.innerHTML = `
-            <div class="actor-detail">
-                <h2>Actor Details</h2>
-                <div class="actor-name">${escapeHtml(actor.canonical_name)}</div>
-                <span class="actor-type">${escapeHtml(actor.actor_type)}</span>
-
-                <div class="detail-section">
-                    <h3>Aliases</h3>
-                    <div class="aliases-list">
-                        ${aliasesHtml}
-                    </div>
-                </div>
-
-                <div class="detail-section">
-                    <h3>Recent Mentions (${mentions.length})</h3>
-                    <div class="news-list" style="max-height: 400px; overflow-y: auto;">
-                        ${mentions.map(n => this.createNewsItemHtml(n)).join('')}
-                    </div>
-                </div>
-            </div>
-        `;
-
-        // Add event listeners to news items
-        document.querySelectorAll('.news-item').forEach(item => {
-            item.addEventListener('click', () => {
-                const newsId = item.dataset.newsId;
-                this.selectNews(newsId);
-            });
-        });
-    }
-
-    clearDetailPanel() {
-        const container = document.getElementById('detailPanel');
-        container.innerHTML = `
-            <div class="empty-state">
-                <p>Select a news item or actor to view details</p>
-            </div>
-        `;
-    }
-
-    async loadStoryEvents(storyId) {
-        try {
-            const response = await fetch(`${API_BASE}/stories/${storyId}/events`);
-            const events = await response.json();
-            this.renderTimeline(events);
-        } catch (error) {
-            console.error('Failed to load events:', error);
-            this.renderTimeline([]);
-        }
-    }
-
-    renderTimeline(events) {
-        const container = document.getElementById('timelineEvents');
-
-        if (events.length === 0) {
-            container.innerHTML = '<div class="loading">No timeline events for this story</div>';
-            return;
-        }
-
-        // Sort by date
-        events.sort((a, b) => new Date(a.event_date) - new Date(b.event_date));
-
-        container.innerHTML = events.map(event => `
-            <div class="event-item ${event.event_type}">
-                <div class="event-date">${formatDate(event.event_date)}</div>
-                <div class="event-title">${escapeHtml(event.title)}</div>
-                <div class="event-description">${escapeHtml(event.description.substring(0, 100))}...</div>
-                <span class="event-type-badge ${event.event_type}">
-                    ${event.event_type === 'fact' ? 'FACT' : 'OPINION'}
-                </span>
-            </div>
-        `).join('');
-    }
-
-    updateStorySelection() {
-        document.querySelectorAll('.story-item').forEach(item => {
-            item.classList.remove('active');
-        });
-
-        if (this.currentStory) {
-            const currentItem = Array.from(document.querySelectorAll('.story-item'))
-                .find(item => item.querySelector('h3').textContent === this.currentStory.title);
-            if (currentItem) {
-                currentItem.classList.add('active');
+        // Render in appropriate view
+        if (this.viewMode === 'list') {
+            this.listView.render(this.stories);
+            if (this.currentStory) {
+                this.listView.currentStoryId = this.currentStory.id;
+                this.listView.updateSelection();
             }
+        } else {
+            this.graphView.render(this.stories);
         }
     }
 
-    async updateStats() {
-        try {
-            const response = await fetch(`${API_BASE}/stats`);
-            const stats = await response.json();
+    updateStats() {
+        const statsStories = document.getElementById('statsStories');
+        const statsNews = document.getElementById('statsNews');
+        const statsActors = document.getElementById('statsActors');
 
-            document.getElementById('statsStories').textContent = stats.stories_count || 0;
-            document.getElementById('statsNews').textContent = stats.news_count || 0;
-            document.getElementById('statsActors').textContent = stats.actors_count || 0;
-        } catch (error) {
-            console.error('Failed to load stats:', error);
+        if (statsStories) statsStories.textContent = this.stories.length;
+
+        // Calculate total news and actors
+        const totalNews = this.stories.reduce((sum, s) => sum + s.size, 0);
+        const uniqueActors = new Set(this.stories.flatMap(s => s.top_actors));
+
+        if (statsNews) statsNews.textContent = totalNews;
+        if (statsActors) statsActors.textContent = uniqueActors.size;
+    }
+
+    // Panel minimization methods
+    togglePanel(panelName) {
+        const container = document.querySelector('.app-container');
+        const className = `${panelName}-minimized`;
+        const isMinimized = container.classList.contains(className);
+
+        container.classList.toggle(className);
+
+        // Update button text
+        const button = document.querySelector(`[data-panel="${panelName}"]`);
+        if (button) {
+            button.textContent = isMinimized ? '−' : '_';
         }
+
+        // Save state to localStorage
+        const minimizedPanels = this.getMinimizedPanels();
+        localStorage.setItem('minimizedPanels', JSON.stringify(minimizedPanels));
     }
 
-    setTimelineZoom(level) {
-        console.log(`Timeline zoom: ${level}`);
-        // Implement timeline zoom logic
+    getMinimizedPanels() {
+        const container = document.querySelector('.app-container');
+        const panels = ['sidebar', 'main', 'detail', 'timeline'];
+        return panels.filter(panel => container.classList.contains(`${panel}-minimized`));
     }
 
-    renderGraph() {
-        const container = document.getElementById('storiesList');
-        container.innerHTML = '<div class="loading">Graph view coming soon...</div>';
-    }
-}
+    restorePanelStates() {
+        const minimizedPanels = JSON.parse(localStorage.getItem('minimizedPanels') || '[]');
+        const container = document.querySelector('.app-container');
 
-// Utility functions
-function escapeHtml(text) {
-    if (!text) return '';
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now - date;
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
-
-    return date.toLocaleDateString();
-}
-
-function showLoading(containerId) {
-    const container = document.getElementById(containerId);
-    if (container) {
-        container.innerHTML = '<div class="loading"><div class="spinner"></div>Loading...</div>';
-    }
-}
-
-function hideLoading(containerId) {
-    // Loading will be replaced by content
-}
-
-function showError(containerId, message) {
-    const container = document.getElementById(containerId);
-    if (container) {
-        container.innerHTML = `<div class="loading" style="color: #f44336;">${message}</div>`;
+        minimizedPanels.forEach(panel => {
+            container.classList.add(`${panel}-minimized`);
+            const button = document.querySelector(`[data-panel="${panel}"]`);
+            if (button) button.textContent = '_';
+        });
     }
 }
 

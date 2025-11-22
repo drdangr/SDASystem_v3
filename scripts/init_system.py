@@ -27,16 +27,19 @@ def generate_mock_data():
 
     # Generate data
     generator = MockDataGenerator()
-    data = generator.generate_full_dataset()
-
-    # Save to file
-    output_file = data_dir / "mock_data.json"
-    with open(output_file, 'w', encoding='utf-8') as f:
-        json.dump(data, f, indent=2, ensure_ascii=False, default=str)
+    generator.save_to_files(str(data_dir))
+    
+    # Load back from files to return
+    data = {}
+    for filename in ["news.json", "actors.json", "stories.json", "domains.json"]:
+        with open(data_dir / filename, 'r', encoding='utf-8') as f:
+            key = filename.split('.')[0]
+            data[key] = json.load(f)
 
     print(f"✓ Generated {len(data['actors'])} actors")
     print(f"✓ Generated {len(data['news'])} news items")
-    print(f"✓ Saved to {output_file}")
+    print(f"✓ Generated {len(data['stories'])} stories")
+    print(f"✓ Saved to {data_dir}/")
     print()
 
     return data
@@ -59,7 +62,8 @@ def initialize_api(data, api_url="http://localhost:8000"):
         print("Sending data to API...")
         response = requests.post(
             f"{api_url}/api/initialize",
-            json=data,
+            data=json.dumps(data, default=str),
+            headers={'Content-Type': 'application/json'},
             timeout=30
         )
 

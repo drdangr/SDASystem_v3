@@ -86,6 +86,7 @@ class GraphManager:
             for j in range(i + 1, len(embedded_news)):
                 sim = float(similarities[i, j])
                 if sim >= threshold:
+                    sim = min(1.0, sim)  # Clamp to avoid float precision issues > 1.0
                     relation = NewsRelation(
                         source_news_id=embedded_news[i].id,
                         target_news_id=embedded_news[j].id,
