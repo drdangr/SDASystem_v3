@@ -458,7 +458,18 @@ async def get_actors_graph():
         for u, v, data in graph_manager.actors_graph.edges(data=True)
     ]
 
-    return {"nodes": nodes, "edges": edges}
+    # Get mentions (news <-> actor)
+    mentions = []
+    for u, v, data in graph_manager.mentions_graph.edges(data=True):
+        # Mentions graph uses prefixed IDs e.g. "news_123", "actor_456"
+        # We need to extract the raw IDs stored in edge data
+        if 'news_id' in data and 'actor_id' in data:
+            mentions.append({
+                "news_id": data['news_id'],
+                "actor_id": data['actor_id']
+            })
+
+    return {"nodes": nodes, "edges": edges, "mentions": mentions}
 
 
 # --- Data Management ---
