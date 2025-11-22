@@ -127,7 +127,7 @@ class GraphView {
                 })
                 .linkColor(() => this.colors.edge)
                 .linkWidth(link => link.weight * 2)
-                .linkOpacity(0.15) // Fainter links for cosmic look
+                // .linkOpacity(0.15) // Removed as it caused initialization error
                 .linkDirectionalParticles(0)
                 .onNodeClick(node => this.handleNodeClick(node))
                 .onNodeHover(node => this.handleNodeHover(node))
@@ -142,6 +142,18 @@ class GraphView {
             console.error('Error initializing graph:', error);
             this.showError(`Failed to initialize graph: ${error.message}`);
         }
+    }
+
+    /**
+     * Show error message
+     */
+    showError(message) {
+        this.container.innerHTML = `
+            <div class="graph-placeholder" style="padding: 40px; text-align: center; color: #ff6b6b;">
+                <h3>Error</h3>
+                <p>${message}</p>
+            </div>
+        `;
     }
 
     /**
@@ -555,24 +567,29 @@ class GraphView {
         const currentData = this.graph.graphData();
 
         // Add actor nodes
-        this.actorData.nodes.forEach(actor => {
-            currentData.nodes.push({
-                id: actor.id,
-                type: 'actor',
-                name: actor.name,
-                actorType: actor.actor_type
+        if (this.actorData.nodes) {
+            this.actorData.nodes.forEach(actor => {
+                // console.log('Adding actor:', actor); // Debug log
+                currentData.nodes.push({
+                    id: actor.id,
+                    type: 'actor',
+                    name: actor.label || actor.name || 'Unknown', // Fallback
+                    actorType: actor.type
+                });
             });
-        });
+        }
 
         // Add actor-news mentions
-        this.actorData.mentions.forEach(mention => {
-            currentData.links.push({
-                source: mention.news_id,
-                target: mention.actor_id,
-                type: 'mention',
-                weight: 0.3
+        if (this.actorData.mentions) {
+            this.actorData.mentions.forEach(mention => {
+                currentData.links.push({
+                    source: mention.news_id,
+                    target: mention.actor_id,
+                    type: 'mention',
+                    weight: 0.3
+                });
             });
-        });
+        }
 
         this.graph.graphData(currentData);
     }
