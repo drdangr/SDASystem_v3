@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SDASystem - Story Driven Analytical System</title>
-    <link rel="stylesheet" href="/static/css/styles.css?v=1763754252">
+    <link rel="stylesheet" href="/static/css/styles.css?v=1763860000">
     <link rel="stylesheet" href="/static/css/graph-styles.css?v=1763756591">
 </head>
 
@@ -34,7 +34,7 @@
         </header>
 
         <!-- Left Sidebar - Stories List -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebarPanel">
             <div class="sidebar-header">
                 <div class="panel-header-content">
                     <h2>Stories</h2>
@@ -53,6 +53,9 @@
             </div>
         </aside>
 
+        <!-- Resizer between sidebar and main -->
+        <div class="resizer resizer-vertical resizer-left" data-direction="horizontal" data-target="sidebar"></div>
+
         <!-- Main Panel - Story Details -->
         <main class="main-panel" id="mainPanel">
             <div class="main-panel-header">
@@ -65,6 +68,9 @@
                 </div>
             </div>
         </main>
+
+        <!-- Resizer between main and detail -->
+        <div class="resizer resizer-vertical resizer-right" data-direction="horizontal" data-target="main"></div>
 
         <!-- Right Detail Panel -->
         <aside class="detail-panel" id="detailPanel">
@@ -80,21 +86,19 @@
         </aside>
 
         <!-- Timeline Panel -->
-        <section class="timeline-panel">
+        <section class="timeline-panel" id="timelinePanel">
             <div class="timeline-header">
-                <div class="panel-header-content">
-                    <h2>Timeline</h2>
-                    <button class="minimize-btn" data-panel="timeline" title="Minimize panel">−</button>
-                </div>
+                <h2>Timeline</h2>
                 <div class="timeline-controls">
-                    <button id="zoomDay">Day</button>
-                    <button id="zoomWeek">Week</button>
-                    <button id="zoomMonth">Month</button>
+                    <button id="timelineZoomIn">+</button>
+                    <button id="timelineZoomOut">-</button>
                 </div>
+                <button class="minimize-btn" data-panel="timeline" title="Minimize panel">−</button>
             </div>
             <div class="timeline-content">
-                <div class="timeline-events" id="timelineEvents">
-                    <div class="loading">Select a story to view timeline</div>
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading timeline...
                 </div>
             </div>
         </section>
@@ -103,6 +107,7 @@
     <!-- Utilities -->
     <script src="/static/js/utils/helpers.js?v=1763755093"></script>
     <script src="/static/js/utils/EventBus.js?v=1763755093"></script>
+    <script src="/static/js/resizer.js?v=1763860000"></script>
 
     <!-- Force Graph Library -->
     <script src="//unpkg.com/d3@7/dist/d3.min.js"></script>
@@ -110,9 +115,9 @@
 
     <!-- View Modules -->
     <script src="/static/js/views/ListView.js?v=1763755093"></script>
-    <script src="/static/js/views/GraphView.js?v=1763778000"></script>
-    <script src="/static/js/views/StoryView.js?v=1763755093"></script>
-    <script src="/static/js/views/DetailsView.js?v=1763755093"></script>
+    <script src="/static/js/views/GraphView.js?v=1763780000"></script>
+    <script src="/static/js/views/StoryView.js?v=1763780000"></script>
+    <script src="/static/js/views/DetailsView.js?v=1763780000"></script>
     <script src="/static/js/views/TimelineView.js?v=1763755093"></script>
 
     <!-- Main Application -->

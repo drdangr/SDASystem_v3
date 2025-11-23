@@ -215,8 +215,8 @@ class ClusteringService:
 
         # Simple keyword matching
         domain_keywords = {
-            DomainCategory.POLITICS: ["politics", "government", "election", "policy"],
-            DomainCategory.ECONOMICS: ["economy", "business", "finance", "market", "trade"],
+            DomainCategory.POLITICS: ["politics", "government", "election", "policy", "democracy", "international", "regulation", "united_states", "united states"],
+            DomainCategory.ECONOMICS: ["economy", "economics", "business", "finance", "market", "trade", "mergers"],
             DomainCategory.TECHNOLOGY: ["technology", "tech", "ai", "software", "digital"],
             DomainCategory.MILITARY: ["military", "defense", "war", "army", "conflict"],
             DomainCategory.HEALTH: ["health", "medicine", "covid", "disease", "hospital"],
