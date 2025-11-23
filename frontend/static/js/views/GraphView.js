@@ -313,24 +313,58 @@ class GraphView {
 
         } else if (node.type === 'actor') {
             // --- ACTOR RENDERING ---
-            ctx.beginPath();
-            const side = size * 1.5;
-            ctx.rect(node.x - side / 2, node.y - side / 2, side, side);
-            ctx.fillStyle = color;
-            ctx.fill();
-
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 1 / globalScale;
-            ctx.stroke();
-
-            if (globalScale > 1.5) {
-                const fontSize = 8 / globalScale;
-                ctx.font = `${fontSize}px Sans-Serif`;
-                ctx.fillStyle = '#ffffff';
-                ctx.textAlign = 'center';
-                ctx.fillText(node.name, node.x, node.y + side);
+            if (node.actorType === 'person') {
+                this.drawPersonIcon(ctx, node.x, node.y, size, color);
+            } else {
+                this.drawFileIcon(ctx, node.x, node.y, size, color);
             }
         }
+    }
+
+    /**
+     * Draw person icon (silhouette)
+     */
+    drawPersonIcon(ctx, x, y, size, color) {
+        ctx.fillStyle = color;
+
+        // Head
+        ctx.beginPath();
+        ctx.arc(x, y - size * 0.4, size * 0.4, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Body (Shoulders)
+        ctx.beginPath();
+        ctx.arc(x, y + size * 0.6, size * 0.8, Math.PI, 0, false); // Semi-circle
+        ctx.fill();
+    }
+
+    /**
+     * Draw file icon (document)
+     */
+    drawFileIcon(ctx, x, y, size, color) {
+        ctx.fillStyle = color;
+        const w = size * 1.2;
+        const h = size * 1.6;
+        const x0 = x - w / 2;
+        const y0 = y - h / 2;
+        const fold = size * 0.4;
+
+        ctx.beginPath();
+        ctx.moveTo(x0, y0);
+        ctx.lineTo(x0 + w - fold, y0);
+        ctx.lineTo(x0 + w, y0 + fold);
+        ctx.lineTo(x0 + w, y0 + h);
+        ctx.lineTo(x0, y0 + h);
+        ctx.closePath();
+        ctx.fill();
+
+        // Fold detail
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+        ctx.beginPath();
+        ctx.moveTo(x0 + w - fold, y0);
+        ctx.lineTo(x0 + w - fold, y0 + fold);
+        ctx.lineTo(x0 + w, y0 + fold);
+        ctx.fill();
     }
 
     /**
@@ -344,11 +378,28 @@ class GraphView {
         } else {
             // Color by domain
             const domainColors = {
-                'politics': '#e74c3c',
-                'economics': '#2ecc71',
-                'technology': '#4a90e2',
-                'culture': '#9b59b6',
-                'military': '#e67e22'
+                'domain_politics': '#e74c3c',
+                'domain_democracy': '#e74c3c',
+                'domain_elections': '#e74c3c',
+                'domain_united_states': '#e74c3c',
+                'domain_international': '#e74c3c',
+                'domain_international_relations': '#e74c3c',
+                'domain_regulation': '#e74c3c',
+
+                'domain_economics': '#2ecc71',
+                'domain_business': '#2ecc71',
+                'domain_mergers': '#2ecc71',
+
+                'domain_technology': '#4a90e2',
+                'domain_ai': '#4a90e2',
+
+                'domain_military': '#e67e22',
+                'domain_ukraine_conflict': '#e67e22',
+
+                'domain_environment': '#1abc9c',
+                'domain_climate': '#1abc9c',
+
+                'domain_culture': '#9b59b6'
             };
             return domainColors[node.domains?.[0]] || this.colors.newsNode;
         }
@@ -374,7 +425,8 @@ class GraphView {
         if (node.type === 'story') {
             return `📊 ${node.title} (${node.size} news)`;
         } else if (node.type === 'actor') {
-            return `👤 ${node.name}`;
+            const icon = node.actorType === 'person' ? '👤' : '📄';
+            return `${icon} ${node.name}`;
         } else {
             return `📰 ${node.title}`;
         }
@@ -574,7 +626,7 @@ class GraphView {
                     id: actor.id,
                     type: 'actor',
                     name: actor.label || actor.name || 'Unknown', // Fallback
-                    actorType: actor.type
+                    actorType: actor.actor_type // Correctly map the specific type (person, company, etc.)
                 });
             });
         }

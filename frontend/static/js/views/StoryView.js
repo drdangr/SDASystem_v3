@@ -36,7 +36,7 @@ class StoryView {
                         <span>${story.size} news items</span>
                         <span>${story.top_actors.length} actors</span>
                         <span>Updated ${formatDate(story.last_activity)}</span>
-                        <span>${story.primary_domain || 'N/A'}</span>
+                        <span>${this.formatDomain(story.primary_domain) || 'N/A'}</span>
                     </div>
                     <div class="summary">
                         ${escapeHtml(story.summary)}
@@ -137,6 +137,17 @@ class StoryView {
     clear() {
         this.container.innerHTML = '';
         this.currentStory = null;
+    }
+
+    /**
+     * Format domain ID to readable name
+     * @param {string} domainId 
+     * @returns {string}
+     */
+    formatDomain(domainId) {
+        if (!domainId) return '';
+        // domain_united_states -> United States
+        return domainId.replace('domain_', '').split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
     }
 
     /**

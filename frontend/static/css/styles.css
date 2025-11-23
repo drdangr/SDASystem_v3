@@ -16,16 +16,43 @@ body {
 /* Main Layout */
 .app-container {
     display: grid;
-    grid-template-columns: var(--sidebar-width, 300px) var(--main-width, 1fr) var(--detail-width, 350px);
+    grid-template-columns: var(--sidebar-width, 300px) 4px var(--main-width, 1fr) 4px var(--detail-width, 350px);
     grid-template-rows: 60px var(--content-height, calc(100vh - 60px - 250px)) var(--timeline-height, 250px);
     grid-template-areas:
-        "header header header"
-        "sidebar main detail"
-        "timeline timeline timeline";
+        "header header header header header"
+        "sidebar resizer1 main resizer2 detail"
+        "timeline timeline timeline timeline timeline";
     height: 100vh;
-    gap: 1px;
+    gap: 0;
     background: #000;
     transition: grid-template-columns 0.3s ease, grid-template-rows 0.3s ease;
+}
+
+/* Resizer styles */
+.resizer {
+    background: #2a3f5f;
+    position: relative;
+    z-index: 1000;
+    transition: background 0.2s;
+}
+
+.resizer-vertical {
+    cursor: col-resize;
+    width: 4px;
+}
+
+.resizer-vertical:hover,
+.resizer-vertical.resizing {
+    background: #4fc3f7;
+    box-shadow: 0 0 5px rgba(79, 195, 247, 0.5);
+}
+
+.resizer-left {
+    grid-area: resizer1;
+}
+
+.resizer-right {
+    grid-area: resizer2;
 }
 
 /* Minimized states */
@@ -712,7 +739,11 @@ body {
 /* Responsive */
 @media (max-width: 1200px) {
     .app-container {
-        grid-template-columns: 250px 1fr 300px;
+        grid-template-columns: 250px 4px 1fr 4px 300px;
+        grid-template-areas:
+            "header header header header header"
+            "sidebar resizer1 main resizer2 detail"
+            "timeline timeline timeline timeline timeline";
     }
 }
 
@@ -727,7 +758,8 @@ body {
     }
 
     .sidebar,
-    .detail-panel {
+    .detail-panel,
+    .resizer {
         display: none;
     }
 }

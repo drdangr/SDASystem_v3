@@ -80,7 +80,7 @@ class DetailsView {
                         <div class="detail-section">
                             <h3>Domains</h3>
                             <div class="aliases-list">
-                                ${news.domains.map(d => `<span class="alias-tag">${escapeHtml(d)}</span>`).join('')}
+                                ${news.domains.map(d => `<span class="alias-tag">${escapeHtml(this.formatDomain(d))}</span>`).join('')}
                             </div>
                         </div>
                     ` : ''}
@@ -178,6 +178,17 @@ class DetailsView {
                 this.eventBus.emit('news:selected', newsId);
             });
         });
+    }
+
+    /**
+     * Format domain ID to readable name
+     * @param {string} domainId 
+     * @returns {string}
+     */
+    formatDomain(domainId) {
+        if (!domainId) return '';
+        // domain_united_states -> United States
+        return domainId.replace('domain_', '').split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
     }
 
     /**
