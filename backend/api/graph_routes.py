@@ -60,7 +60,8 @@ async def get_news_graph() -> Dict[str, Any]:
                 "domain": story_data.primary_domain or (story_data.domains[0] if story_data.domains else None),
                 "size": story_data.size,
                 "relevance": story_data.relevance,
-                "cohesion": story_data.cohesion
+                "cohesion": story_data.cohesion,
+                "top_actors": story_data.top_actors
             }
             stories.append(story)
         

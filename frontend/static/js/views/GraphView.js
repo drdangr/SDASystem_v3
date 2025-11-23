@@ -165,17 +165,27 @@ class GraphView {
 
         const nodes = [];
         const links = [];
+        const addedNodeIds = new Set();
+
+        // Helper to add node if not exists
+        const addNode = (node) => {
+            if (!addedNodeIds.has(node.id)) {
+                nodes.push(node);
+                addedNodeIds.add(node.id);
+            }
+        };
 
         // Add story nodes (stars)
         if (this.graphData.stories) {
             this.graphData.stories.forEach(story => {
-                nodes.push({
+                addNode({
                     id: `story_${story.id}`,
                     type: 'story',
                     storyId: story.id,
                     title: story.title,
                     size: story.size,
-                    domain: story.domain
+                    domain: story.domain,
+                    topActors: story.top_actors // Store for later
                 });
             });
         } else {
@@ -184,7 +194,7 @@ class GraphView {
 
         // Add news nodes (planets)
         this.graphData.nodes.forEach(news => {
-            nodes.push({
+            addNode({
                 id: news.id,
                 type: 'news',
                 title: news.title,
@@ -215,6 +225,55 @@ class GraphView {
                 });
             }
         });
+
+        // --- ACTOR LAYER ---
+        if (this.showActors && this.actorData) {
+            // Add actor nodes
+            if (this.actorData.nodes) {
+                this.actorData.nodes.forEach(actor => {
+                    addNode({
+                        id: actor.id,
+                        type: 'actor',
+                        name: actor.label || actor.name || 'Unknown',
+                        actorType: actor.actor_type
+                    });
+                });
+            }
+
+            // Add actor-news mentions
+            if (this.actorData.mentions) {
+                this.actorData.mentions.forEach(mention => {
+                    // Only add link if both nodes exist
+                    if (addedNodeIds.has(mention.news_id) && addedNodeIds.has(mention.actor_id)) {
+                        links.push({
+                            source: mention.news_id,
+                            target: mention.actor_id,
+                            type: 'mention',
+                            weight: 0.3
+                        });
+                    }
+                });
+            }
+
+            // Add Story -> Top Actor links (Virtual)
+            if (this.graphData.stories) {
+                this.graphData.stories.forEach(story => {
+                    if (story.top_actors) {
+                        story.top_actors.forEach(actorId => {
+                            if (addedNodeIds.has(actorId)) {
+                                links.push({
+                                    source: `story_${story.id}`,
+                                    target: actorId,
+                                    type: 'story_actor',
+                                    weight: 0.1, // Light pull
+                                    isVirtual: true
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        }
 
         return { nodes, links };
     }
@@ -585,6 +644,9 @@ class GraphView {
     /**
      * Toggle actor layer visibility
      */
+    /**
+     * Toggle actor layer visibility
+     */
     async toggleActorLayer() {
         this.showActors = !this.showActors;
 
@@ -593,14 +655,17 @@ class GraphView {
             try {
                 const response = await fetch(`${this.apiBase}/graph/actors`);
                 this.actorData = await response.json();
-                this.addActorLayer();
             } catch (error) {
                 console.error('Failed to load actors:', error);
+                this.showActors = false;
+                return;
             }
-        } else if (this.showActors) {
-            this.addActorLayer();
-        } else {
-            this.removeActorLayer();
+        }
+
+        // Rebuild graph data
+        const newData = this.prepareGraphData();
+        if (this.graph) {
+            this.graph.graphData(newData);
         }
 
         // Toggle legend item
@@ -608,57 +673,6 @@ class GraphView {
         if (legendActor) {
             legendActor.style.display = this.showActors ? 'flex' : 'none';
         }
-    }
-
-    /**
-     * Add actor layer to graph
-     */
-    addActorLayer() {
-        if (!this.graph || !this.actorData) return;
-
-        const currentData = this.graph.graphData();
-
-        // Add actor nodes
-        if (this.actorData.nodes) {
-            this.actorData.nodes.forEach(actor => {
-                // console.log('Adding actor:', actor); // Debug log
-                currentData.nodes.push({
-                    id: actor.id,
-                    type: 'actor',
-                    name: actor.label || actor.name || 'Unknown', // Fallback
-                    actorType: actor.actor_type // Correctly map the specific type (person, company, etc.)
-                });
-            });
-        }
-
-        // Add actor-news mentions
-        if (this.actorData.mentions) {
-            this.actorData.mentions.forEach(mention => {
-                currentData.links.push({
-                    source: mention.news_id,
-                    target: mention.actor_id,
-                    type: 'mention',
-                    weight: 0.3
-                });
-            });
-        }
-
-        this.graph.graphData(currentData);
-    }
-
-    /**
-     * Remove actor layer from graph
-     */
-    removeActorLayer() {
-        if (!this.graph) return;
-
-        const currentData = this.graph.graphData();
-
-        // Remove actor nodes and links
-        currentData.nodes = currentData.nodes.filter(n => n.type !== 'actor');
-        currentData.links = currentData.links.filter(l => l.type !== 'mention');
-
-        this.graph.graphData(currentData);
     }
 
     /**
