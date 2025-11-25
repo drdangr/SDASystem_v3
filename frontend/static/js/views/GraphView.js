@@ -14,6 +14,7 @@ class GraphView {
         this.graphData = null;
         this.graph = null;
         this.showActors = false;
+        this.showDomains = false;
 
         // Cosmic theme colors
         this.colors = {
@@ -22,7 +23,9 @@ class GraphView {
             storyNode: '#ffd700',
             actorNode: '#9b59b6',
             edge: '#3a6ea5',
-            highlight: '#ff6b6b'
+            edge: '#3a6ea5',
+            highlight: '#ff6b6b',
+            domainNode: '#2c3e50'
         };
     }
 
@@ -275,6 +278,51 @@ class GraphView {
             }
         }
 
+        // --- DOMAIN LAYER ---
+        if (this.showDomains) {
+            const domainNodes = new Map();
+
+            // 1. Identify active domains from News
+            this.graphData.nodes.forEach(news => {
+                if (news.domains && Array.isArray(news.domains)) {
+                    news.domains.forEach(domainName => {
+                        if (!domainNodes.has(domainName)) {
+                            domainNodes.set(domainName, {
+                                id: `domain_${domainName}`,
+                                type: 'domain',
+                                name: domainName,
+                                newsCount: 0
+                            });
+                        }
+                        domainNodes.get(domainName).newsCount++;
+                    });
+                }
+            });
+
+            // 2. Add Domain Nodes
+            domainNodes.forEach(domainNode => {
+                addNode(domainNode);
+            });
+
+            // 3. Add News -> Domain Links
+            this.graphData.nodes.forEach(news => {
+                if (news.domains && Array.isArray(news.domains)) {
+                    news.domains.forEach(domainName => {
+                        const domainId = `domain_${domainName}`;
+                        if (addedNodeIds.has(domainId) && addedNodeIds.has(news.id)) {
+                            links.push({
+                                source: news.id,
+                                target: domainId,
+                                type: 'news_domain',
+                                weight: 0.15, // Gentle pull to form zones
+                                isVirtual: true
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
         return { nodes, links };
     }
 
@@ -377,6 +425,25 @@ class GraphView {
             } else {
                 this.drawFileIcon(ctx, node.x, node.y, size, color);
             }
+        } else if (node.type === 'domain') {
+            // --- DOMAIN ZONE RENDERING ---
+
+            // 1. Zone Circle (Transparent)
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, size, 0, 2 * Math.PI);
+            ctx.fillStyle = color + '20'; // Very transparent
+            ctx.fill();
+            ctx.strokeStyle = color + '40';
+            ctx.lineWidth = 1 / globalScale;
+            ctx.stroke();
+
+            // 2. Label (Always visible)
+            const fontSize = 12 / globalScale;
+            ctx.font = `bold ${fontSize}px Sans-Serif`;
+            ctx.fillStyle = color + 'AA'; // Semi-transparent text
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(node.name, node.x, node.y);
         }
     }
 
@@ -434,6 +501,28 @@ class GraphView {
             return this.colors.storyNode;
         } else if (node.type === 'actor') {
             return this.colors.actorNode;
+        } else if (node.type === 'domain') {
+            // Use the same domain color mapping as news
+            const domainColors = {
+                'politics': '#e74c3c',
+                'democracy': '#e74c3c',
+                'elections': '#e74c3c',
+                'united_states': '#e74c3c',
+                'international': '#e74c3c',
+                'economics': '#2ecc71',
+                'business': '#2ecc71',
+                'technology': '#4a90e2',
+                'ai': '#4a90e2',
+                'military': '#e67e22',
+                'environment': '#1abc9c',
+                'culture': '#9b59b6'
+            };
+            // Try to match partial string
+            const name = node.name.toLowerCase();
+            for (const [key, color] of Object.entries(domainColors)) {
+                if (name.includes(key)) return color;
+            }
+            return '#7f8c8d'; // Default gray for unknown domains
         } else {
             // Color by domain
             const domainColors = {
@@ -472,6 +561,9 @@ class GraphView {
             return 8 + node.size * 0.5;
         } else if (node.type === 'actor') {
             return 5;
+        } else if (node.type === 'domain') {
+            // Size based on news count
+            return 20 + (node.newsCount || 0) * 2;
         } else {
             return node.isPinned ? 6 : 4;
         }
@@ -486,6 +578,8 @@ class GraphView {
         } else if (node.type === 'actor') {
             const icon = node.actorType === 'person' ? '👤' : '📄';
             return `${icon} ${node.name}`;
+        } else if (node.type === 'domain') {
+            return `🌐 ${node.name} (${node.newsCount} news)`;
         } else {
             return `📰 ${node.title}`;
         }
@@ -622,6 +716,7 @@ class GraphView {
         controls.className = 'graph-controls';
         controls.innerHTML = `
             <button id="toggleActors" class="graph-btn">Toggle Actors</button>
+            <button id="toggleDomains" class="graph-btn">Toggle Domains</button>
             <button id="zoomReset" class="graph-btn">Reset View</button>
         `;
         this.container.appendChild(controls);
@@ -632,6 +727,10 @@ class GraphView {
         // Add event listeners
         document.getElementById('toggleActors')?.addEventListener('click', () => {
             this.toggleActorLayer();
+        });
+
+        document.getElementById('toggleDomains')?.addEventListener('click', () => {
+            this.toggleDomainLayer();
         });
 
         document.getElementById('zoomReset')?.addEventListener('click', () => {
@@ -672,6 +771,19 @@ class GraphView {
         const legendActor = this.legend?.querySelector('#legendActor');
         if (legendActor) {
             legendActor.style.display = this.showActors ? 'flex' : 'none';
+        }
+    }
+
+    /**
+     * Toggle domain layer visibility
+     */
+    toggleDomainLayer() {
+        this.showDomains = !this.showDomains;
+
+        // Rebuild graph data
+        const newData = this.prepareGraphData();
+        if (this.graph) {
+            this.graph.graphData(newData);
         }
     }
 
