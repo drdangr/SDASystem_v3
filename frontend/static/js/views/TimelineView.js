@@ -4,6 +4,9 @@
 class TimelineView {
     constructor(containerId, eventBus, apiBase) {
         this.container = document.getElementById(containerId);
+        if (!this.container) {
+            console.warn(`TimelineView: Container '${containerId}' not found`);
+        }
         this.eventBus = eventBus;
         this.apiBase = apiBase;
         this.events = [];
@@ -15,6 +18,7 @@ class TimelineView {
      * @param {string} storyId - Story ID
      */
     async loadStoryTimeline(storyId) {
+        if (!this.container) return;
         if (!storyId) {
             this.clear();
             return;
@@ -26,7 +30,7 @@ class TimelineView {
             this.render(events);
         } catch (error) {
             console.error('Error loading timeline:', error);
-            this.container.innerHTML = '<div class="loading">Failed to load timeline</div>';
+            if (this.container) this.container.innerHTML = '<div class="loading">Failed to load timeline</div>';
         }
     }
 
@@ -35,6 +39,7 @@ class TimelineView {
      * @param {Array} events - Array of event objects
      */
     render(events) {
+        if (!this.container) return;
         this.events = events;
 
         if (events.length === 0) {
@@ -72,7 +77,7 @@ class TimelineView {
      * Clear the timeline
      */
     clear() {
-        this.container.innerHTML = '<div class="loading">Select a story to view timeline</div>';
+        if (this.container) this.container.innerHTML = '<div class="loading">Select a story to view timeline</div>';
         this.events = [];
     }
 
@@ -80,6 +85,6 @@ class TimelineView {
      * Show loading state
      */
     showLoading() {
-        this.container.innerHTML = '<div class="loading"><div class="spinner"></div>Loading timeline...</div>';
+        if (this.container) this.container.innerHTML = '<div class="loading"><div class="spinner"></div>Loading timeline...</div>';
     }
 }

@@ -15,6 +15,10 @@ class GraphView {
         this.graph = null;
         this.showActors = false;
         this.showDomains = false;
+        this.hoveredNode = null;
+        this.draggedNode = null;
+        this.highlightedLinks = new Set();
+        this.highlightedNodes = new Set();
 
         // Cosmic theme colors
         this.colors = {
@@ -128,12 +132,28 @@ class GraphView {
                 .nodeCanvasObject((node, ctx, globalScale) => {
                     this.drawNode(node, ctx, globalScale);
                 })
-                .linkColor(() => this.colors.edge)
-                .linkWidth(link => link.weight * 2)
+                .linkColor(link => this.getLinkColor(link))
+                .linkWidth(link => this.getLinkWidth(link))
                 // .linkOpacity(0.15) // Removed as it caused initialization error
                 .linkDirectionalParticles(0)
                 .onNodeClick(node => this.handleNodeClick(node))
                 .onNodeHover(node => this.handleNodeHover(node))
+                .nodePointerAreaPaint((node, color, ctx) => {
+                    const size = this.getNodeSize(node);
+                    ctx.fillStyle = color;
+                    ctx.beginPath();
+                    ctx.arc(node.x, node.y, size + 2, 0, 2 * Math.PI); // Slightly larger hit area
+                    ctx.fill();
+                })
+                .enableNodeDrag(true)
+                .onNodeDrag(node => {
+                    console.log('onNodeDrag fired', node.id);
+                    this.handleNodeDrag(node);
+                })
+                .onNodeDragEnd(node => {
+                    console.log('onNodeDragEnd fired', node.id);
+                    this.handleNodeDragEnd(node);
+                })
                 .cooldownTicks(100)
                 .d3AlphaDecay(0.02)
                 .d3VelocityDecay(0.3);
@@ -339,6 +359,7 @@ class GraphView {
         if (!Number.isFinite(size) || size <= 0) return;
 
         const color = this.getNodeColor(node);
+        const isHighlighted = this.highlightedNodes.has(node.id);
 
         if (node.type === 'story') {
             // --- STAR RENDERING ---
@@ -370,6 +391,18 @@ class GraphView {
             ctx.arc(node.x, node.y, size, 0, 2 * Math.PI);
             ctx.fillStyle = color + '80'; // Tint over white
             ctx.fill();
+
+            // 4. Highlight ring if connected
+            if (isHighlighted && this.highlightedNodes.size > 0) {
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, size + 3, 0, 2 * Math.PI);
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 3 / globalScale;
+                ctx.shadowColor = '#ffffff';
+                ctx.shadowBlur = 8;
+                ctx.stroke();
+                ctx.shadowBlur = 0; // Reset
+            }
 
             // Label for stars (always visible if large enough)
             if (globalScale > 0.2) {
@@ -418,12 +451,36 @@ class GraphView {
                 ctx.stroke();
             }
 
+            // 4. Highlight ring if connected
+            if (isHighlighted && this.highlightedNodes.size > 0) {
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, size + 2, 0, 2 * Math.PI);
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2.5 / globalScale;
+                ctx.shadowColor = '#ffffff';
+                ctx.shadowBlur = 6;
+                ctx.stroke();
+                ctx.shadowBlur = 0; // Reset
+            }
+
         } else if (node.type === 'actor') {
             // --- ACTOR RENDERING ---
             if (node.actorType === 'person') {
                 this.drawPersonIcon(ctx, node.x, node.y, size, color);
             } else {
                 this.drawFileIcon(ctx, node.x, node.y, size, color);
+            }
+
+            // Highlight ring if connected
+            if (isHighlighted && this.highlightedNodes.size > 0) {
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, size + 2, 0, 2 * Math.PI);
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2.5 / globalScale;
+                ctx.shadowColor = '#ffffff';
+                ctx.shadowBlur = 6;
+                ctx.stroke();
+                ctx.shadowBlur = 0; // Reset
             }
         } else if (node.type === 'domain') {
             // --- DOMAIN ZONE RENDERING ---
@@ -496,62 +553,7 @@ class GraphView {
     /**
      * Get node color based on type and domain
      */
-    getNodeColor(node) {
-        if (node.type === 'story') {
-            return this.colors.storyNode;
-        } else if (node.type === 'actor') {
-            return this.colors.actorNode;
-        } else if (node.type === 'domain') {
-            // Use the same domain color mapping as news
-            const domainColors = {
-                'politics': '#e74c3c',
-                'democracy': '#e74c3c',
-                'elections': '#e74c3c',
-                'united_states': '#e74c3c',
-                'international': '#e74c3c',
-                'economics': '#2ecc71',
-                'business': '#2ecc71',
-                'technology': '#4a90e2',
-                'ai': '#4a90e2',
-                'military': '#e67e22',
-                'environment': '#1abc9c',
-                'culture': '#9b59b6'
-            };
-            // Try to match partial string
-            const name = node.name.toLowerCase();
-            for (const [key, color] of Object.entries(domainColors)) {
-                if (name.includes(key)) return color;
-            }
-            return '#7f8c8d'; // Default gray for unknown domains
-        } else {
-            // Color by domain
-            const domainColors = {
-                'domain_politics': '#e74c3c',
-                'domain_democracy': '#e74c3c',
-                'domain_elections': '#e74c3c',
-                'domain_united_states': '#e74c3c',
-                'domain_international': '#e74c3c',
-                'domain_international_relations': '#e74c3c',
-                'domain_regulation': '#e74c3c',
 
-                'domain_economics': '#2ecc71',
-                'domain_business': '#2ecc71',
-                'domain_mergers': '#2ecc71',
-
-                'domain_technology': '#4a90e2',
-                'domain_ai': '#4a90e2',
-
-                'domain_military': '#e67e22',
-                'domain_ukraine_conflict': '#e67e22',
-
-                'domain_environment': '#1abc9c',
-                'domain_climate': '#1abc9c',
-
-                'domain_culture': '#9b59b6'
-            };
-            return domainColors[node.domains?.[0]] || this.colors.newsNode;
-        }
-    }
 
     /**
      * Get node size
@@ -641,27 +643,149 @@ class GraphView {
     /**
      * Handle node hover
      */
+    /**
+     * Handle node drag start/move
+     */
+    handleNodeDrag(node) {
+        if (this.draggedNode === node) return; // No change
+        this.draggedNode = node;
+        this.updateHighlight();
+    }
+
+    /**
+     * Handle node drag end
+     */
+    handleNodeDragEnd(node) {
+        this.draggedNode = null;
+        this.updateHighlight();
+    }
+
+    /**
+     * Handle node hover
+     */
     handleNodeHover(node) {
+        if (this.hoveredNode === node) return; // No change
+        this.hoveredNode = node;
+        this.updateHighlight();
+    }
+
+    /**
+     * Update highlight state for nodes and links
+     */
+    updateHighlight() {
         if (!this.graph) return;
 
-        // Highlight connected nodes
-        if (node) {
-            const linkedNodeIds = new Set();
-            this.graph.graphData().links
-                .filter(link => link.source.id === node.id || link.target.id === node.id)
-                .forEach(link => {
-                    linkedNodeIds.add(link.source.id);
-                    linkedNodeIds.add(link.target.id);
-                });
+        const activeNode = this.draggedNode || this.hoveredNode;
+        console.log('updateHighlight called. Active node:', activeNode?.id);
 
-            // Update node colors
-            this.graph.nodeColor(n => {
-                return linkedNodeIds.has(n.id) ? this.colors.highlight : this.getNodeColor(n);
+        this.highlightedNodes.clear();
+        this.highlightedLinks.clear();
+
+        if (activeNode) {
+            this.highlightedNodes.add(activeNode.id);
+
+            // Find connected nodes and links
+            this.graph.graphData().links.forEach(link => {
+                // Handle both object reference (after init) and string ID (before init)
+                const sourceId = link.source.id || link.source;
+                const targetId = link.target.id || link.target;
+
+                if (sourceId === activeNode.id || targetId === activeNode.id) {
+                    this.highlightedLinks.add(link);
+                    this.highlightedNodes.add(sourceId);
+                    this.highlightedNodes.add(targetId);
+                }
             });
-        } else {
-            // Reset colors
-            this.graph.nodeColor(n => this.getNodeColor(n));
+            console.log('Highlighted nodes count:', this.highlightedNodes.size);
         }
+
+        // Trigger update of colors by passing new accessor functions
+        this.graph
+            .nodeColor(node => this.getNodeColor(node))
+            .linkColor(link => this.getLinkColor(link))
+            .linkWidth(link => this.getLinkWidth(link));
+    }
+
+    /**
+     * Get link color based on highlight state
+     */
+    getLinkColor(link) {
+        if (this.highlightedLinks.has(link)) {
+            return '#ffffff'; // Bright white for highlighted links
+        }
+        return this.colors.edge;
+    }
+
+    /**
+     * Get link width based on highlight state
+     */
+    getLinkWidth(link) {
+        const baseWidth = link.weight * 2;
+        if (this.highlightedLinks.has(link)) {
+            return baseWidth + 2; // Thicker when highlighted
+        }
+        return baseWidth;
+    }
+
+    /**
+     * Get node color (base color only, no highlight effects)
+     */
+    getNodeColor(node) {
+        let color;
+        if (node.type === 'story') {
+            color = this.colors.storyNode;
+        } else if (node.type === 'actor') {
+            color = this.colors.actorNode;
+        } else if (node.type === 'domain') {
+            const domainColors = {
+                'politics': '#e74c3c',
+                'democracy': '#e74c3c',
+                'elections': '#e74c3c',
+                'united_states': '#e74c3c',
+                'international': '#e74c3c',
+                'economics': '#2ecc71',
+                'business': '#2ecc71',
+                'technology': '#4a90e2',
+                'ai': '#4a90e2',
+                'military': '#e67e22',
+                'environment': '#1abc9c',
+                'culture': '#9b59b6'
+            };
+            const name = node.name.toLowerCase();
+            let found = false;
+            for (const [key, c] of Object.entries(domainColors)) {
+                if (name.includes(key)) {
+                    color = c;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) color = '#7f8c8d';
+        } else {
+            // News color by domain
+            const domainColors = {
+                'domain_politics': '#e74c3c',
+                'domain_democracy': '#e74c3c',
+                'domain_elections': '#e74c3c',
+                'domain_united_states': '#e74c3c',
+                'domain_international': '#e74c3c',
+                'domain_international_relations': '#e74c3c',
+                'domain_regulation': '#e74c3c',
+                'domain_economics': '#2ecc71',
+                'domain_business': '#2ecc71',
+                'domain_mergers': '#2ecc71',
+                'domain_technology': '#4a90e2',
+                'domain_ai': '#4a90e2',
+                'domain_military': '#e67e22',
+                'domain_ukraine_conflict': '#e67e22',
+                'domain_environment': '#1abc9c',
+                'domain_climate': '#1abc9c',
+                'domain_culture': '#9b59b6'
+            };
+            color = domainColors[node.domains?.[0]] || this.colors.newsNode;
+        }
+
+        return color;
     }
 
     /**
