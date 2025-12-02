@@ -18,7 +18,7 @@ class SDAApp {
         this.graphView = new GraphView('storiesList', this.eventBus, API_BASE);
         this.storyView = new StoryView('.main-panel-content', this.eventBus, API_BASE);
         this.detailsView = new DetailsView('.detail-panel-content', this.eventBus, API_BASE);
-        this.timelineView = new TimelineView('timelineEvents', this.eventBus, API_BASE);
+        this.timelineView = new TimelineView('.timeline-content', this.eventBus, API_BASE);
 
         this.init();
     }
@@ -27,7 +27,6 @@ class SDAApp {
         this.setupEventListeners();
         this.setupEventBusListeners();
         this.restorePanelStates();
-        this.updateResizersVisibility(); // Убеждаемся, что ресайзеры правильно отображаются
         this.loadData();
     }
 
@@ -157,6 +156,8 @@ class SDAApp {
 
         // Render in appropriate view
         if (this.viewMode === 'list') {
+            // Удаляем контролы графа при переключении на список
+            this.graphView.removeControls?.();
             this.listView.render(this.stories);
             if (this.currentStory) {
                 this.listView.currentStoryId = this.currentStory.id;
@@ -183,72 +184,90 @@ class SDAApp {
     }
 
     // Panel minimization methods
+    // Маппинг имён панелей к селекторам
+    getPanelElement(panelName) {
+        const selectors = {
+            'sidebar': '.sidebar',
+            'main': '.main-panel',
+            'detail': '.detail-panel',
+            'timeline': '.timeline-panel'
+        };
+        return document.querySelector(selectors[panelName]);
+    }
+
     togglePanel(panelName) {
-        const container = document.querySelector('.app-container');
-        const className = `${panelName}-minimized`;
+        const panel = this.getPanelElement(panelName);
+        if (!panel) return;
         
-        // Toggle the minimized class
-        container.classList.toggle(className);
+        // Toggle the minimized class on the panel itself
+        panel.classList.toggle('minimized');
         
         // Check state AFTER toggle
-        const isNowMinimized = container.classList.contains(className);
+        const isNowMinimized = panel.classList.contains('minimized');
 
         // Update button text based on NEW state
         const button = document.querySelector(`[data-panel="${panelName}"]`);
         if (button) {
-            // Если панель теперь минимизирована, показываем '_' (развернуть)
-            // Если панель теперь развернута, показываем '−' (свернуть)
-            button.textContent = isNowMinimized ? '_' : '−';
+            button.textContent = isNowMinimized ? '+' : '−';
         }
 
-        // Hide/show resizers based on panel state
-        this.updateResizersVisibility();
+        // Обновляем flex для оставшихся панелей
+        this.updatePanelsFlex();
 
         // Save state to localStorage
         const minimizedPanels = this.getMinimizedPanels();
         localStorage.setItem('minimizedPanels', JSON.stringify(minimizedPanels));
     }
 
-    updateResizersVisibility() {
-        const container = document.querySelector('.app-container');
-        const sidebarResizer = document.querySelector('.resizer-left');
-        const mainResizer = document.querySelector('.resizer-right');
+    // Обновляет flex панелей в зависимости от того, какие свёрнуты
+    updatePanelsFlex() {
+        const sidebar = document.querySelector('.sidebar');
+        const main = document.querySelector('.main-panel');
+        const detail = document.querySelector('.detail-panel');
 
-        const isSidebarMinimized = container.classList.contains('sidebar-minimized');
-        const isMainMinimized = container.classList.contains('main-minimized');
-        const isDetailMinimized = container.classList.contains('detail-minimized');
+        const sidebarMin = sidebar?.classList.contains('minimized');
+        const mainMin = main?.classList.contains('minimized');
+        const detailMin = detail?.classList.contains('minimized');
 
-        // Ресайзер между sidebar и main скрывается, если sidebar ИЛИ main минимизирован
-        // (если минимизирован sidebar, его нельзя изменить; если минимизирован main, его нельзя изменить)
-        if (sidebarResizer) {
-            sidebarResizer.style.display = (isSidebarMinimized || isMainMinimized) ? 'none' : '';
+        // Сбрасываем flex для не-минимизированных панелей
+        if (sidebar && !sidebarMin) {
+            // Если main свёрнут, sidebar должен расти
+            sidebar.style.flex = mainMin ? '1 1 auto' : '0 0 300px';
         }
 
-        // Ресайзер между main и detail скрывается, если main ИЛИ detail минимизирован
-        // (если минимизирован main, его нельзя изменить; если минимизирован detail, его нельзя изменить)
-        if (mainResizer) {
-            mainResizer.style.display = (isMainMinimized || isDetailMinimized) ? 'none' : '';
+        if (main && !mainMin) {
+            // Main всегда растёт, если не свёрнут
+            main.style.flex = '1 1 auto';
+        }
+
+        if (detail && !detailMin) {
+            // Если main свёрнут, detail тоже должен расти
+            detail.style.flex = mainMin ? '1 1 auto' : '0 0 350px';
         }
     }
 
     getMinimizedPanels() {
-        const container = document.querySelector('.app-container');
         const panels = ['sidebar', 'main', 'detail', 'timeline'];
-        return panels.filter(panel => container.classList.contains(`${panel}-minimized`));
+        return panels.filter(panelName => {
+            const panel = this.getPanelElement(panelName);
+            return panel && panel.classList.contains('minimized');
+        });
     }
 
     restorePanelStates() {
         const minimizedPanels = JSON.parse(localStorage.getItem('minimizedPanels') || '[]');
-        const container = document.querySelector('.app-container');
 
-        minimizedPanels.forEach(panel => {
-            container.classList.add(`${panel}-minimized`);
-            const button = document.querySelector(`[data-panel="${panel}"]`);
-            if (button) button.textContent = '_'; // Минимизированная панель показывает '_'
+        minimizedPanels.forEach(panelName => {
+            const panel = this.getPanelElement(panelName);
+            if (panel) {
+                panel.classList.add('minimized');
+            }
+            const button = document.querySelector(`[data-panel="${panelName}"]`);
+            if (button) button.textContent = '+';
         });
 
-        // Обновляем видимость ресайзеров после восстановления состояний
-        this.updateResizersVisibility();
+        // Обновляем flex после восстановления состояний
+        this.updatePanelsFlex();
     }
 }
 

@@ -13,121 +13,21 @@ body {
     overflow: hidden;
 }
 
-/* Main Layout */
+/* ===========================================
+   MAIN LAYOUT - Flexbox для трёх колонок
+   =========================================== */
+
 .app-container {
-    display: grid;
-    grid-template-columns: var(--sidebar-width, 300px) 4px var(--main-width, 1fr) 4px var(--detail-width, 350px);
-    grid-template-rows: 60px var(--content-height, calc(100vh - 60px - 250px)) var(--timeline-height, 250px);
-    grid-template-areas:
-        "header header header header header"
-        "sidebar resizer1 main resizer2 detail"
-        "timeline timeline timeline timeline timeline";
+    display: flex;
+    flex-direction: column;
     height: 100vh;
-    gap: 0;
     background: #000;
-    transition: grid-template-columns 0.3s ease, grid-template-rows 0.3s ease;
 }
 
-.app-container.resizing {
-    transition: none;
-}
-
-/* Resizer styles */
-.resizer {
-    background: #2a3f5f;
-    position: relative;
-    z-index: 1000;
-    transition: background 0.2s;
-    user-select: none;
-    -webkit-user-select: none;
-    pointer-events: auto;
-}
-
-.resizer-vertical {
-    cursor: col-resize;
-    width: 4px;
-    height: 100%;
-}
-
-.resizer-vertical:hover,
-.resizer-vertical.resizing {
-    background: #4fc3f7;
-    box-shadow: 0 0 5px rgba(79, 195, 247, 0.5);
-    width: 6px;
-}
-
-.resizer-vertical.resizing {
-    background: #4fc3f7;
-    box-shadow: 0 0 10px rgba(79, 195, 247, 0.8);
-}
-
-.resizer-left {
-    grid-area: resizer1;
-}
-
-.resizer-right {
-    grid-area: resizer2;
-}
-
-/* Minimized states */
-.app-container.sidebar-minimized {
-    --sidebar-width: 40px;
-    --main-width: 1fr; /* Main занимает освободившееся место */
-    --detail-width: 350px; /* Detail остаётся фиксированным */
-    grid-template-columns: var(--sidebar-width) 4px var(--main-width) 4px var(--detail-width);
-}
-
-.app-container.main-minimized {
-    --main-width: 40px;
-    --sidebar-width: 1fr; /* Sidebar и detail растягиваются поровну */
-    --detail-width: 1fr;
-    grid-template-columns: var(--sidebar-width) 4px var(--main-width) 4px var(--detail-width);
-}
-
-.app-container.detail-minimized {
-    --detail-width: 40px;
-    --main-width: 1fr; /* Main занимает освободившееся место */
-    --sidebar-width: 300px; /* Sidebar остаётся фиксированным */
-    grid-template-columns: var(--sidebar-width) 4px var(--main-width) 4px var(--detail-width);
-}
-
-/* Комбинированные состояния - когда минимизированы несколько панелей */
-.app-container.sidebar-minimized.detail-minimized {
-    --sidebar-width: 40px;
-    --detail-width: 40px;
-    --main-width: 1fr; /* Main занимает всё свободное место */
-    grid-template-columns: var(--sidebar-width) 4px var(--main-width) 4px var(--detail-width);
-}
-
-.app-container.sidebar-minimized.main-minimized {
-    --sidebar-width: 40px;
-    --main-width: 40px;
-    --detail-width: 1fr; /* Detail занимает всё свободное место */
-    grid-template-columns: var(--sidebar-width) 4px var(--main-width) 4px var(--detail-width);
-}
-
-.app-container.main-minimized.detail-minimized {
-    --main-width: 40px;
-    --detail-width: 40px;
-    --sidebar-width: 1fr; /* Sidebar занимает всё свободное место */
-    grid-template-columns: var(--sidebar-width) 4px var(--main-width) 4px var(--detail-width);
-}
-
-.app-container.sidebar-minimized.main-minimized.detail-minimized {
-    --sidebar-width: 40px;
-    --main-width: 40px;
-    --detail-width: 1fr; /* Detail занимает всё свободное место */
-    grid-template-columns: var(--sidebar-width) 4px var(--main-width) 4px var(--detail-width);
-}
-
-.app-container.timeline-minimized {
-    --timeline-height: 40px;
-    --content-height: calc(100vh - 60px - 40px);
-}
-
-/* Header */
+/* Верхняя часть: header + три колонки */
 .header {
-    grid-area: header;
+    flex-shrink: 0;
+    height: 60px;
     background: linear-gradient(135deg, #1a1f3a 0%, #0f1729 100%);
     padding: 0 20px;
     display: flex;
@@ -135,6 +35,135 @@ body {
     justify-content: space-between;
     border-bottom: 2px solid #2a3f5f;
 }
+
+/* Контейнер для трёх колонок + ресайзеров */
+.panels-container {
+    display: flex;
+    flex: 1;
+    min-height: 0; /* Важно для корректной работы overflow */
+}
+
+/* ===========================================
+   ПАНЕЛИ - Flexbox
+   
+   Логика: Sidebar и Main могут расти (flex-grow: 1).
+   Detail фиксирован справа (flex-grow: 0).
+   При сворачивании панель = 40px, остальные растягиваются ВПРАВО.
+   =========================================== */
+
+/* Sidebar - левая панель (может расти) */
+.sidebar {
+    flex: 0 0 300px; /* Начальный размер 300px */
+    background: #111827;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-right: 1px solid #1f2937;
+    position: relative;
+    transition: flex 0.3s ease;
+    min-width: 0;
+}
+
+/* Main - центральная панель (ВСЕГДА занимает свободное место) */
+.main-panel {
+    flex: 1 1 auto; /* Растёт, занимает всё свободное место */
+    background: #0f1729;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: relative;
+    transition: flex 0.3s ease;
+    min-width: 0;
+}
+
+/* Detail - правая панель (фиксирована справа) */
+.detail-panel {
+    flex: 0 0 350px; /* Фиксированный размер 350px */
+    background: #111827;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-left: 1px solid #1f2937;
+    position: relative;
+    transition: flex 0.3s ease;
+    min-width: 0;
+}
+
+/* Timeline - нижняя панель */
+.timeline-panel {
+    flex-shrink: 0;
+    height: 250px;
+    background: #111827;
+    border-top: 1px solid #1f2937;
+    overflow: hidden;
+    position: relative;
+    transition: height 0.3s ease;
+}
+
+/* ===========================================
+   MINIMIZED STATES - Сворачивание панелей
+   
+   При сворачивании: flex: 0 0 40px
+   Main ВСЕГДА растягивается на освободившееся место.
+   =========================================== */
+
+/* Sidebar свёрнут - main растянется вправо */
+.sidebar.minimized {
+    flex: 0 0 40px !important;
+}
+
+/* Main свёрнут */
+.main-panel.minimized {
+    flex: 0 0 40px !important;
+}
+
+/* Detail свёрнут - main растянется вправо */
+.detail-panel.minimized {
+    flex: 0 0 40px !important;
+}
+
+/* Timeline свёрнут */
+.timeline-panel.minimized {
+    height: 40px !important;
+}
+
+/* ===========================================
+   RESIZER STYLES
+   =========================================== */
+
+.resizer {
+    flex-shrink: 0;
+    background: #2a3f5f;
+    position: relative;
+    z-index: 100;
+    transition: background 0.2s;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.resizer-vertical {
+    cursor: col-resize;
+    width: 4px;
+}
+
+.resizer-vertical:hover,
+.resizer-vertical.resizing {
+    background: #4fc3f7;
+    box-shadow: 0 0 8px rgba(79, 195, 247, 0.6);
+}
+
+.resizer-horizontal {
+    cursor: row-resize;
+    height: 4px;
+    width: 100%;
+}
+
+.resizer-horizontal:hover,
+.resizer-horizontal.resizing {
+    background: #4fc3f7;
+    box-shadow: 0 0 8px rgba(79, 195, 247, 0.6);
+}
+
+/* ===========================================
+   HEADER
+   =========================================== */
 
 .header h1 {
     font-size: 24px;
@@ -164,14 +193,9 @@ body {
     color: #4fc3f7;
 }
 
-/* Left Sidebar - Stories List */
-.sidebar {
-    grid-area: sidebar;
-    background: #111827;
-    overflow-y: auto;
-    border-right: 1px solid #1f2937;
-    position: relative;
-}
+/* ===========================================
+   SIDEBAR CONTENT
+   =========================================== */
 
 .sidebar-header {
     padding: 15px;
@@ -182,25 +206,43 @@ body {
     z-index: 10;
 }
 
-.sidebar .minimize-btn {
-    position: absolute;
-    top: 15px;
-    right: 15px;
+.panel-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    gap: 10px;
+}
+
+/* Graph controls in header */
+.graph-controls-header {
+    display: flex;
+    gap: 5px;
+    flex-shrink: 0;
+}
+
+.graph-controls-header .graph-btn {
+    padding: 4px 8px;
+    font-size: 11px;
+    background: #2a3f5f;
+    border: none;
+    color: #8b9dc3;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.graph-controls-header .graph-btn:hover {
+    background: #4fc3f7;
+    color: #000;
 }
 
 .sidebar-header h2 {
     font-size: 16px;
     font-weight: 600;
     color: #fff;
-    margin-bottom: 10px;
-    padding-right: 30px;
-    /* Make room for button */
-}
-
-.panel-header-content {
-    display: block;
-    /* Changed from flex */
-    margin-bottom: 10px;
+    margin: 0;
 }
 
 .view-toggle {
@@ -229,12 +271,9 @@ body {
     padding: 10px;
 }
 
-/* Hide content when minimized */
-.sidebar-minimized .stories-list {
-    display: none;
-}
-
-.sidebar-minimized .view-toggle {
+/* Скрываем контент при сворачивании */
+.sidebar.minimized .stories-list,
+.sidebar.minimized .view-toggle {
     display: none;
 }
 
@@ -287,13 +326,9 @@ body {
     color: #4fc3f7;
 }
 
-/* Main Panel - Story Details */
-.main-panel {
-    grid-area: main;
-    background: #0f1729;
-    overflow-y: auto;
-    position: relative;
-}
+/* ===========================================
+   MAIN PANEL CONTENT
+   =========================================== */
 
 .main-panel-header {
     position: sticky;
@@ -312,7 +347,7 @@ body {
     overflow-y: auto;
 }
 
-.main-minimized .main-panel-content {
+.main-panel.minimized .main-panel-content {
     display: none;
 }
 
@@ -439,14 +474,9 @@ body {
     color: #6b7c93;
 }
 
-/* Right Detail Panel */
-.detail-panel {
-    grid-area: detail;
-    background: #111827;
-    overflow-y: auto;
-    border-left: 1px solid #1f2937;
-    position: relative;
-}
+/* ===========================================
+   DETAIL PANEL CONTENT
+   =========================================== */
 
 .detail-panel-header {
     padding: 15px 20px;
@@ -469,14 +499,13 @@ body {
     color: #fff;
     margin: 0;
     padding-right: 30px;
-    /* Make room for button */
 }
 
 .detail-panel-content {
     padding: 20px;
 }
 
-.detail-minimized .detail-panel-content {
+.detail-panel.minimized .detail-panel-content {
     display: none;
 }
 
@@ -542,14 +571,9 @@ body {
     color: #d0d0d0;
 }
 
-/* Timeline Panel */
-.timeline-panel {
-    grid-area: timeline;
-    background: #111827;
-    border-top: 1px solid #1f2937;
-    overflow-y: auto;
-    position: relative;
-}
+/* ===========================================
+   TIMELINE PANEL CONTENT
+   =========================================== */
 
 .timeline-header {
     padding: 15px 20px;
@@ -572,10 +596,9 @@ body {
     color: #fff;
     margin: 0;
     padding-right: 30px;
-    /* Make room for button */
 }
 
-.timeline-minimized .timeline-content {
+.timeline-panel.minimized .timeline-content {
     display: none;
 }
 
@@ -603,9 +626,12 @@ body {
 .timeline-content {
     padding: 20px;
     overflow-x: auto;
+    overflow-y: auto;
+    height: calc(100% - 60px);
 }
 
-.timeline-events {
+.timeline-events,
+.timeline-events-container {
     display: flex;
     gap: 15px;
     min-width: max-content;
@@ -649,25 +675,10 @@ body {
     line-height: 1.4;
 }
 
-.event-type-badge {
-    display: inline-block;
-    padding: 2px 8px;
-    border-radius: 3px;
-    font-size: 10px;
-    margin-top: 6px;
-}
+/* ===========================================
+   LOADING STATES
+   =========================================== */
 
-.event-type-badge.fact {
-    background: rgba(79, 195, 247, 0.2);
-    color: #4fc3f7;
-}
-
-.event-type-badge.opinion {
-    background: rgba(255, 152, 0, 0.2);
-    color: #ff9800;
-}
-
-/* Loading States */
 .loading {
     text-align: center;
     padding: 40px;
@@ -685,16 +696,14 @@ body {
 }
 
 @keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 
-/* Minimize Button */
+/* ===========================================
+   MINIMIZE BUTTON
+   =========================================== */
+
 .minimize-btn {
     background: transparent;
     border: 1px solid #2a3f5f;
@@ -719,16 +728,12 @@ body {
     color: #4fc3f7;
 }
 
-/* Rotate button when minimized */
-.sidebar-minimized .sidebar .minimize-btn,
-.main-minimized .main-panel .minimize-btn,
-.detail-minimized .detail-panel .minimize-btn,
-.timeline-minimized .timeline-panel .minimize-btn {
-    transform: rotate(180deg);
-}
+/* ===========================================
+   MINIMIZED PANEL STYLES - Вертикальный текст
+   =========================================== */
 
-/* Adjust header layout when minimized */
-.sidebar-minimized .sidebar-header {
+/* Sidebar minimized */
+.sidebar.minimized .sidebar-header {
     padding: 8px;
     display: flex;
     flex-direction: column;
@@ -736,7 +741,12 @@ body {
     height: 100%;
 }
 
-.sidebar-minimized .sidebar-header h2 {
+.sidebar.minimized .panel-header-content {
+    flex-direction: column;
+    flex: 1;
+}
+
+.sidebar.minimized .sidebar-header h2 {
     font-size: 14px;
     writing-mode: vertical-rl;
     text-orientation: mixed;
@@ -745,14 +755,16 @@ body {
     transform: rotate(180deg);
 }
 
-.sidebar-minimized .sidebar .minimize-btn {
-    position: static;
-    margin: 5px auto 0 auto;
-    flex-shrink: 0;
+.sidebar.minimized .minimize-btn {
+    margin-top: 10px;
 }
 
-/* Main panel minimized - добавляем вертикальную надпись */
-.main-minimized .main-panel-header {
+.sidebar.minimized .view-toggle {
+    display: none;
+}
+
+/* Main panel minimized */
+.main-panel.minimized .main-panel-header {
     position: static;
     height: 100%;
     width: 100%;
@@ -763,7 +775,7 @@ body {
     padding: 10px 0;
 }
 
-.main-minimized .main-panel-header::before {
+.main-panel.minimized .main-panel-header::before {
     content: 'Story Details';
     font-size: 14px;
     font-weight: 600;
@@ -774,14 +786,15 @@ body {
     margin: auto 0;
 }
 
-.detail-minimized .detail-panel-header {
+/* Detail panel minimized */
+.detail-panel.minimized .detail-panel-header {
     display: flex;
     flex-direction: column;
     align-items: center;
     height: 100%;
 }
 
-.detail-minimized .detail-panel-header h2 {
+.detail-panel.minimized .detail-panel-header h2 {
     font-size: 14px;
     writing-mode: vertical-rl;
     text-orientation: mixed;
@@ -790,27 +803,31 @@ body {
     transform: rotate(180deg);
 }
 
-.detail-minimized .detail-panel .minimize-btn {
+.detail-panel.minimized .detail-panel .minimize-btn,
+.detail-panel.minimized .minimize-btn {
     position: static;
     margin: 5px auto 0 auto;
-    flex-shrink: 0;
 }
 
-.timeline-minimized .timeline-header h2 {
+/* Timeline minimized */
+.timeline-panel.minimized .timeline-header h2 {
     font-size: 12px;
     padding-right: 0;
 }
 
-.timeline-minimized .timeline-panel .minimize-btn {
+.timeline-panel.minimized .timeline-panel .minimize-btn {
     top: 8px;
     right: 8px;
 }
 
-.timeline-minimized .timeline-controls {
+.timeline-panel.minimized .timeline-controls {
     display: none;
 }
 
-/* Scrollbar Styling */
+/* ===========================================
+   SCROLLBAR STYLING
+   =========================================== */
+
 ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -829,30 +846,18 @@ body {
     background: #4fc3f7;
 }
 
-/* Responsive */
-@media (max-width: 1200px) {
-    .app-container {
-        grid-template-columns: 250px 4px 1fr 4px 300px;
-        grid-template-areas:
-            "header header header header header"
-            "sidebar resizer1 main resizer2 detail"
-            "timeline timeline timeline timeline timeline";
-    }
-}
+/* ===========================================
+   RESPONSIVE
+   =========================================== */
 
 @media (max-width: 900px) {
-    .app-container {
-        grid-template-columns: 1fr;
-        grid-template-rows: 60px 1fr 250px;
-        grid-template-areas:
-            "header"
-            "main"
-            "timeline";
-    }
-
     .sidebar,
     .detail-panel,
-    .resizer {
+    .resizer-vertical {
         display: none;
+    }
+    
+    .main-panel {
+        flex: 1;
     }
 }

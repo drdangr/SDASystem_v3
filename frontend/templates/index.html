@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SDASystem - Story Driven Analytical System</title>
-    <link rel="stylesheet" href="/static/css/styles.css?v=1763860000">
-    <link rel="stylesheet" href="/static/css/graph-styles.css?v=1763756591">
+    <link rel="stylesheet" href="/static/css/styles.css?v=3">
+    <link rel="stylesheet" href="/static/css/graph-styles.css?v=3">
 </head>
 
 <body>
@@ -33,57 +33,60 @@
             </div>
         </header>
 
-        <!-- Left Sidebar - Stories List -->
-        <aside class="sidebar" id="sidebarPanel">
-            <div class="sidebar-header">
-                <div class="panel-header-content">
-                    <h2>Stories</h2>
-                    <button class="minimize-btn" data-panel="sidebar" title="Minimize panel">−</button>
+        <!-- Контейнер для трёх колонок -->
+        <div class="panels-container">
+            <!-- Left Sidebar - Stories List -->
+            <aside class="sidebar" id="sidebarPanel">
+                <div class="sidebar-header">
+                    <div class="panel-header-content">
+                        <h2>Stories</h2>
+                        <button class="minimize-btn" data-panel="sidebar" title="Minimize panel">−</button>
+                    </div>
+                    <div class="view-toggle">
+                        <button id="viewList" class="active">List</button>
+                        <button id="viewGraph">Graph</button>
+                    </div>
                 </div>
-                <div class="view-toggle">
-                    <button id="viewList" class="active">List</button>
-                    <button id="viewGraph">Graph</button>
+                <div class="stories-list" id="storiesList">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        Loading stories...
+                    </div>
                 </div>
-            </div>
-            <div class="stories-list" id="storiesList">
-                <div class="loading">
-                    <div class="spinner"></div>
-                    Loading stories...
-                </div>
-            </div>
-        </aside>
+            </aside>
 
-        <!-- Resizer between sidebar and main -->
-        <div class="resizer resizer-vertical resizer-left" data-direction="horizontal" data-target="sidebar"></div>
+            <!-- Resizer between sidebar and main -->
+            <div class="resizer resizer-vertical resizer-left"></div>
 
-        <!-- Main Panel - Story Details -->
-        <main class="main-panel" id="mainPanel">
-            <div class="main-panel-header">
-                <button class="minimize-btn" data-panel="main" title="Minimize panel">−</button>
-            </div>
-            <div class="main-panel-content">
-                <div class="loading">
-                    <div class="spinner"></div>
-                    Loading story details...
+            <!-- Main Panel - Story Details -->
+            <main class="main-panel" id="mainPanel">
+                <div class="main-panel-header">
+                    <button class="minimize-btn" data-panel="main" title="Minimize panel">−</button>
                 </div>
-            </div>
-        </main>
-
-        <!-- Resizer between main and detail -->
-        <div class="resizer resizer-vertical resizer-right" data-direction="horizontal" data-target="main"></div>
-
-        <!-- Right Detail Panel -->
-        <aside class="detail-panel" id="detailPanel">
-            <div class="detail-panel-header">
-                <h2>Details</h2>
-                <button class="minimize-btn" data-panel="detail" title="Minimize panel">−</button>
-            </div>
-            <div class="detail-panel-content">
-                <div class="empty-state">
-                    <p>Select a news item or actor to view details</p>
+                <div class="main-panel-content">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        Loading story details...
+                    </div>
                 </div>
-            </div>
-        </aside>
+            </main>
+
+            <!-- Resizer between main and detail -->
+            <div class="resizer resizer-vertical resizer-right"></div>
+
+            <!-- Right Detail Panel -->
+            <aside class="detail-panel" id="detailPanel">
+                <div class="detail-panel-header">
+                    <h2>Details</h2>
+                    <button class="minimize-btn" data-panel="detail" title="Minimize panel">−</button>
+                </div>
+                <div class="detail-panel-content">
+                    <div class="empty-state">
+                        <p>Select a news item or actor to view details</p>
+                    </div>
+                </div>
+            </aside>
+        </div>
 
         <!-- Timeline Panel -->
         <section class="timeline-panel" id="timelinePanel">
@@ -105,23 +108,23 @@
     </div>
 
     <!-- Utilities -->
-    <script src="/static/js/utils/helpers.js?v=1763755093"></script>
-    <script src="/static/js/utils/EventBus.js?v=1763755093"></script>
-    <script src="/static/js/resizer.js?v=1763860000"></script>
+    <script src="/static/js/utils/helpers.js?v=3"></script>
+    <script src="/static/js/utils/EventBus.js?v=3"></script>
+    <script src="/static/js/resizer.js?v=3"></script>
 
     <!-- Force Graph Library -->
     <script src="//unpkg.com/d3@7/dist/d3.min.js"></script>
-    <script src="/static/js/lib/force-graph.min.js?v=1763772600"></script>
+    <script src="/static/js/lib/force-graph.min.js?v=3"></script>
 
     <!-- View Modules -->
-    <script src="/static/js/views/ListView.js?v=1763755093"></script>
-    <script src="/static/js/views/GraphView.js?v=1763780000"></script>
-    <script src="/static/js/views/StoryView.js?v=1763780000"></script>
-    <script src="/static/js/views/DetailsView.js?v=1763780000"></script>
-    <script src="/static/js/views/TimelineView.js?v=1763755093"></script>
+    <script src="/static/js/views/ListView.js?v=3"></script>
+    <script src="/static/js/views/GraphView.js?v=3"></script>
+    <script src="/static/js/views/StoryView.js?v=3"></script>
+    <script src="/static/js/views/DetailsView.js?v=3"></script>
+    <script src="/static/js/views/TimelineView.js?v=3"></script>
 
     <!-- Main Application -->
-    <script src="/static/js/app.js?v=1763756658"></script>
+    <script src="/static/js/app.js?v=3"></script>
 </body>
 
 </html>

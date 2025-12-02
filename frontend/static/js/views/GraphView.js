@@ -833,17 +833,27 @@ class GraphView {
     }
 
     /**
-     * Create control buttons
+     * Create control buttons in the sidebar header
      */
     createControls() {
+        // Удаляем старые контролы если есть
+        document.querySelector('.graph-controls-header')?.remove();
+        
+        // Создаём контейнер для кнопок в header
         const controls = document.createElement('div');
-        controls.className = 'graph-controls';
+        controls.className = 'graph-controls-header';
         controls.innerHTML = `
-            <button id="toggleActors" class="graph-btn">Toggle Actors</button>
-            <button id="toggleDomains" class="graph-btn">Toggle Domains</button>
-            <button id="zoomReset" class="graph-btn">Reset View</button>
+            <button id="toggleActors" class="graph-btn" title="Toggle Actors">Actors</button>
+            <button id="toggleDomains" class="graph-btn" title="Toggle Domains">Domains</button>
+            <button id="zoomReset" class="graph-btn" title="Reset View">Reset</button>
         `;
-        this.container.appendChild(controls);
+        
+        // Вставляем в panel-header-content, перед кнопкой minimize
+        const headerContent = document.querySelector('.sidebar-header .panel-header-content');
+        const minimizeBtn = headerContent?.querySelector('.minimize-btn');
+        if (headerContent && minimizeBtn) {
+            headerContent.insertBefore(controls, minimizeBtn);
+        }
 
         // Create Legend
         this.createLegend();
@@ -862,6 +872,13 @@ class GraphView {
                 this.graph.zoomToFit(400);
             }
         });
+    }
+
+    /**
+     * Remove control buttons from header (when switching to List view)
+     */
+    removeControls() {
+        document.querySelector('.graph-controls-header')?.remove();
     }
 
     /**
