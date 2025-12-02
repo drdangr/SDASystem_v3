@@ -1,143 +1,139 @@
 /**
- * Panel Resizer - Handles resizable panels with drag functionality
+ * Panel Resizer - Управление размерами панелей с Flexbox
+ * 
+ * Логика:
+ * - Левый ресайзер (resizer-left): изменяет flex-basis sidebar
+ * - Правый ресайзер (resizer-right): изменяет flex-basis detail
+ * - Горизонтальный ресайзер: изменяет height timeline
  */
 class PanelResizer {
     constructor() {
         this.isResizing = false;
         this.currentResizer = null;
-        this.startX = 0;
-        this.startWidth = 0;
-        this.minWidth = 200;
-        this.maxWidthPercent = 0.6; // Maximum 60% of container width
-
+        this.startPos = 0;
+        this.startSize = 0;
+        
+        // Ограничения
+        this.minWidth = 150;
+        this.maxWidthPercent = 0.5; // Максимум 50% ширины контейнера
+        this.minHeight = 100;
+        this.maxHeightPercent = 0.6;
+        
         this.init();
     }
 
     init() {
-        console.log('PanelResizer initializing...');
-        const resizers = document.querySelectorAll('.resizer-vertical');
-        console.log(`Found ${resizers.length} resizers`);
-
-        if (resizers.length === 0) {
-            console.warn('No resizers found! Check HTML structure.');
-            return;
-        }
-
-        resizers.forEach((resizer, index) => {
-            const target = resizer.dataset.target;
-            console.log(`Resizer ${index + 1}: target="${target}"`);
-            resizer.addEventListener('mousedown', (e) => this.startResize(e, resizer));
+        // Вертикальные ресайзеры
+        document.querySelectorAll('.resizer-vertical').forEach(resizer => {
+            resizer.addEventListener('mousedown', (e) => this.startResize(e, resizer, 'horizontal'));
         });
-
+        
+        // Горизонтальный ресайзер (если есть)
+        document.querySelectorAll('.resizer-horizontal').forEach(resizer => {
+            resizer.addEventListener('mousedown', (e) => this.startResize(e, resizer, 'vertical'));
+        });
+        
+        // Глобальные обработчики
         document.addEventListener('mousemove', (e) => this.resize(e));
         document.addEventListener('mouseup', () => this.stopResize());
-        console.log('PanelResizer initialized successfully');
+        
+        console.log('PanelResizer initialized');
     }
 
-    startResize(e, resizer) {
+    startResize(e, resizer, direction) {
+        e.preventDefault();
+        
         this.isResizing = true;
         this.currentResizer = resizer;
-        this.startX = e.clientX;
-
-        const target = resizer.dataset.target;
-        const container = document.querySelector('.app-container');
-
-        if (target === 'sidebar') {
-            const sidebar = document.querySelector('.sidebar');
-            if (!sidebar) {
-                console.error('Sidebar element not found');
-                this.isResizing = false;
-                return;
+        this.direction = direction;
+        
+        if (direction === 'horizontal') {
+            this.startPos = e.clientX;
+            
+            // Определяем, какую панель изменяем
+            if (resizer.classList.contains('resizer-left')) {
+                // Левый ресайзер - изменяем sidebar
+                this.targetPanel = document.querySelector('.sidebar');
+                this.resizeDirection = 1; // При движении вправо - увеличиваем
+            } else if (resizer.classList.contains('resizer-right')) {
+                // Правый ресайзер - изменяем detail
+                this.targetPanel = document.querySelector('.detail-panel');
+                this.resizeDirection = -1; // При движении вправо - уменьшаем
             }
-            this.startWidth = sidebar.offsetWidth;
-            this.targetElement = sidebar;
-            this.cssVariable = '--sidebar-width';
-        } else if (target === 'main') {
-            // Ресайзер между main и detail изменяет ширину detail-panel
-            const detail = document.querySelector('.detail-panel');
-            if (!detail) {
-                console.error('Detail panel element not found');
-                this.isResizing = false;
-                return;
+            
+            if (this.targetPanel) {
+                this.startSize = this.targetPanel.offsetWidth;
             }
-            this.startWidth = detail.offsetWidth;
-            this.targetElement = detail;
-            this.cssVariable = '--detail-width';
         } else {
-            console.error('Unknown resizer target:', target);
+            // Вертикальный ресайз (timeline)
+            this.startPos = e.clientY;
+            this.targetPanel = document.querySelector('.timeline-panel');
+            this.resizeDirection = -1; // При движении вверх - увеличиваем
+            
+            if (this.targetPanel) {
+                this.startSize = this.targetPanel.offsetHeight;
+            }
+        }
+        
+        // Проверяем, что панель не минимизирована
+        if (this.targetPanel && this.targetPanel.classList.contains('minimized')) {
             this.isResizing = false;
             return;
         }
-
+        
+        // Добавляем классы для визуальной обратной связи
         resizer.classList.add('resizing');
-        if (container) {
-            container.classList.add('resizing');
-        }
-        document.body.style.cursor = 'col-resize';
+        document.body.style.cursor = direction === 'horizontal' ? 'col-resize' : 'row-resize';
         document.body.style.userSelect = 'none';
-
-        e.preventDefault();
-        e.stopPropagation();
     }
 
     resize(e) {
-        if (!this.isResizing || !this.currentResizer) return;
-
-        const container = document.querySelector('.app-container');
-        if (!container) return;
-
-        const containerWidth = container.offsetWidth;
-        const maxWidth = containerWidth * this.maxWidthPercent;
-
-        let newWidth;
-        const target = this.currentResizer.dataset.target;
-
-        if (target === 'sidebar') {
-            // Sidebar resizes from left to right (при перетаскивании вправо увеличивается)
-            const delta = e.clientX - this.startX;
-            newWidth = this.startWidth + delta;
-        } else if (target === 'main') {
-            // Detail panel resizes from right to left (при перетаскивании влево увеличивается)
-            const delta = this.startX - e.clientX;
-            newWidth = this.startWidth + delta;
-        } else {
-            return;
-        }
-
-        // Constrain width
-        newWidth = Math.max(this.minWidth, Math.min(newWidth, maxWidth));
-
-        // Update CSS variable - grid-template-columns использует переменные, поэтому обновление автоматическое
-        container.style.setProperty(this.cssVariable, `${newWidth}px`);
+        if (!this.isResizing || !this.currentResizer || !this.targetPanel) return;
         
-        // Для отладки: проверяем, что переменная установлена
-        const actualValue = container.style.getPropertyValue(this.cssVariable);
-        if (!actualValue) {
-            console.warn(`Failed to set CSS variable ${this.cssVariable} to ${newWidth}px`);
+        let newSize;
+        
+        if (this.direction === 'horizontal') {
+            const delta = (e.clientX - this.startPos) * this.resizeDirection;
+            newSize = this.startSize + delta;
+            
+            // Ограничения
+            const container = document.querySelector('.panels-container');
+            const maxWidth = container ? container.offsetWidth * this.maxWidthPercent : 600;
+            newSize = Math.max(this.minWidth, Math.min(newSize, maxWidth));
+            
+            // Устанавливаем flex-basis
+            this.targetPanel.style.flexBasis = `${newSize}px`;
+        } else {
+            const delta = (e.clientY - this.startPos) * this.resizeDirection;
+            newSize = this.startSize + delta;
+            
+            // Ограничения для timeline
+            const maxHeight = (window.innerHeight - 60) * this.maxHeightPercent;
+            newSize = Math.max(this.minHeight, Math.min(newSize, maxHeight));
+            
+            // Устанавливаем height
+            this.targetPanel.style.height = `${newSize}px`;
         }
     }
 
     stopResize() {
         if (!this.isResizing) return;
-
+        
         this.isResizing = false;
-
+        
         if (this.currentResizer) {
             this.currentResizer.classList.remove('resizing');
-            this.currentResizer = null;
         }
-
-        const container = document.querySelector('.app-container');
-        if (container) {
-            container.classList.remove('resizing');
-        }
-
+        
         document.body.style.cursor = '';
         document.body.style.userSelect = '';
+        
+        this.currentResizer = null;
+        this.targetPanel = null;
     }
 }
 
-// Initialize when DOM is ready
+// Инициализация при загрузке DOM
 document.addEventListener('DOMContentLoaded', () => {
-    new PanelResizer();
+    window.panelResizer = new PanelResizer();
 });

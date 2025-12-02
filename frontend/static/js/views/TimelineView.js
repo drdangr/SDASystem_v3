@@ -2,10 +2,13 @@
  * TimelineView - Renders timeline of events in the bottom panel
  */
 class TimelineView {
-    constructor(containerId, eventBus, apiBase) {
-        this.container = document.getElementById(containerId);
+    constructor(containerSelector, eventBus, apiBase) {
+        // Поддерживаем как ID, так и селектор класса
+        this.container = containerSelector.startsWith('.') 
+            ? document.querySelector(containerSelector)
+            : document.getElementById(containerSelector);
         if (!this.container) {
-            console.warn(`TimelineView: Container '${containerId}' not found`);
+            console.warn(`TimelineView: Container '${containerSelector}' not found`);
         }
         this.eventBus = eventBus;
         this.apiBase = apiBase;
@@ -18,19 +21,32 @@ class TimelineView {
      * @param {string} storyId - Story ID
      */
     async loadStoryTimeline(storyId) {
-        if (!this.container) return;
+        if (!this.container) {
+            console.error('TimelineView: Container not found');
+            return;
+        }
         if (!storyId) {
             this.clear();
             return;
         }
 
+        // Показываем состояние загрузки
+        this.showLoading();
+
         try {
             const response = await fetch(`${this.apiBase}/stories/${storyId}/events`);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
             const events = await response.json();
             this.render(events);
         } catch (error) {
             console.error('Error loading timeline:', error);
-            if (this.container) this.container.innerHTML = '<div class="loading">Failed to load timeline</div>';
+            if (this.container) {
+                this.container.innerHTML = `<div class="loading">Failed to load timeline: ${error.message}</div>`;
+            }
         }
     }
 
@@ -48,8 +64,8 @@ class TimelineView {
         }
 
         const eventsHtml = events.map(event => `
-            <div class="event-item ${event.type || 'fact'}">
-                <div class="event-date">${formatDate(event.timestamp)}</div>
+            <div class="event-item ${event.event_type || event.type || 'fact'}">
+                <div class="event-date">${formatDate(event.event_date || event.timestamp)}</div>
                 <div class="event-title">${escapeHtml(event.title)}</div>
                 <div class="event-description">${escapeHtml(event.description || '')}</div>
             </div>
