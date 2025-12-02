@@ -28,23 +28,37 @@ body {
     transition: grid-template-columns 0.3s ease, grid-template-rows 0.3s ease;
 }
 
+.app-container.resizing {
+    transition: none;
+}
+
 /* Resizer styles */
 .resizer {
     background: #2a3f5f;
     position: relative;
     z-index: 1000;
     transition: background 0.2s;
+    user-select: none;
+    -webkit-user-select: none;
+    pointer-events: auto;
 }
 
 .resizer-vertical {
     cursor: col-resize;
     width: 4px;
+    height: 100%;
 }
 
 .resizer-vertical:hover,
 .resizer-vertical.resizing {
     background: #4fc3f7;
     box-shadow: 0 0 5px rgba(79, 195, 247, 0.5);
+    width: 6px;
+}
+
+.resizer-vertical.resizing {
+    background: #4fc3f7;
+    box-shadow: 0 0 10px rgba(79, 195, 247, 0.8);
 }
 
 .resizer-left {
@@ -58,16 +72,52 @@ body {
 /* Minimized states */
 .app-container.sidebar-minimized {
     --sidebar-width: 40px;
+    --main-width: 1fr; /* Main занимает освободившееся место */
+    --detail-width: 350px; /* Detail остаётся фиксированным */
+    grid-template-columns: var(--sidebar-width) 4px var(--main-width) 4px var(--detail-width);
 }
 
 .app-container.main-minimized {
     --main-width: 40px;
-    --sidebar-width: 1fr;
+    --sidebar-width: 1fr; /* Sidebar и detail растягиваются поровну */
     --detail-width: 1fr;
+    grid-template-columns: var(--sidebar-width) 4px var(--main-width) 4px var(--detail-width);
 }
 
 .app-container.detail-minimized {
     --detail-width: 40px;
+    --main-width: 1fr; /* Main занимает освободившееся место */
+    --sidebar-width: 300px; /* Sidebar остаётся фиксированным */
+    grid-template-columns: var(--sidebar-width) 4px var(--main-width) 4px var(--detail-width);
+}
+
+/* Комбинированные состояния - когда минимизированы несколько панелей */
+.app-container.sidebar-minimized.detail-minimized {
+    --sidebar-width: 40px;
+    --detail-width: 40px;
+    --main-width: 1fr; /* Main занимает всё свободное место */
+    grid-template-columns: var(--sidebar-width) 4px var(--main-width) 4px var(--detail-width);
+}
+
+.app-container.sidebar-minimized.main-minimized {
+    --sidebar-width: 40px;
+    --main-width: 40px;
+    --detail-width: 1fr; /* Detail занимает всё свободное место */
+    grid-template-columns: var(--sidebar-width) 4px var(--main-width) 4px var(--detail-width);
+}
+
+.app-container.main-minimized.detail-minimized {
+    --main-width: 40px;
+    --detail-width: 40px;
+    --sidebar-width: 1fr; /* Sidebar занимает всё свободное место */
+    grid-template-columns: var(--sidebar-width) 4px var(--main-width) 4px var(--detail-width);
+}
+
+.app-container.sidebar-minimized.main-minimized.detail-minimized {
+    --sidebar-width: 40px;
+    --main-width: 40px;
+    --detail-width: 1fr; /* Detail занимает всё свободное место */
+    grid-template-columns: var(--sidebar-width) 4px var(--main-width) 4px var(--detail-width);
 }
 
 .app-container.timeline-minimized {
