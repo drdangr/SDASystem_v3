@@ -27,6 +27,7 @@ class SDAApp {
         this.setupEventListeners();
         this.setupEventBusListeners();
         this.restorePanelStates();
+        this.updateResizersVisibility(); // Убеждаемся, что ресайзеры правильно отображаются
         this.loadData();
     }
 
@@ -185,19 +186,49 @@ class SDAApp {
     togglePanel(panelName) {
         const container = document.querySelector('.app-container');
         const className = `${panelName}-minimized`;
-        const isMinimized = container.classList.contains(className);
-
+        
+        // Toggle the minimized class
         container.classList.toggle(className);
+        
+        // Check state AFTER toggle
+        const isNowMinimized = container.classList.contains(className);
 
-        // Update button text
+        // Update button text based on NEW state
         const button = document.querySelector(`[data-panel="${panelName}"]`);
         if (button) {
-            button.textContent = isMinimized ? '−' : '_';
+            // Если панель теперь минимизирована, показываем '_' (развернуть)
+            // Если панель теперь развернута, показываем '−' (свернуть)
+            button.textContent = isNowMinimized ? '_' : '−';
         }
+
+        // Hide/show resizers based on panel state
+        this.updateResizersVisibility();
 
         // Save state to localStorage
         const minimizedPanels = this.getMinimizedPanels();
         localStorage.setItem('minimizedPanels', JSON.stringify(minimizedPanels));
+    }
+
+    updateResizersVisibility() {
+        const container = document.querySelector('.app-container');
+        const sidebarResizer = document.querySelector('.resizer-left');
+        const mainResizer = document.querySelector('.resizer-right');
+
+        const isSidebarMinimized = container.classList.contains('sidebar-minimized');
+        const isMainMinimized = container.classList.contains('main-minimized');
+        const isDetailMinimized = container.classList.contains('detail-minimized');
+
+        // Ресайзер между sidebar и main скрывается, если sidebar ИЛИ main минимизирован
+        // (если минимизирован sidebar, его нельзя изменить; если минимизирован main, его нельзя изменить)
+        if (sidebarResizer) {
+            sidebarResizer.style.display = (isSidebarMinimized || isMainMinimized) ? 'none' : '';
+        }
+
+        // Ресайзер между main и detail скрывается, если main ИЛИ detail минимизирован
+        // (если минимизирован main, его нельзя изменить; если минимизирован detail, его нельзя изменить)
+        if (mainResizer) {
+            mainResizer.style.display = (isMainMinimized || isDetailMinimized) ? 'none' : '';
+        }
     }
 
     getMinimizedPanels() {
@@ -213,8 +244,11 @@ class SDAApp {
         minimizedPanels.forEach(panel => {
             container.classList.add(`${panel}-minimized`);
             const button = document.querySelector(`[data-panel="${panel}"]`);
-            if (button) button.textContent = '_';
+            if (button) button.textContent = '_'; // Минимизированная панель показывает '_'
         });
+
+        // Обновляем видимость ресайзеров после восстановления состояний
+        this.updateResizersVisibility();
     }
 }
 
