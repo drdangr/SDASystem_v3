@@ -123,6 +123,71 @@ class GraphManager:
             aliases=actor.aliases
         )
 
+    def ensure_actor(self, name: str, actor_type: str = "person", confidence: float = 0.5) -> str:
+        """Find actor by name (case-insensitive) or create new one"""
+        actor_type = self._normalize_actor_type(actor_type)
+        for actor in self.actors.values():
+            if actor.canonical_name.lower() == name.lower():
+                return actor.id
+        actor_id = f"actor_{len(self.actors) + 1}"
+        new_actor = Actor(
+            id=actor_id,
+            canonical_name=name,
+            actor_type=actor_type or "person",
+            confidence=confidence
+        )
+        self.add_actor(new_actor)
+        return actor_id
+
+    def add_mention(self, news_id: str, actor_id: str, confidence: float = 0.5) -> None:
+        """Link news to actor in mentions graph"""
+        news_node = f"news_{news_id}"
+        actor_node = f"actor_{actor_id}"
+        self.mentions_graph.add_node(news_node, type="news")
+        self.mentions_graph.add_node(actor_node, type="actor")
+        self.mentions_graph.add_edge(
+            news_node,
+            actor_node,
+            confidence=confidence
+        )
+        # update news object cache
+        if news_id in self.news:
+            if actor_id not in self.news[news_id].mentioned_actors:
+                self.news[news_id].mentioned_actors.append(actor_id)
+
+    def update_story_top_actors(self, story_id: str, top_n: int = 5) -> None:
+        """Recompute top actors for a story based on mentions in its news"""
+        if story_id not in self.stories:
+            return
+        story = self.stories[story_id]
+        counts = {}
+        for news_id in story.news_ids:
+            if news_id in self.news:
+                for aid in self.news[news_id].mentioned_actors:
+                    counts[aid] = counts.get(aid, 0) + 1
+        # sort by frequency desc
+        sorted_ids = [aid for aid, _ in sorted(counts.items(), key=lambda x: x[1], reverse=True)]
+        top_ids = sorted_ids[:top_n]
+        # convert to names for UI compatibility
+        top_names = []
+        for aid in top_ids:
+            actor = self.actors.get(aid)
+            if actor:
+                top_names.append(actor.canonical_name)
+        story.top_actors = top_names
+
+    def _normalize_actor_type(self, actor_type: str) -> str:
+        allowed = {"person", "company", "country", "organization", "government", "structure", "event"}
+        if not actor_type:
+            return "organization"
+        t = str(actor_type).lower()
+        if t in allowed:
+            return t
+        # map common synonyms
+        if t in {"org", "other"}:
+            return "organization"
+        return "organization"
+
     def add_actor_relation(self, relation: ActorRelation) -> None:
         """Add relationship between actors"""
         if relation.source_actor_id in self.actors and relation.target_actor_id in self.actors:

@@ -1,3 +1,6 @@
+import { llmGenerate } from '../api/llmClient.js';
+import { Storage } from '../ui/storage.js';
+
 /**
  * StoryView - Renders detailed story information in the main panel
  */
@@ -48,12 +51,20 @@ export class StoryView {
                             ? story.domains.map(d => `<span>${escapeHtml(this.formatDomain(d))}</span>`).join('')
                             : '<span>No domains</span>'}
                     </div>
-                    <div class="summary">
+                    <div class="llm-status-line">
+                        <span class="llm-label">LLM summary:</span>
+                        <span class="llm-status" id="llmSummaryStatus"></span>
+                    </div>
+                    <div class="summary" id="storySummary">
                         ${escapeHtml(story.summary)}
                     </div>
 
                     <h2 class="section-title">Key Points</h2>
-                    <ul class="bullets-list">
+                    <div class="llm-status-line">
+                        <span class="llm-label">LLM bullets:</span>
+                        <span class="llm-status" id="llmBulletsStatus"></span>
+                    </div>
+                    <ul class="bullets-list" id="storyBullets">
                         ${story.bullets.map(b => `<li>${escapeHtml(b)}</li>`).join('')}
                     </ul>
 
@@ -69,7 +80,10 @@ export class StoryView {
                 </div>
             `;
 
+            this.newsTextCache = (newsItems || []).map(n => `${n.title}. ${n.summary}`).join('\n');
+
             this.setupEventListeners();
+            this.runLLMAuto(story);
         } catch (error) {
             console.error('Error rendering story:', error);
             this.container.innerHTML = '<div class="error">Failed to load story details</div>';
@@ -82,12 +96,23 @@ export class StoryView {
      * @returns {string} HTML string
      */
     async renderActorsSection(actorIds) {
-        if (actorIds.length === 0) return '<p>No actors identified</p>';
+        if (!actorIds || actorIds.length === 0) return '<p>No actors identified</p>';
 
         const actorsHtml = [];
-        for (const actorId of actorIds.slice(0, 12)) { // Limit to 12
+        for (const idOrName of actorIds.slice(0, 12)) { // Limit to 12
+            // If it's already a name, render directly
+            if (typeof idOrName === 'string' && !idOrName.startsWith('actor_')) {
+                actorsHtml.push(`
+                    <div class="actor-chip">
+                        ${escapeHtml(idOrName)}
+                    </div>
+                `);
+                continue;
+            }
+            // Else treat as actor_id
             try {
-                const response = await fetch(`${this.apiBase}/actors/${actorId}`);
+                const response = await fetch(`${this.apiBase}/actors/${idOrName}`);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 const actor = await response.json();
                 actorsHtml.push(`
                     <div class="actor-chip" data-actor-id="${actor.id}">
@@ -95,7 +120,7 @@ export class StoryView {
                     </div>
                 `);
             } catch (error) {
-                console.warn(`Failed to load actor ${actorId}`);
+                console.warn(`Failed to load actor ${idOrName}`, error);
             }
         }
 
@@ -139,6 +164,75 @@ export class StoryView {
                 this.eventBus.emit('actor:selected', actorId);
             });
         });
+    }
+
+    runLLMAuto(story) {
+        const summaryStatus = this.container.querySelector('#llmSummaryStatus');
+        const bulletsStatus = this.container.querySelector('#llmBulletsStatus');
+        const summaryEl = this.container.querySelector('#storySummary');
+        const bulletsEl = this.container.querySelector('#storyBullets');
+
+        const settings = Storage.load('llmSettings', null);
+        const text = `${story.summary}\n${this.newsTextCache || ''}`;
+
+        // Summary
+        this.runLLM({
+            task: 'summary',
+            title: story.title,
+            text,
+            statusEl: summaryStatus,
+            onResult: (res) => {
+                if (summaryEl) summaryEl.innerHTML = escapeHtml(res || '');
+            },
+            cacheKey: `llm_summary_${story.id}`,
+            settings
+        });
+
+        // Bullets
+        this.runLLM({
+            task: 'bullets',
+            title: story.title,
+            text,
+            statusEl: bulletsStatus,
+            onResult: (resList) => {
+                const arr = Array.isArray(resList) ? resList : [];
+                const cleaned = arr
+                    .map(b => (typeof b === 'string' ? b : ''))
+                    .filter(Boolean)
+                    .filter(line => line.toLowerCase().indexOf('concise bullets') === -1 && line.toLowerCase().indexOf('up to') === -1);
+                if (bulletsEl) {
+                    bulletsEl.innerHTML = cleaned.map(b => `<li>${escapeHtml(b)}</li>`).join('');
+                }
+            },
+            cacheKey: `llm_bullets_${story.id}`,
+            settings
+        });
+    }
+
+    async runLLM({ task, title, text, statusEl, onResult, cacheKey, settings }) {
+        try {
+            if (statusEl) statusEl.textContent = 'Loading...';
+            const cached = Storage.load(cacheKey, null);
+            if (cached) {
+                if (statusEl) statusEl.textContent = 'Cached';
+                onResult?.(cached);
+                return;
+            }
+
+            const resp = await llmGenerate({
+                task,
+                title,
+                text,
+                settings: settings || {}
+            });
+            const result = resp?.result;
+            onResult?.(result);
+            Storage.save(cacheKey, result);
+            if (statusEl) statusEl.textContent = 'Done';
+        } catch (e) {
+            console.error('LLM error', e);
+            if (statusEl) statusEl.textContent = 'Error';
+        }
     }
 
     /**
