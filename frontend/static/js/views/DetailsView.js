@@ -1,7 +1,7 @@
 /**
  * DetailsView - Renders detailed information for selected news or actor in the right panel
  */
-class DetailsView {
+export class DetailsView {
     constructor(containerId, eventBus, apiBase) {
         this.container = document.querySelector(containerId);
         this.eventBus = eventBus;

@@ -2,7 +2,7 @@
  * GraphView - Interactive graph visualization with cosmic theme
  * Visualizes news as planets, stories as stars, in a space-like environment
  */
-class GraphView {
+export class GraphView {
     constructor(containerId, eventBus, apiBase) {
         this.container = document.getElementById(containerId);
         this.eventBus = eventBus;

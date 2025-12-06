@@ -69,6 +69,15 @@ def load_data():
                     item['first_seen'] = datetime.fromisoformat(item['first_seen'])
                 if 'last_activity' in item and item['last_activity']:
                     item['last_activity'] = datetime.fromisoformat(item['last_activity'])
+                # Mock/stub fill for missing generated fields
+                if not item.get('summary'):
+                    item['summary'] = f"Auto summary for {item.get('title', 'Story')}"
+                if not item.get('bullets'):
+                    item['bullets'] = [f"Key point for {item.get('title', 'story')}"]
+                if not item.get('domains'):
+                    item['domains'] = []
+                if not item.get('top_actors'):
+                    item['top_actors'] = []
                 story = Story(**item)
                 graph_manager.add_story(story)
             print(f"Loaded {len(stories_data)} stories")
@@ -76,6 +85,37 @@ def load_data():
     # Compute similarities
     print("Computing news similarities...")
     graph_manager.compute_news_similarities(threshold=0.6)
+
+    # Extract timeline events from news
+    print("Extracting timeline events from news...")
+    total_events = 0
+    for news in graph_manager.news.values():
+        events = event_service.extract_events_from_news(news)
+        for event in events:
+            # Ensure story linkage is set from news
+            if not event.story_id:
+                event.story_id = news.story_id
+            graph_manager.add_event(event)
+            total_events += 1
+    print(f"Extracted {total_events} events")
+
+    # Ensure each story has at least one event (synthetic fallback)
+    from backend.models.entities import Event, EventType
+    for story in graph_manager.stories.values():
+        if len(story.event_ids) == 0:
+            synthetic = Event(
+                id=f"event_synth_{story.id}",
+                news_id=story.core_news_ids[0] if story.core_news_ids else story.news_ids[0] if story.news_ids else f"news_{story.id}",
+                story_id=story.id,
+                event_type=EventType.FACT,
+                title=f"{story.title} (synthetic event)",
+                description=story.summary[:200] if story.summary else story.title,
+                event_date=story.last_activity or story.updated_at or datetime.utcnow(),
+                actors=story.top_actors,
+                source_trust=0.5,
+                confidence=0.5
+            )
+            graph_manager.add_event(synthetic)
 
 # Execute loading
 try:
