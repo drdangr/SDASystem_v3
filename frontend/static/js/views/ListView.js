@@ -1,7 +1,7 @@
 /**
  * ListView - Renders stories as a list in the left sidebar
  */
-class ListView {
+export class ListView {
     constructor(containerId, eventBus) {
         this.container = document.getElementById(containerId);
         this.eventBus = eventBus;
@@ -48,6 +48,7 @@ class ListView {
                 <span>${story.size} news</span>
                 <span>${story.top_actors.length} actors</span>
                 <span>${formatDate(story.last_activity)}</span>
+                <span>${escapeHtml(this.getPrimaryDomain(story) || 'No domain')}</span>
             </div>
             <div class="story-metrics">
                 <span class="metric">R: ${(story.relevance * 100).toFixed(0)}%</span>
@@ -83,6 +84,15 @@ class ListView {
                 item.classList.add('active');
             }
         });
+    }
+
+    /**
+     * Resolve primary domain label
+     */
+    getPrimaryDomain(story) {
+        if (story.primary_domain) return story.primary_domain.replace('domain_', '').replace(/_/g, ' ');
+        if (story.domains && story.domains.length > 0) return story.domains[0].replace('domain_', '').replace(/_/g, ' ');
+        return '';
     }
 
     /**

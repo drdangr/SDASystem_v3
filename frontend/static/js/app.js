@@ -1,4 +1,14 @@
 // SDASystem Frontend Application - Refactored with Modular Views
+import { SidebarPanel } from './panels/sidebar.js';
+import { MainPanel } from './panels/mainPanel.js';
+import { DetailPanel } from './panels/detailPanel.js';
+import { TimelinePanel } from './panels/timelinePanel.js';
+import { ListView } from './views/ListView.js';
+import { GraphView } from './views/GraphView.js';
+import { StoryView } from './views/StoryView.js';
+import { DetailsView } from './views/DetailsView.js';
+import { TimelineView } from './views/TimelineView.js';
+
 const API_BASE = '/api';
 
 class SDAApp {
@@ -8,7 +18,7 @@ class SDAApp {
         this.currentStory = null;
         this.currentNews = null;
         this.currentActor = null;
-        this.viewMode = 'list'; // 'list' or 'graph'
+        this.viewMode = 'list'; // kept for backward compat
 
         // Initialize EventBus for inter-module communication
         this.eventBus = new EventBus();
@@ -20,6 +30,14 @@ class SDAApp {
         this.detailsView = new DetailsView('.detail-panel-content', this.eventBus, API_BASE);
         this.timelineView = new TimelineView('.timeline-content', this.eventBus, API_BASE);
 
+        // Panels abstraction
+        this.sidebarPanel = new SidebarPanel(this.eventBus, this.listView, this.graphView, (mode) => {
+            this.viewMode = mode;
+        });
+        this.mainPanel = new MainPanel(this.storyView);
+        this.detailPanel = new DetailPanel(this.detailsView);
+        this.timelinePanel = new TimelinePanel(this.timelineView);
+
         this.init();
     }
 
@@ -27,6 +45,7 @@ class SDAApp {
         this.setupEventListeners();
         this.setupEventBusListeners();
         this.restorePanelStates();
+        this.sidebarPanel.init();
         this.loadData();
     }
 
@@ -54,30 +73,6 @@ class SDAApp {
     }
 
     setupEventListeners() {
-        // View mode toggle
-        document.getElementById('viewList')?.addEventListener('click', () => {
-            this.viewMode = 'list';
-            this.updateViewMode();
-        });
-
-        document.getElementById('viewGraph')?.addEventListener('click', () => {
-            this.viewMode = 'graph';
-            this.updateViewMode();
-        });
-
-        // Timeline zoom controls
-        document.getElementById('zoomDay')?.addEventListener('click', () => {
-            this.timelineView.setZoom('day');
-        });
-
-        document.getElementById('zoomWeek')?.addEventListener('click', () => {
-            this.timelineView.setZoom('week');
-        });
-
-        document.getElementById('zoomMonth')?.addEventListener('click', () => {
-            this.timelineView.setZoom('month');
-        });
-
         // Panel minimization - use event delegation
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('minimize-btn')) {
@@ -114,19 +109,17 @@ class SDAApp {
         this.currentStory = story;
 
         // Update list selection
-        if (this.viewMode === 'list') {
-            this.listView.currentStoryId = storyId;
-            this.listView.updateSelection();
-        }
+        this.listView.currentStoryId = storyId;
+        this.listView.updateSelection();
 
         // Render story details
-        await this.storyView.render(story);
+        await this.mainPanel.render(story);
 
         // Load timeline
-        await this.timelineView.loadStoryTimeline(storyId);
+        await this.timelinePanel.render(storyId);
 
         // Clear detail panel
-        this.detailsView.clear();
+        this.detailPanel.clear();
     }
 
     async selectNews(newsId) {
@@ -150,22 +143,8 @@ class SDAApp {
     }
 
     updateViewMode() {
-        // Update button states
-        document.getElementById('viewList')?.classList.toggle('active', this.viewMode === 'list');
-        document.getElementById('viewGraph')?.classList.toggle('active', this.viewMode === 'graph');
-
-        // Render in appropriate view
-        if (this.viewMode === 'list') {
-            // Удаляем контролы графа при переключении на список
-            this.graphView.removeControls?.();
-            this.listView.render(this.stories);
-            if (this.currentStory) {
-                this.listView.currentStoryId = this.currentStory.id;
-                this.listView.updateSelection();
-            }
-        } else {
-            this.graphView.render(this.stories);
-        }
+        this.sidebarPanel.viewMode = this.viewMode;
+        this.sidebarPanel.updateViewMode();
     }
 
     updateStats() {

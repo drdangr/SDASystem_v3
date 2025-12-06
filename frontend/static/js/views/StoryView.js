@@ -1,7 +1,7 @@
 /**
  * StoryView - Renders detailed story information in the main panel
  */
-class StoryView {
+export class StoryView {
     constructor(containerId, eventBus, apiBase) {
         this.container = document.querySelector(containerId);
         this.eventBus = eventBus;
@@ -37,6 +37,16 @@ class StoryView {
                         <span>${story.top_actors.length} actors</span>
                         <span>Updated ${formatDate(story.last_activity)}</span>
                         <span>${this.formatDomain(story.primary_domain) || 'N/A'}</span>
+                    </div>
+                    <div class="meta-info">
+                        <span>Relevance: ${(story.relevance * 100).toFixed(0)}%</span>
+                        <span>Cohesion: ${(story.cohesion * 100).toFixed(0)}%</span>
+                        <span>Freshness: ${(story.freshness * 100).toFixed(0)}%</span>
+                    </div>
+                    <div class="meta-info">
+                        ${(story.domains && story.domains.length)
+                            ? story.domains.map(d => `<span>${escapeHtml(this.formatDomain(d))}</span>`).join('')
+                            : '<span>No domains</span>'}
                     </div>
                     <div class="summary">
                         ${escapeHtml(story.summary)}

@@ -93,8 +93,13 @@
             <div class="timeline-header">
                 <h2>Timeline</h2>
                 <div class="timeline-controls">
-                    <button id="timelineZoomIn">+</button>
-                    <button id="timelineZoomOut">-</button>
+                    <button id="filterFact" class="active">Fact</button>
+                    <button id="filterOpinion" class="active">Opinion</button>
+                    <button id="zoomDay">Day</button>
+                    <button id="zoomMonth">Month</button>
+                    <button id="zoomYear">Year</button>
+                    <button id="zoomOut">−</button>
+                    <button id="zoomIn">+</button>
                 </div>
                 <button class="minimize-btn" data-panel="timeline" title="Minimize panel">−</button>
             </div>
@@ -107,7 +112,7 @@
         </section>
     </div>
 
-    <!-- Utilities -->
+    <!-- Utilities (globals) -->
     <script src="/static/js/utils/helpers.js?v=3"></script>
     <script src="/static/js/utils/EventBus.js?v=3"></script>
     <script src="/static/js/resizer.js?v=3"></script>
@@ -116,15 +121,8 @@
     <script src="//unpkg.com/d3@7/dist/d3.min.js"></script>
     <script src="/static/js/lib/force-graph.min.js?v=3"></script>
 
-    <!-- View Modules -->
-    <script src="/static/js/views/ListView.js?v=3"></script>
-    <script src="/static/js/views/GraphView.js?v=3"></script>
-    <script src="/static/js/views/StoryView.js?v=3"></script>
-    <script src="/static/js/views/DetailsView.js?v=3"></script>
-    <script src="/static/js/views/TimelineView.js?v=3"></script>
-
-    <!-- Main Application -->
-    <script src="/static/js/app.js?v=3"></script>
+    <!-- Main Application as module (imports panels/views inside) -->
+    <script type="module" src="/static/js/app.js?v=3"></script>
 </body>
 
 </html>

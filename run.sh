@@ -29,15 +29,10 @@ if [ ! -f "data/mock_data.json" ]; then
     python -m backend.utils.mock_data_generator
 fi
 
-echo ""
-echo "Starting server..."
-echo ""
-echo "Access the application at:"
-echo "  → UI: http://localhost:8000/ui"
-echo "  → API Docs: http://localhost:8000/docs"
-echo ""
-echo "Press Ctrl+C to stop the server"
+echo "[run] Backend (serves frontend static) → http://localhost:8000/ui"
+echo "[run] API docs → http://localhost:8000/docs"
+echo "[run] Stop: Ctrl+C"
 echo ""
 
-# Start the server
-python main.py
+# Start the server with reload
+exec uvicorn main:app --host 0.0.0.0 --port 8000 --reload

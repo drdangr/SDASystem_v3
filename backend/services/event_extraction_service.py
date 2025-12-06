@@ -86,7 +86,25 @@ class EventExtractionService:
                     source_trust=source_trust,
                     confidence=self._calculate_confidence(sentence, event_type)
                 )
+                # Guarantee story linkage if available
+                if news.story_id and not event.story_id:
+                    event.story_id = news.story_id
                 events.append(event)
+
+        # Fallback: if nothing extracted, create a single fact event using published_at
+        if not events and news.published_at:
+            events.append(Event(
+                id=f"event_{uuid.uuid4().hex[:12]}",
+                news_id=news.id,
+                story_id=news.story_id,
+                event_type=EventType.FACT,
+                title=news.title[:80],
+                description=news.summary[:200] or news.full_text[:200],
+                event_date=news.published_at,
+                actors=news.mentioned_actors,
+                source_trust=source_trust,
+                confidence=0.6
+            ))
 
         return events
 
@@ -122,8 +140,8 @@ class EventExtractionService:
                 except:
                     continue
 
-        # If no explicit date, return None (will use news publication date)
-        return None
+        # If no explicit date, use publication date as fallback
+        return fallback_date
 
     def _classify_event_type(self, sentence: str) -> EventType:
         """Classify event as FACT or OPINION"""
