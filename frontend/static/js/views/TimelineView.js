@@ -133,7 +133,7 @@ export class TimelineView {
                             <div class="event-description">${escapeHtml(ev.description || '')}</div>
                         </div>
                     </div>
-                </div>
+            </div>
             `;
         }).join('');
 

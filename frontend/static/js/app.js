@@ -8,6 +8,8 @@ import { GraphView } from './views/GraphView.js';
 import { StoryView } from './views/StoryView.js';
 import { DetailsView } from './views/DetailsView.js';
 import { TimelineView } from './views/TimelineView.js';
+import { LLMSettingsModal } from './ui/llmSettings.js';
+import { llmGenerate } from './api/llmClient.js';
 
 const API_BASE = '/api';
 
@@ -38,6 +40,13 @@ class SDAApp {
         this.detailPanel = new DetailPanel(this.detailsView);
         this.timelinePanel = new TimelinePanel(this.timelineView);
 
+        // LLM settings modal
+        this.llmSettings = null;
+        this.llmModal = new LLMSettingsModal('llmSettings', (state) => {
+            this.llmSettings = state;
+        });
+        this.llmDebugModal = this.initLLMDebugModal();
+
         this.init();
     }
 
@@ -46,7 +55,39 @@ class SDAApp {
         this.setupEventBusListeners();
         this.restorePanelStates();
         this.sidebarPanel.init();
+        this.llmModal.init();
+        this.llmSettings = this.llmModal.state;
         this.loadData();
+    }
+
+    initLLMDebugModal() {
+        const modal = document.querySelector('#llmDebugModal');
+        const openBtn = document.querySelector('#llmDebugBtn');
+        const closeBtn = document.querySelector('#llmDebugClose');
+        const saveBtn = document.querySelector('#llmDebugSave');
+        const textarea = document.querySelector('#llmDebugContent');
+
+        const show = () => {
+            textarea.value = window.lastLLMDebug || 'Нет данных';
+            modal?.classList.add('open');
+        };
+        const hide = () => modal?.classList.remove('open');
+
+        openBtn?.addEventListener('click', show);
+        closeBtn?.addEventListener('click', hide);
+        saveBtn?.addEventListener('click', hide);
+
+        return { show, hide, textarea };
+    }
+
+    // LLM helper (used in next steps for summary/bullets)
+    async callLLM(task, title, text) {
+        return llmGenerate({
+            task,
+            title,
+            text,
+            settings: this.llmSettings || {}
+        });
     }
 
     async loadData() {
@@ -100,6 +141,11 @@ class SDAApp {
         this.eventBus.on('actor:selected', async (actorId) => {
             await this.selectActor(actorId);
         });
+
+        // Actors updated via LLM for a news item
+        this.eventBus.on('actors:updated', async () => {
+            await this.refreshStories();
+        });
     }
 
     async selectStory(storyId) {
@@ -109,8 +155,8 @@ class SDAApp {
         this.currentStory = story;
 
         // Update list selection
-        this.listView.currentStoryId = storyId;
-        this.listView.updateSelection();
+            this.listView.currentStoryId = storyId;
+            this.listView.updateSelection();
 
         // Render story details
         await this.mainPanel.render(story);
@@ -160,6 +206,32 @@ class SDAApp {
 
         if (statsNews) statsNews.textContent = totalNews;
         if (statsActors) statsActors.textContent = uniqueActors.size;
+    }
+
+    async refreshStories() {
+        try {
+            const prevStoryId = this.currentStory?.id;
+            const prevNewsId = this.currentNews?.id;
+            const response = await fetch(`${API_BASE}/stories`);
+            this.stories = await response.json();
+
+            if (this.viewMode === 'list') {
+                this.listView.render(this.stories);
+            } else {
+                this.graphView.render(this.stories);
+            }
+
+            if (prevStoryId) {
+                await this.selectStory(prevStoryId);
+                if (prevNewsId) {
+                    await this.selectNews(prevNewsId);
+                }
+            }
+
+            this.updateStats();
+        } catch (error) {
+            console.error('Failed to refresh stories:', error);
+        }
     }
 
     // Panel minimization methods

@@ -1,0 +1,1 @@
+{"text": "```json\n[\n  {\n    \"name\": \"Microsoft\",\n    \"type\": \"organization\",\n    \"confidence\": 0.98\n  },\n  {\n    \"name\": \"Google\",\n    \"type\": \"organization\",\n    \"confidence\": 0.98\n  },\n  {\n    \"name\": \"Meta\",\n    \"type\": \"organization\",\n    \"confidence\": 0.98\n  }\n]\n```"}

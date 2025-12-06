@@ -5,7 +5,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Literal
 from datetime import datetime
 
 from backend.models.entities import (
@@ -16,8 +16,11 @@ from backend.services.clustering_service import ClusteringService
 from backend.services.ner_service import NERService
 from backend.services.event_extraction_service import EventExtractionService
 from backend.services.embedding_service import EmbeddingService
+from backend.services.llm_service import LLMService
 from backend.api import graph_routes
 
+from pydantic import BaseModel
+from pydantic import Field
 
 # Initialize services
 graph_manager = GraphManager()
@@ -29,6 +32,8 @@ clustering_service = ClusteringService(graph_manager)
 # Load data on startup
 import json
 import os
+from dotenv import load_dotenv
+load_dotenv()
 
 def load_data():
     """Load mock data from JSON files"""
@@ -141,6 +146,104 @@ app.add_middleware(
 
 # Include graph router
 app.include_router(graph_routes.router)
+
+class LLMRequest(BaseModel):
+    task: Literal["summary", "bullets", "domains", "events"]
+    title: Optional[str] = ""
+    text: str
+    model: Optional[str] = None
+    temperature: Optional[float] = None
+    top_p: Optional[float] = None
+    top_k: Optional[int] = None
+    max_tokens: Optional[int] = None
+
+class LLMActorsRequest(BaseModel):
+    news_id: str = Field(..., description="News ID to enrich")
+    model: Optional[str] = None
+    temperature: Optional[float] = None
+    top_p: Optional[float] = None
+    top_k: Optional[int] = None
+    max_tokens: Optional[int] = None
+
+# --- LLM ---
+
+@app.post("/api/llm/generate")
+async def llm_generate(payload: LLMRequest):
+    """
+    Generate content via Gemini (with cache), or mock if no key.
+    """
+    svc = LLMService(
+        api_key=os.getenv("GEMINI_API_KEY"),
+        model_name=payload.model,
+        temperature=payload.temperature,
+        top_p=payload.top_p,
+        top_k=payload.top_k,
+        max_tokens=payload.max_tokens
+    )
+
+    if payload.task == "summary":
+        result = svc.summarize(payload.title or "", payload.text)
+        return {"result": result}
+    if payload.task == "bullets":
+        result = svc.make_bullets(payload.title or "", payload.text)
+        return {"result": result}
+    if payload.task == "domains":
+        result = svc.extract_domains(payload.text)
+        return {"result": result}
+    if payload.task == "events":
+        result = svc.extract_events(payload.text)
+        return {"result": result}
+
+    raise HTTPException(status_code=400, detail="Unsupported task")
+
+
+@app.post("/api/news/{news_id}/actors/refresh")
+async def refresh_news_actors(news_id: str, payload: LLMActorsRequest):
+    """
+    Enrich news with actors via LLM and update graph (with cache).
+    """
+    news = graph_manager.news.get(news_id)
+    if not news:
+        raise HTTPException(status_code=404, detail="News not found")
+
+    svc = LLMService(
+        api_key=os.getenv("GEMINI_API_KEY"),
+        model_name=payload.model,
+        temperature=payload.temperature,
+        top_p=payload.top_p,
+        top_k=payload.top_k,
+        max_tokens=payload.max_tokens,
+    )
+
+    text = f"{news.title}\n{news.summary or ''}\n{news.full_text or ''}"
+    try:
+        actors = svc.extract_actors(text)
+        raw = getattr(svc, "last_raw", None)
+    except Exception as e:
+        import traceback
+        detail = f"{e}\n{traceback.format_exc()}"
+        print(f"[LLM actors error] news_id={news_id} detail={detail}")
+        raise HTTPException(status_code=500, detail=detail)
+
+    # Update graph: add/merge actors and mentions
+    updated_ids = []
+    for actor_data in actors:
+        name = actor_data.get("name")
+        if not name:
+            continue
+        actor_id = graph_manager.ensure_actor(name=name, actor_type=actor_data.get("type"), confidence=actor_data.get("confidence"))
+        graph_manager.add_mention(news_id=news.id, actor_id=actor_id, confidence=actor_data.get("confidence", 0.5))
+        updated_ids.append(actor_id)
+
+    # Keep only actor_* ids, replace old entries
+    unique_ids = list({aid for aid in updated_ids if isinstance(aid, str) and aid.startswith("actor_")})
+    news.mentioned_actors = unique_ids
+    graph_manager.news[news.id].mentioned_actors = unique_ids
+    # update story top actors
+    if news.story_id:
+        graph_manager.update_story_top_actors(news.story_id)
+
+    return {"actors": actors, "actor_ids": unique_ids, "raw": raw}
 
 
 # --- Health Check ---

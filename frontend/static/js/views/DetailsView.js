@@ -1,6 +1,8 @@
 /**
  * DetailsView - Renders detailed information for selected news or actor in the right panel
  */
+import { Storage } from '../ui/storage.js';
+
 export class DetailsView {
     constructor(containerId, eventBus, apiBase) {
         this.container = document.querySelector(containerId);
@@ -14,7 +16,7 @@ export class DetailsView {
      * Render news detail
      * @param {Object} news - News object
      */
-    async renderNews(news) {
+    async renderNews(news, actorsOverride = null, actorIdsOverride = null) {
         this.currentNews = news;
         this.currentActor = null;
 
@@ -23,11 +25,23 @@ export class DetailsView {
         try {
             // Fetch actors mentioned in this news
             let actorsHtml = '';
-            if (news.mentioned_actors && news.mentioned_actors.length > 0) {
-                const actorsList = [];
-                for (const actorId of news.mentioned_actors.slice(0, 10)) {
+            const ids = actorIdsOverride
+                ? actorIdsOverride
+                : (news.mentioned_actors || []).filter(id => typeof id === 'string' && id.startsWith('actor_'));
+            const actorsList = [];
+            if (Array.isArray(actorsOverride) && actorsOverride.length > 0) {
+                for (const a of actorsOverride) {
+                    actorsList.push(`
+                        <div class="actor-chip">
+                            ${escapeHtml(a.name || '')}
+                        </div>
+                    `);
+                }
+            } else if (ids.length > 0) {
+                for (const actorId of ids.slice(0, 10)) {
                     try {
                         const response = await fetch(`${this.apiBase}/actors/${actorId}`);
+                        if (!response.ok) throw new Error(`HTTP ${response.status}`);
                         const actor = await response.json();
                         actorsList.push(`
                             <div class="actor-chip" data-actor-id="${actor.id}">
@@ -35,15 +49,21 @@ export class DetailsView {
                             </div>
                         `);
                     } catch (error) {
-                        console.warn(`Failed to load actor ${actorId}`);
+                        console.warn(`Failed to load actor ${actorId}`, error);
                     }
                 }
-                actorsHtml = actorsList.join('');
             }
+            actorsHtml = actorsList.join('');
 
             this.container.innerHTML = `
                 <div class="news-detail">
                     <h3 style="font-size: 18px; color: #fff; margin: 15px 0;">${escapeHtml(news.title)}</h3>
+
+                    <div class="llm-status-line">
+                        <span class="llm-label">LLM actors:</span>
+                        <span class="llm-status" id="llmActorsStatus"></span>
+                        <button class="llm-btn" id="llmActorsRefresh">Refresh</button>
+                    </div>
 
                     <div class="detail-section">
                         <h3>Source</h3>
@@ -67,14 +87,12 @@ export class DetailsView {
                         </div>
                     ` : ''}
 
-                    ${news.mentioned_actors && news.mentioned_actors.length > 0 ? `
-                        <div class="detail-section">
-                            <h3>Mentioned Actors</h3>
-                            <div class="actors-grid">
-                                ${actorsHtml}
-                            </div>
+                    <div class="detail-section">
+                        <h3>Mentioned Actors</h3>
+                        <div class="actors-grid">
+                            ${actorsHtml || '<span class="alias-tag">No actors</span>'}
                         </div>
-                    ` : ''}
+                    </div>
 
                     ${news.domains && news.domains.length > 0 ? `
                         <div class="detail-section">
@@ -88,6 +106,7 @@ export class DetailsView {
             `;
 
             this.setupEventListeners();
+            this.setupActorsRefresh(news.id);
         } catch (error) {
             console.error('Error rendering news detail:', error);
             this.container.innerHTML = '<div class="error">Failed to load news details</div>';
@@ -177,6 +196,71 @@ export class DetailsView {
                 const newsId = item.dataset.newsId;
                 this.eventBus.emit('news:selected', newsId);
             });
+        });
+    }
+
+    setupActorsRefresh(newsId) {
+        const btn = this.container.querySelector('#llmActorsRefresh');
+        const statusEl = this.container.querySelector('#llmActorsStatus');
+        // preserve reference to current news for update
+        const currentNews = this.currentNews;
+        if (!btn) return;
+
+        btn.addEventListener('click', async () => {
+            try {
+                if (statusEl) statusEl.textContent = 'Loading...';
+                const settings = Storage.load('llmSettings', null) || {};
+                const payload = {
+                    news_id: newsId,
+                    model: settings.model,
+                    temperature: settings.temperature,
+                    top_p: settings.top_p,
+                    top_k: settings.top_k,
+                    max_tokens: settings.max_tokens
+                };
+                const resp = await fetch(`/api/news/${newsId}/actors/refresh`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!resp.ok) {
+                    const txt = await resp.text();
+                    window.lastLLMDebug = `HTTP ${resp.status}: ${txt}`;
+                    throw new Error(`HTTP ${resp.status}`);
+                }
+                const data = await resp.json();
+                console.log('LLM actors response', data);
+                const debugObj = {
+                    actors: data.actors,
+                    actor_ids: data.actor_ids,
+                    raw: data.raw
+                };
+                window.lastLLMDebug = JSON.stringify(debugObj, null, 2);
+
+                // render actors directly from response
+                const actorsList = Array.isArray(data.actors) ? data.actors : [];
+                // re-render with overrides
+                await this.renderNews({
+                    ...currentNews,
+                    mentioned_actors: data.actor_ids || currentNews?.mentioned_actors || []
+                }, actorsList, data.actor_ids);
+
+                // notify app to refresh stories/graph aggregates
+                this.eventBus.emit('actors:updated');
+
+                // re-fetch news to sync with backend, but ensure mentioned_actors are kept
+                const newsResp = await fetch(`/api/news/${newsId}`);
+                const updated = await newsResp.json();
+                if (data.actor_ids && Array.isArray(data.actor_ids)) {
+                    updated.mentioned_actors = data.actor_ids;
+                }
+                await this.renderNews(updated, actorsList, data.actor_ids);
+                if (statusEl) statusEl.textContent = 'Done';
+            } catch (e) {
+                console.error('LLM actors refresh error', e);
+                window.lastLLMDebug = String(e);
+                if (statusEl) statusEl.textContent = 'Error';
+            }
         });
     }
 
