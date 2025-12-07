@@ -114,36 +114,132 @@ class LLMService:
             return "organization"
 
         prompt = (
-            "Extract named entities (actors) from the text. "
-            "Return JSON array; each item: {\"name\": string, \"type\": \"person|organization|location|other\", \"confidence\": number 0-1}. "
-            "Deduplicate, keep top 8 most relevant, concise names.\n"
+            "Extract ALL named entities (actors) from the text. Focus on:\n"
+            "- Persons (leaders, officials, individuals): use full names when possible (e.g., 'Vladimir Putin' not just 'Putin')\n"
+            "- Companies (e.g., 'Tesla', 'Microsoft', 'OpenAI')\n"
+            "- Countries (e.g., 'United States', 'Russia', 'China' - use full names, not just 'US')\n"
+            "- Organizations (e.g., 'NATO', 'European Union', 'United Nations')\n"
+            "- Also extract indirect mentions: if text says 'US' or 'America', extract 'United States'; "
+            "if text says 'EU', extract 'European Union'; if text says 'Putin' or 'President Putin', extract 'Vladimir Putin'\n\n"
+            "Return a JSON array. Each item: {\"name\": string, \"type\": \"person|company|country|organization|government\", \"confidence\": number 0-1}\n"
+            "- Use canonical/full names when possible (prefer 'United States' over 'US', 'Vladimir Putin' over 'Putin')\n"
+            "- Include both canonical and alias mentions if they appear in text\n"
+            "- Deduplicate similar entities (merge 'US' and 'United States' as one)\n"
+            "- Keep top 8-10 most relevant actors\n"
+            "- confidence: 0.9+ for explicit mentions, 0.7-0.8 for indirect/implied mentions\n\n"
+            "Example:\n"
+            "Text: 'Putin criticized NATO and the US'\n"
+            "Output: [{\"name\": \"Vladimir Putin\", \"type\": \"person\", \"confidence\": 0.95}, "
+            "{\"name\": \"NATO\", \"type\": \"organization\", \"confidence\": 0.95}, "
+            "{\"name\": \"United States\", \"type\": \"country\", \"confidence\": 0.9}]\n\n"
             f"Text:\n{text}"
         )
         raw = self._run(prompt)
         self.last_raw = raw
+        
+        # Проверка на пустой ответ
+        if not raw or raw.strip() == "[empty response]" or len(raw.strip()) < 10:
+            # Повторная попытка с упрощенным промптом
+            simple_prompt = (
+                "Extract named entities from the text. Return JSON array: "
+                "[{\"name\": string, \"type\": \"person|company|country|organization\", \"confidence\": 0.9}]. "
+                "Extract persons, companies, countries, organizations mentioned in the text.\n"
+                f"Text:\n{text}"
+            )
+            raw = self._run(simple_prompt, **{"temperature": 0.2})  # Более детерминированный режим
+            self.last_raw = raw
+        
         data = self._parse_json_array(raw)
         if not isinstance(data, list):
             data = []
 
         normalized = []
+        seen_names = set()  # Для дедупликации
+        
         for item in data:
             if not isinstance(item, dict):
                 continue
             name = item.get("name")
             if not name:
                 continue
+            
+            name = str(name).strip()
+            name_lower = name.lower()
+            
+            # Дедупликация (пропускаем если уже видели похожее имя)
+            if name_lower in seen_names:
+                continue
+            
+            # Нормализация: приводим к каноническим формам
+            normalized_name = self._normalize_actor_name(name)
+            
             ent_type = _map_type(item.get("type"))
+            
+            # Улучшенное определение типа на основе имени
+            if ent_type == "organization" and self._looks_like_country(normalized_name):
+                ent_type = "country"
+            elif ent_type == "organization" and self._looks_like_company(normalized_name):
+                ent_type = "company"
+            
             conf = item.get("confidence")
             try:
                 conf_val = float(conf) if conf is not None else 0.5
             except Exception:
                 conf_val = 0.5
+            
             normalized.append({
-                "name": str(name).strip(),
+                "name": normalized_name,
                 "type": ent_type,
                 "confidence": conf_val
             })
+            seen_names.add(name_lower)
+            seen_names.add(normalized_name.lower())
+        
         return normalized
+    
+    def _normalize_actor_name(self, name: str) -> str:
+        """Нормализовать имя актора к канонической форме"""
+        name = name.strip()
+        name_lower = name.lower()
+        
+        # Страны - приводим к полным названиям
+        country_map = {
+            "us": "United States",
+            "usa": "United States",
+            "u.s.": "United States",
+            "u.s.a.": "United States",
+            "america": "United States",
+            "uk": "United Kingdom",
+            "u.k.": "United Kingdom",
+            "eu": "European Union",
+            "nato": "NATO",
+            "who": "World Health Organization",
+            "un": "United Nations",
+            "оон": "United Nations",
+            "россия": "Russia",
+            "рф": "Russia",
+            "китай": "China",
+            "prc": "China",
+            "украина": "Ukraine"
+        }
+        
+        if name_lower in country_map:
+            return country_map[name_lower]
+        
+        # Сохраняем оригинальное имя, но очищаем
+        return name
+    
+    def _looks_like_country(self, name: str) -> bool:
+        """Эвристика: похоже ли имя на страну"""
+        country_indicators = ["united states", "russia", "china", "ukraine", "france", "germany", 
+                            "japan", "korea", "india", "brazil", "mexico", "canada", "australia"]
+        return any(indicator in name.lower() for indicator in country_indicators)
+    
+    def _looks_like_company(self, name: str) -> bool:
+        """Эвристика: похоже ли имя на компанию"""
+        company_indicators = ["inc", "corp", "ltd", "llc", "company", "technologies", "systems"]
+        name_lower = name.lower()
+        return any(indicator in name_lower for indicator in company_indicators)
 
     # --- Internal helpers ---
     def _hash(self, prompt: str, model: str, params: Dict) -> str:
@@ -214,7 +310,20 @@ class LLMService:
                 generation_config=params,
                 request_options={"timeout": self.timeout}
             )
-            text = getattr(response, "text", None) or ""
+            text = ""
+            try:
+                text = getattr(response, "text", None) or ""
+            except Exception:
+                text = ""
+            if not text:
+                # fallback: concatenate parts from first candidate
+                candidates = getattr(response, "candidates", None) or []
+                if candidates:
+                    parts = getattr(candidates[0], "content", None)
+                    if parts and getattr(parts, "parts", None):
+                        text = "\n".join([getattr(p, "text", "") or "" for p in parts.parts if getattr(p, "text", "")])
+            if not text:
+                text = "[empty response]"
             self._cache_set(cache_key, text)
             self.last_raw = text
             return text

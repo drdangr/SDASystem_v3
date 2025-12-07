@@ -5,7 +5,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-from typing import List, Optional, Dict, Literal
+from typing import List, Optional, Dict, Literal, Any
 from datetime import datetime
 
 from backend.models.entities import (
@@ -14,9 +14,12 @@ from backend.models.entities import (
 from backend.services.graph_manager import GraphManager
 from backend.services.clustering_service import ClusteringService
 from backend.services.ner_service import NERService
+from backend.services.ner_spacy_service import HybridNERService
+from backend.services.actors_extraction_service import ActorsExtractionService
 from backend.services.event_extraction_service import EventExtractionService
 from backend.services.embedding_service import EmbeddingService
 from backend.services.llm_service import LLMService
+from backend.services.llm_registry import ServiceRegistry
 from backend.api import graph_routes
 
 from pydantic import BaseModel
@@ -34,6 +37,15 @@ import json
 import os
 from dotenv import load_dotenv
 load_dotenv()
+# LLM registry (auto reload by mtime)
+llm_registry = ServiceRegistry(
+    config_path=os.getenv("LLM_SERVICES_CONFIG", "config/llm_services.json"),
+    auto_reload=True
+)
+# Базовый LLM для акторов
+default_llm_service = LLMService(api_key=os.getenv("GEMINI_API_KEY"))
+# Сервис извлечения акторов (инициализируется после загрузки данных)
+actors_extraction_service: Optional[ActorsExtractionService] = None
 
 def load_data():
     """Load mock data from JSON files"""
@@ -125,6 +137,25 @@ def load_data():
 # Execute loading
 try:
     load_data()
+    # Создать сервис извлечения акторов после загрузки данных
+    # Используем автоматическое определение языка, если SPACY_MODEL не указан явно
+    spacy_model_env = os.getenv("SPACY_MODEL")
+    # Если SPACY_MODEL не установлен или равен дефолтному - используем автоопределение
+    spacy_model = None if (not spacy_model_env or spacy_model_env == "en_core_web_sm") else spacy_model_env
+    
+    actors_extraction_service = ActorsExtractionService(
+        graph_manager,
+        default_llm_service,
+        data_dir="data",
+        use_spacy=True,
+        spacy_model=spacy_model,  # None = автоматическое определение языка
+    )
+    # Автоинициализация, если акторов нет
+    if len(graph_manager.actors) == 0:
+        try:
+            actors_extraction_service.start_initialization(low_conf_threshold=0.75)
+        except Exception as auto_init_error:
+            print(f"Auto initialization failed: {auto_init_error}")
 except Exception as e:
     print(f"Error loading data: {e}")
 
@@ -156,6 +187,8 @@ class LLMRequest(BaseModel):
     top_p: Optional[float] = None
     top_k: Optional[int] = None
     max_tokens: Optional[int] = None
+    profile_id: Optional[str] = Field(None, description="LLM profile id (overrides defaults)")
+    service_id: Optional[str] = Field(None, description="Optional service to route call through registry")
 
 class LLMActorsRequest(BaseModel):
     news_id: str = Field(..., description="News ID to enrich")
@@ -164,34 +197,137 @@ class LLMActorsRequest(BaseModel):
     top_p: Optional[float] = None
     top_k: Optional[int] = None
     max_tokens: Optional[int] = None
+    profile_id: Optional[str] = Field(None, description="LLM profile id for actors enrichment")
+
+
+class LLMServiceUpdateRequest(BaseModel):
+    profile_id: Optional[str] = Field(None, description="New default profile id")
+    params: Optional[Dict[str, Any]] = Field(None, description="Override params for the service")
+
+
+class LLMInvokeRequest(BaseModel):
+    profile_id: Optional[str] = None
+    payload: Dict[str, Any]
 
 # --- LLM ---
+
+@app.get("/api/llm/services")
+async def llm_services():
+    """
+    List registered LLM services and profiles (for UI).
+    """
+    services = llm_registry.list_services()
+    profiles = llm_registry.list_profiles()
+    return {
+        "services": [
+            {
+                "id": s.id,
+                "label": s.label,
+                "description": s.description,
+                "default_profile_id": s.default_profile_id,
+                "params": s.params,
+            }
+            for s in services
+        ],
+        "profiles": [p.__dict__ for p in profiles],
+    }
+
+
+@app.put("/api/llm/services/{service_id}")
+async def llm_service_update(service_id: str, req: LLMServiceUpdateRequest):
+    """
+    Update service default profile/params (persisted to JSON).
+    """
+    try:
+        updated = llm_registry.update_service(
+            service_id=service_id,
+            profile_id=req.profile_id,
+            params=req.params,
+        )
+        return {
+            "id": updated.id,
+            "label": updated.label,
+            "description": updated.description,
+            "default_profile_id": updated.default_profile_id,
+            "params": updated.params,
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.post("/api/llm/services/{service_id}/invoke")
+async def llm_service_invoke(service_id: str, req: LLMInvokeRequest):
+    """
+    Dev-only: invoke a registered service with given payload.
+    """
+    try:
+        service_cfg = llm_registry.get_service(service_id)
+        if not service_cfg:
+            raise HTTPException(status_code=404, detail="Service not found")
+        profile_id = req.profile_id or service_cfg.default_profile_id
+        llm = llm_registry.build_llm(profile_id, use_mock=True)
+        service = llm_registry.instantiate_service(service_id)
+        result = service.run(llm, req.payload)
+        return {"service_id": service_id, "profile_id": profile_id, "result": result}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @app.post("/api/llm/generate")
 async def llm_generate(payload: LLMRequest):
     """
     Generate content via Gemini (with cache), or mock if no key.
+    Uses registry profiles; backward-compatible with direct params.
     """
-    svc = LLMService(
-        api_key=os.getenv("GEMINI_API_KEY"),
-        model_name=payload.model,
-        temperature=payload.temperature,
-        top_p=payload.top_p,
-        top_k=payload.top_k,
-        max_tokens=payload.max_tokens
-    )
+    # resolve profile (if provided) else fallback to first profile or env defaults
+    profile_id = payload.profile_id
+    llm = None
+    if profile_id:
+        llm = llm_registry.build_llm(profile_id, use_mock=os.getenv("LLM_FORCE_MOCK") == "1")
+    else:
+        profiles = llm_registry.list_profiles()
+        if profiles:
+            llm = llm_registry.build_llm(
+                profiles[0].id,
+                use_mock=(os.getenv("LLM_FORCE_MOCK") == "1" or not os.getenv("GEMINI_API_KEY"))
+            )
+
+    if not llm:
+        # fallback to direct construction
+        llm = LLMService(
+            api_key=os.getenv("GEMINI_API_KEY"),
+            model_name=payload.model,
+            temperature=payload.temperature,
+            top_p=payload.top_p,
+            top_k=payload.top_k,
+            max_tokens=payload.max_tokens
+        )
+
+    # allow overrides
+    if payload.model:
+        llm.model_name = payload.model
+    if payload.temperature is not None:
+        llm.params["temperature"] = payload.temperature
+    if payload.top_p is not None:
+        llm.params["top_p"] = payload.top_p
+    if payload.top_k is not None:
+        llm.params["top_k"] = payload.top_k
+    if payload.max_tokens is not None:
+        llm.params["max_output_tokens"] = payload.max_tokens
 
     if payload.task == "summary":
-        result = svc.summarize(payload.title or "", payload.text)
+        result = llm.summarize(payload.title or "", payload.text)
         return {"result": result}
     if payload.task == "bullets":
-        result = svc.make_bullets(payload.title or "", payload.text)
+        result = llm.make_bullets(payload.title or "", payload.text)
         return {"result": result}
     if payload.task == "domains":
-        result = svc.extract_domains(payload.text)
+        result = llm.extract_domains(payload.text)
         return {"result": result}
     if payload.task == "events":
-        result = svc.extract_events(payload.text)
+        result = llm.extract_events(payload.text)
         return {"result": result}
 
     raise HTTPException(status_code=400, detail="Unsupported task")
@@ -200,29 +336,62 @@ async def llm_generate(payload: LLMRequest):
 @app.post("/api/news/{news_id}/actors/refresh")
 async def refresh_news_actors(news_id: str, payload: LLMActorsRequest):
     """
-    Enrich news with actors via LLM and update graph (with cache).
+    Enrich news with actors via Hybrid NER (spaCy + LLM) or LLM only.
+    Uses hybrid approach by default if available, falls back to LLM only.
     """
     news = graph_manager.news.get(news_id)
     if not news:
         raise HTTPException(status_code=404, detail="News not found")
 
-    svc = LLMService(
-        api_key=os.getenv("GEMINI_API_KEY"),
-        model_name=payload.model,
-        temperature=payload.temperature,
-        top_p=payload.top_p,
-        top_k=payload.top_k,
-        max_tokens=payload.max_tokens,
-    )
+    # Build LLM from registry profile if provided
+    llm = None
+    profile_id = payload.profile_id
+    if profile_id:
+        llm = llm_registry.build_llm(profile_id, use_mock=os.getenv("LLM_FORCE_MOCK") == "1")
+    if not llm:
+        llm = LLMService(
+            api_key=os.getenv("GEMINI_API_KEY"),
+            model_name=payload.model,
+            temperature=payload.temperature,
+            top_p=payload.top_p,
+            top_k=payload.top_k,
+            max_tokens=payload.max_tokens,
+        )
 
     text = f"{news.title}\n{news.summary or ''}\n{news.full_text or ''}"
+    
+    # Использовать гибридный подход если доступен spaCy, иначе только LLM
+    use_hybrid = os.getenv("USE_HYBRID_NER", "true").lower() == "true"
+    method_used = "llm_only"
+    
     try:
-        actors = svc.extract_actors(text)
-        raw = getattr(svc, "last_raw", None)
+        if use_hybrid:
+            try:
+                # Создать гибридный сервис
+                hybrid_service = HybridNERService(llm, use_spacy=True)
+                # Загрузить акторов в gazetteer
+                actors_list = list(graph_manager.actors.values())
+                if actors_list:
+                    hybrid_service.load_gazetteer(actors_list)
+                
+                # Извлечь акторов гибридным методом
+                actors = hybrid_service.extract_actors(text, use_llm=True)
+                method_used = "hybrid_spacy_llm"
+            except Exception as hybrid_error:
+                # Fallback на LLM если гибридный не работает
+                print(f"[Hybrid NER fallback] {hybrid_error}, using LLM only")
+                actors = llm.extract_actors(text)
+                method_used = "llm_only_fallback"
+        else:
+            # Только LLM
+            actors = llm.extract_actors(text)
+            method_used = "llm_only"
+        
+        raw = getattr(llm, "last_raw", None)
     except Exception as e:
         import traceback
         detail = f"{e}\n{traceback.format_exc()}"
-        print(f"[LLM actors error] news_id={news_id} detail={detail}")
+        print(f"[Actors extraction error] news_id={news_id} method={method_used} detail={detail}")
         raise HTTPException(status_code=500, detail=detail)
 
     # Update graph: add/merge actors and mentions
@@ -243,7 +412,7 @@ async def refresh_news_actors(news_id: str, payload: LLMActorsRequest):
     if news.story_id:
         graph_manager.update_story_top_actors(news.story_id)
 
-    return {"actors": actors, "actor_ids": unique_ids, "raw": raw}
+    return {"actors": actors, "actor_ids": unique_ids, "raw": raw, "method": method_used}
 
 
 # --- Health Check ---
@@ -672,6 +841,68 @@ async def initialize_system(data: Dict):
             "stories_created": len(stories)
         }
 
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/system/init/status")
+async def get_init_status():
+    if not actors_extraction_service:
+        raise HTTPException(status_code=500, detail="ActorsExtractionService not initialized")
+    return actors_extraction_service.get_status()
+
+
+@app.post("/api/system/init/start")
+async def start_initialization(low_conf_threshold: float = 0.75):
+    if not actors_extraction_service:
+        raise HTTPException(status_code=500, detail="ActorsExtractionService not initialized")
+    actors_extraction_service.start_initialization(low_conf_threshold=low_conf_threshold)
+    return actors_extraction_service.get_status()
+
+
+# --- Actors extraction triggers ---
+
+@app.post("/api/actors/extract/all")
+async def extract_all_actors(low_conf_threshold: float = 0.75):
+    if not actors_extraction_service:
+        raise HTTPException(status_code=500, detail="ActorsExtractionService not initialized")
+    try:
+        actors_extraction_service.clear_all(clear_cache=True)
+        result = actors_extraction_service.extract_all(low_conf_threshold=low_conf_threshold)
+        status = actors_extraction_service.get_status()
+        return {"updated": len(result), "status": status}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/actors/extract/story/{story_id}")
+async def extract_story_actors(story_id: str, low_conf_threshold: float = 0.75):
+    if not actors_extraction_service:
+        raise HTTPException(status_code=500, detail="ActorsExtractionService not initialized")
+    if story_id not in graph_manager.stories:
+        raise HTTPException(status_code=404, detail="Story not found")
+    try:
+        result = actors_extraction_service.extract_for_story(story_id, low_conf_threshold=low_conf_threshold)
+        status = actors_extraction_service.get_status()
+        return {"story_id": story_id, "updated": len(result), "status": status}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/actors/extract/news/{news_id}")
+async def extract_news_actors(news_id: str, low_conf_threshold: float = 0.75):
+    if not actors_extraction_service:
+        raise HTTPException(status_code=500, detail="ActorsExtractionService not initialized")
+    if news_id not in graph_manager.news:
+        raise HTTPException(status_code=404, detail="News not found")
+    try:
+        news = graph_manager.news[news_id]
+        _, ids = actors_extraction_service.extract_for_news(news, low_conf_threshold=low_conf_threshold)
+        actors_extraction_service.load_gazetteer()
+        actors_extraction_service._save_actors()
+        actors_extraction_service._save_news()
+        status = actors_extraction_service.get_status()
+        return {"news_id": news_id, "actors": ids, "status": status}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

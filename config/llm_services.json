@@ -1,0 +1,46 @@
+{
+  "profiles": [
+    {
+      "id": "default_fast",
+      "label": "Gemini fast",
+      "provider": "gemini",
+      "model": "gemini-2.5-flash",
+      "temperature": 0.3,
+      "top_p": 0.9,
+      "top_k": 40,
+      "max_tokens": 1024,
+      "timeout": 15
+    },
+    {
+      "id": "quality",
+      "label": "Gemini quality",
+      "provider": "gemini",
+      "model": "gemini-2.5-pro",
+      "temperature": 0.4,
+      "top_p": 0.9,
+      "top_k": 40,
+      "max_tokens": 2048,
+      "timeout": 20
+    }
+  ],
+  "services": [
+    {
+      "id": "summary_bullets",
+      "label": "Summary + bullets",
+      "description": "Генерация саммари и буллетов для новости/истории одним вызовом.",
+      "impl": "backend.services.llm_tasks.summary_bullets_service:SummaryBulletsService",
+      "default_profile_id": "default_fast",
+      "params": {
+        "max_points": 4
+      }
+    },
+    {
+      "id": "actors_llm",
+      "label": "LLM actors",
+      "description": "Выделение акторов через LLM (fallback на мок).",
+      "impl": "backend.services.llm_tasks.actors_service:ActorsLLMService",
+      "default_profile_id": "default_fast"
+    }
+  ]
+}
+

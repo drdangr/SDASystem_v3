@@ -1,0 +1,352 @@
+[
+  {
+    "id": "actor_d201343d1ed5",
+    "canonical_name": "Vladimir Putin",
+    "actor_type": "person",
+    "aliases": [
+      {
+        "name": "Путин",
+        "type": "alias"
+      },
+      {
+        "name": "Putin",
+        "type": "alias"
+      },
+      {
+        "name": "President Putin",
+        "type": "alias"
+      }
+    ],
+    "created_at": "2025-11-22 00:28:49.221461",
+    "updated_at": "2025-11-22 00:28:49.221650",
+    "metadata": {}
+  },
+  {
+    "id": "actor_ed2d5daa6f6c",
+    "canonical_name": "Joe Biden",
+    "actor_type": "person",
+    "aliases": [
+      {
+        "name": "Biden",
+        "type": "alias"
+      },
+      {
+        "name": "President Biden",
+        "type": "alias"
+      },
+      {
+        "name": "Байден",
+        "type": "alias"
+      }
+    ],
+    "created_at": "2025-11-22 00:28:49.221674",
+    "updated_at": "2025-11-22 00:28:49.221675",
+    "metadata": {}
+  },
+  {
+    "id": "actor_54d41c2b65bc",
+    "canonical_name": "Xi Jinping",
+    "actor_type": "person",
+    "aliases": [
+      {
+        "name": "Xi",
+        "type": "alias"
+      },
+      {
+        "name": "Си Цзиньпин",
+        "type": "alias"
+      }
+    ],
+    "created_at": "2025-11-22 00:28:49.221684",
+    "updated_at": "2025-11-22 00:28:49.221685",
+    "metadata": {}
+  },
+  {
+    "id": "actor_fe2d942a0675",
+    "canonical_name": "Ursula von der Leyen",
+    "actor_type": "person",
+    "aliases": [
+      {
+        "name": "von der Leyen",
+        "type": "alias"
+      },
+      {
+        "name": "фон дер Ляйен",
+        "type": "alias"
+      }
+    ],
+    "created_at": "2025-11-22 00:28:49.221692",
+    "updated_at": "2025-11-22 00:28:49.221692",
+    "metadata": {}
+  },
+  {
+    "id": "actor_0894681fa4a4",
+    "canonical_name": "Volodymyr Zelensky",
+    "actor_type": "person",
+    "aliases": [
+      {
+        "name": "Zelensky",
+        "type": "alias"
+      },
+      {
+        "name": "Зеленский",
+        "type": "alias"
+      }
+    ],
+    "created_at": "2025-11-22 00:28:49.221699",
+    "updated_at": "2025-11-22 00:28:49.221699",
+    "metadata": {}
+  },
+  {
+    "id": "actor_9a0cc70ba267",
+    "canonical_name": "OpenAI",
+    "actor_type": "company",
+    "aliases": [
+      {
+        "name": "OpenAI Inc",
+        "type": "alias"
+      },
+      {
+        "name": "ChatGPT maker",
+        "type": "alias"
+      }
+    ],
+    "created_at": "2025-11-22 00:28:49.221705",
+    "updated_at": "2025-11-22 00:28:49.221705",
+    "metadata": {}
+  },
+  {
+    "id": "actor_8ca667afc7f7",
+    "canonical_name": "Google",
+    "actor_type": "company",
+    "aliases": [
+      {
+        "name": "Alphabet",
+        "type": "alias"
+      },
+      {
+        "name": "Google Inc",
+        "type": "alias"
+      }
+    ],
+    "created_at": "2025-11-22 00:28:49.221711",
+    "updated_at": "2025-11-22 00:28:49.221711",
+    "metadata": {}
+  },
+  {
+    "id": "actor_20fea056145e",
+    "canonical_name": "Microsoft",
+    "actor_type": "company",
+    "aliases": [
+      {
+        "name": "MSFT",
+        "type": "alias"
+      },
+      {
+        "name": "Microsoft Corp",
+        "type": "alias"
+      }
+    ],
+    "created_at": "2025-11-22 00:28:49.221717",
+    "updated_at": "2025-11-22 00:28:49.221718",
+    "metadata": {}
+  },
+  {
+    "id": "actor_64c3cc6d7eba",
+    "canonical_name": "Tesla",
+    "actor_type": "company",
+    "aliases": [
+      {
+        "name": "Tesla Inc",
+        "type": "alias"
+      },
+      {
+        "name": "TSLA",
+        "type": "alias"
+      }
+    ],
+    "created_at": "2025-11-22 00:28:49.221723",
+    "updated_at": "2025-11-22 00:28:49.221723",
+    "metadata": {}
+  },
+  {
+    "id": "actor_2dc49c7c08b5",
+    "canonical_name": "Meta",
+    "actor_type": "company",
+    "aliases": [
+      {
+        "name": "Facebook",
+        "type": "alias"
+      },
+      {
+        "name": "Meta Platforms",
+        "type": "alias"
+      }
+    ],
+    "created_at": "2025-11-22 00:28:49.221729",
+    "updated_at": "2025-11-22 00:28:49.221729",
+    "metadata": {}
+  },
+  {
+    "id": "actor_f7cc169b01aa",
+    "canonical_name": "United States",
+    "actor_type": "country",
+    "aliases": [
+      {
+        "name": "USA",
+        "type": "alias"
+      },
+      {
+        "name": "US",
+        "type": "alias"
+      },
+      {
+        "name": "America",
+        "type": "alias"
+      },
+      {
+        "name": "США",
+        "type": "alias"
+      }
+    ],
+    "created_at": "2025-11-22 00:28:49.221735",
+    "updated_at": "2025-11-22 00:28:49.221735",
+    "metadata": {}
+  },
+  {
+    "id": "actor_67323c41b6eb",
+    "canonical_name": "Russia",
+    "actor_type": "country",
+    "aliases": [
+      {
+        "name": "Russian Federation",
+        "type": "alias"
+      },
+      {
+        "name": "Россия",
+        "type": "alias"
+      }
+    ],
+    "created_at": "2025-11-22 00:28:49.221741",
+    "updated_at": "2025-11-22 00:28:49.221741",
+    "metadata": {}
+  },
+  {
+    "id": "actor_a352f15abdff",
+    "canonical_name": "China",
+    "actor_type": "country",
+    "aliases": [
+      {
+        "name": "PRC",
+        "type": "alias"
+      },
+      {
+        "name": "Китай",
+        "type": "alias"
+      }
+    ],
+    "created_at": "2025-11-22 00:28:49.221746",
+    "updated_at": "2025-11-22 00:28:49.221747",
+    "metadata": {}
+  },
+  {
+    "id": "actor_58a67d900502",
+    "canonical_name": "European Union",
+    "actor_type": "organization",
+    "aliases": [
+      {
+        "name": "EU",
+        "type": "alias"
+      },
+      {
+        "name": "ЕС",
+        "type": "alias"
+      }
+    ],
+    "created_at": "2025-11-22 00:28:49.221752",
+    "updated_at": "2025-11-22 00:28:49.221752",
+    "metadata": {}
+  },
+  {
+    "id": "actor_1dcb1df3d7ba",
+    "canonical_name": "Ukraine",
+    "actor_type": "country",
+    "aliases": [
+      {
+        "name": "Украина",
+        "type": "alias"
+      }
+    ],
+    "created_at": "2025-11-22 00:28:49.221758",
+    "updated_at": "2025-11-22 00:28:49.221758",
+    "metadata": {}
+  },
+  {
+    "id": "actor_dfe483753306",
+    "canonical_name": "United Nations",
+    "actor_type": "organization",
+    "aliases": [
+      {
+        "name": "UN",
+        "type": "alias"
+      },
+      {
+        "name": "ООН",
+        "type": "alias"
+      }
+    ],
+    "created_at": "2025-11-22 00:28:49.221763",
+    "updated_at": "2025-11-22 00:28:49.221764",
+    "metadata": {}
+  },
+  {
+    "id": "actor_872f3fc74846",
+    "canonical_name": "NATO",
+    "actor_type": "organization",
+    "aliases": [
+      {
+        "name": "North Atlantic Treaty Organization",
+        "type": "alias"
+      }
+    ],
+    "created_at": "2025-11-22 00:28:49.221769",
+    "updated_at": "2025-11-22 00:28:49.221769",
+    "metadata": {}
+  },
+  {
+    "id": "actor_8263d98f5b32",
+    "canonical_name": "European Commission",
+    "actor_type": "organization",
+    "aliases": [
+      {
+        "name": "EC",
+        "type": "alias"
+      },
+      {
+        "name": "Еврокомиссия",
+        "type": "alias"
+      }
+    ],
+    "created_at": "2025-11-22 00:28:49.221775",
+    "updated_at": "2025-11-22 00:28:49.221775",
+    "metadata": {}
+  },
+  {
+    "id": "actor_8fc34739d1a2",
+    "canonical_name": "World Health Organization",
+    "actor_type": "organization",
+    "aliases": [
+      {
+        "name": "WHO",
+        "type": "alias"
+      },
+      {
+        "name": "ВОЗ",
+        "type": "alias"
+      }
+    ],
+    "created_at": "2025-11-22 00:28:49.221780",
+    "updated_at": "2025-11-22 00:28:49.221780",
+    "metadata": {}
+  }
+]

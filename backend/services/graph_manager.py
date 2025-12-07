@@ -168,13 +168,7 @@ class GraphManager:
         # sort by frequency desc
         sorted_ids = [aid for aid, _ in sorted(counts.items(), key=lambda x: x[1], reverse=True)]
         top_ids = sorted_ids[:top_n]
-        # convert to names for UI compatibility
-        top_names = []
-        for aid in top_ids:
-            actor = self.actors.get(aid)
-            if actor:
-                top_names.append(actor.canonical_name)
-        story.top_actors = top_names
+        story.top_actors = top_ids
 
     def _normalize_actor_type(self, actor_type: str) -> str:
         allowed = {"person", "company", "country", "organization", "government", "structure", "event"}
@@ -203,7 +197,7 @@ class GraphManager:
 
     def get_actor_mentions_count(self, actor_id: str) -> int:
         """Count how many news mention this actor"""
-        actor_node = f"actor_{actor_id}"
+        actor_node = actor_id if actor_id.startswith("actor_") else f"actor_{actor_id}"
         if actor_node in self.mentions_graph:
             return len([n for n in self.mentions_graph.neighbors(actor_node)])
         return 0
@@ -221,14 +215,19 @@ class GraphManager:
 
     def get_actor_news(self, actor_id: str) -> List[str]:
         """Get all news mentioning this actor"""
-        actor_node = f"actor_{actor_id}"
-        if actor_node in self.mentions_graph:
-            return [
-                n.replace("news_", "")
-                for n in self.mentions_graph.neighbors(actor_node)
-                if n.startswith("news_")
-            ]
-        return []
+        # Normalize actor_id (ensure it has actor_ prefix)
+        normalized_actor_id = actor_id if actor_id.startswith("actor_") else f"actor_{actor_id}"
+        
+        # Search through all edges in mentions_graph to find matches by actor_id in edge data
+        news_ids = []
+        for u, v, data in self.mentions_graph.edges(data=True):
+            # Check if edge data contains our actor_id
+            if data.get('actor_id') == normalized_actor_id or data.get('actor_id') == actor_id:
+                news_id = data.get('news_id')
+                if news_id and news_id not in news_ids:
+                    news_ids.append(news_id)
+        
+        return news_ids
 
     # --- Stories ---
 

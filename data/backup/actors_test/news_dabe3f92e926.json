@@ -1,0 +1,82 @@
+{
+  "news_id": "news_dabe3f92e926",
+  "news_title": "UN Calls for Peace Negotiations",
+  "news_text": "UN Calls for Peace Negotiations\nUnited Nations urges diplomatic solution to ongoing Ukraine conflict.\nThe United Nations called for immediate peace negotiations to resolve the Ukraine conflict. The organization emphasized the humanitarian impact and urged all parties to return to the negotiating table.",
+  "expected_actors": [
+    {
+      "id": "actor_dfe483753306",
+      "canonical_name": "United Nations",
+      "actor_type": "organization",
+      "aliases": [
+        "UN",
+        "ООН"
+      ],
+      "all_mentions": [
+        "UN",
+        "un",
+        "United Nations",
+        "united nations",
+        "ООН",
+        "оон"
+      ],
+      "normalized_names": [
+        "un",
+        "un",
+        "united nations",
+        "united nations",
+        "оон",
+        "оон"
+      ]
+    },
+    {
+      "id": "actor_1dcb1df3d7ba",
+      "canonical_name": "Ukraine",
+      "actor_type": "country",
+      "aliases": [
+        "Украина"
+      ],
+      "all_mentions": [
+        "украина",
+        "ukraine",
+        "Украина",
+        "Ukraine"
+      ],
+      "normalized_names": [
+        "украина",
+        "ukraine",
+        "украина",
+        "ukraine"
+      ]
+    },
+    {
+      "id": "actor_67323c41b6eb",
+      "canonical_name": "Russia",
+      "actor_type": "country",
+      "aliases": [
+        "Russian Federation",
+        "Россия"
+      ],
+      "all_mentions": [
+        "россия",
+        "russian federation",
+        "Россия",
+        "Russian Federation",
+        "russia",
+        "Russia"
+      ],
+      "normalized_names": [
+        "россия",
+        "russian federation",
+        "россия",
+        "russian federation",
+        "russia",
+        "russia"
+      ]
+    }
+  ],
+  "original_mentioned_actors": [
+    "actor_dfe483753306",
+    "actor_1dcb1df3d7ba",
+    "actor_67323c41b6eb"
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "news_id": "news_f663e678e8a1",
+  "news_title": "Microsoft Announces Major AI Investment",
+  "news_text": "Microsoft Announces Major AI Investment\nMicrosoft reveals multi-billion dollar investment in AI infrastructure and development.\nMicrosoft announced a major investment in AI infrastructure, including expanded partnerships with OpenAI. The company plans to integrate advanced AI capabilities across all product lines.",
+  "expected_actors": [
+    {
+      "id": "actor_20fea056145e",
+      "canonical_name": "Microsoft",
+      "actor_type": "company",
+      "aliases": [
+        "MSFT",
+        "Microsoft Corp"
+      ],
+      "all_mentions": [
+        "msft",
+        "Microsoft Corp",
+        "microsoft",
+        "microsoft corp",
+        "Microsoft",
+        "MSFT"
+      ],
+      "normalized_names": [
+        "msft",
+        "microsoft corp",
+        "microsoft",
+        "microsoft corp",
+        "microsoft",
+        "msft"
+      ]
+    },
+    {
+      "id": "actor_9a0cc70ba267",
+      "canonical_name": "OpenAI",
+      "actor_type": "company",
+      "aliases": [
+        "OpenAI Inc",
+        "ChatGPT maker"
+      ],
+      "all_mentions": [
+        "ChatGPT maker",
+        "OpenAI",
+        "openai inc",
+        "chatgpt maker",
+        "openai",
+        "OpenAI Inc"
+      ],
+      "normalized_names": [
+        "chatgpt maker",
+        "openai",
+        "openai inc",
+        "chatgpt maker",
+        "openai",
+        "openai inc"
+      ]
+    }
+  ],
+  "original_mentioned_actors": [
+    "actor_20fea056145e",
+    "actor_9a0cc70ba267"
+  ]
+}

@@ -1,0 +1,180 @@
+{
+  "news_id": "news_df494fe14ead",
+  "news_title": "Global Climate Summit Opens with Ambitious Goals",
+  "news_text": "Global Climate Summit Opens with Ambitious Goals\nWorld leaders gather to discuss climate action and emission reduction targets.\nLeaders from around the world gathered today for the global climate summit. Joe Biden, Xi Jinping, and Ursula von der Leyen are among the attendees. The summit aims to establish new emission reduction commitments.",
+  "expected_actors": [
+    {
+      "id": "actor_f7cc169b01aa",
+      "canonical_name": "United States",
+      "actor_type": "country",
+      "aliases": [
+        "USA",
+        "US",
+        "America",
+        "США"
+      ],
+      "all_mentions": [
+        "America",
+        "united states",
+        "USA",
+        "United States",
+        "us",
+        "america",
+        "US",
+        "США",
+        "сша",
+        "usa"
+      ],
+      "normalized_names": [
+        "america",
+        "united states",
+        "usa",
+        "united states",
+        "us",
+        "america",
+        "us",
+        "сша",
+        "сша",
+        "usa"
+      ]
+    },
+    {
+      "id": "actor_ed2d5daa6f6c",
+      "canonical_name": "Joe Biden",
+      "actor_type": "person",
+      "aliases": [
+        "Biden",
+        "President Biden",
+        "Байден"
+      ],
+      "all_mentions": [
+        "байден",
+        "Байден",
+        "president biden",
+        "Joe Biden",
+        "Biden",
+        "biden",
+        "President Biden",
+        "joe biden"
+      ],
+      "normalized_names": [
+        "байден",
+        "байден",
+        "president biden",
+        "joe biden",
+        "biden",
+        "biden",
+        "president biden",
+        "joe biden"
+      ]
+    },
+    {
+      "id": "actor_a352f15abdff",
+      "canonical_name": "China",
+      "actor_type": "country",
+      "aliases": [
+        "PRC",
+        "Китай"
+      ],
+      "all_mentions": [
+        "China",
+        "PRC",
+        "китай",
+        "Китай",
+        "china",
+        "prc"
+      ],
+      "normalized_names": [
+        "china",
+        "prc",
+        "китай",
+        "китай",
+        "china",
+        "prc"
+      ]
+    },
+    {
+      "id": "actor_54d41c2b65bc",
+      "canonical_name": "Xi Jinping",
+      "actor_type": "person",
+      "aliases": [
+        "Xi",
+        "Си Цзиньпин"
+      ],
+      "all_mentions": [
+        "си цзиньпин",
+        "Xi Jinping",
+        "xi",
+        "Си Цзиньпин",
+        "Xi",
+        "xi jinping"
+      ],
+      "normalized_names": [
+        "си цзиньпин",
+        "xi jinping",
+        "xi",
+        "си цзиньпин",
+        "xi",
+        "xi jinping"
+      ]
+    },
+    {
+      "id": "actor_58a67d900502",
+      "canonical_name": "European Union",
+      "actor_type": "organization",
+      "aliases": [
+        "EU",
+        "ЕС"
+      ],
+      "all_mentions": [
+        "european union",
+        "ес",
+        "EU",
+        "eu",
+        "ЕС",
+        "European Union"
+      ],
+      "normalized_names": [
+        "european union",
+        "ес",
+        "eu",
+        "eu",
+        "ес",
+        "european union"
+      ]
+    },
+    {
+      "id": "actor_fe2d942a0675",
+      "canonical_name": "Ursula von der Leyen",
+      "actor_type": "person",
+      "aliases": [
+        "von der Leyen",
+        "фон дер Ляйен"
+      ],
+      "all_mentions": [
+        "фон дер ляйен",
+        "ursula von der leyen",
+        "фон дер Ляйен",
+        "von der Leyen",
+        "Ursula von der Leyen",
+        "von der leyen"
+      ],
+      "normalized_names": [
+        "фон дер ляйен",
+        "ursula von der leyen",
+        "фон дер ляйен",
+        "von der leyen",
+        "ursula von der leyen",
+        "von der leyen"
+      ]
+    }
+  ],
+  "original_mentioned_actors": [
+    "actor_f7cc169b01aa",
+    "actor_ed2d5daa6f6c",
+    "actor_a352f15abdff",
+    "actor_54d41c2b65bc",
+    "actor_58a67d900502",
+    "actor_fe2d942a0675"
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "news_id": "news_tesla_ai_002",
+  "news_title": "Tesla Advances Self-Driving Technology with AI Breakthrough",
+  "news_text": "Tesla Advances Self-Driving Technology with AI Breakthrough\nTesla unveils major improvements to its Full Self-Driving system using advanced neural networks.\nTesla announced a significant breakthrough in autonomous driving technology, leveraging cutting-edge artificial intelligence and neural networks. The company's Full Self-Driving (FSD) system now demonstrates improved performance in complex urban environments. This development positions Tesla as a leader in AI-powered transportation solutions in the United States market.",
+  "expected_actors": [
+    {
+      "id": "actor_64c3cc6d7eba",
+      "canonical_name": "Tesla",
+      "actor_type": "company",
+      "aliases": [
+        "Tesla Inc",
+        "TSLA"
+      ],
+      "all_mentions": [
+        "TSLA",
+        "tsla",
+        "Tesla Inc",
+        "tesla inc",
+        "Tesla",
+        "tesla"
+      ],
+      "normalized_names": [
+        "tsla",
+        "tsla",
+        "tesla inc",
+        "tesla inc",
+        "tesla",
+        "tesla"
+      ]
+    },
+    {
+      "id": "actor_f7cc169b01aa",
+      "canonical_name": "United States",
+      "actor_type": "country",
+      "aliases": [
+        "USA",
+        "US",
+        "America",
+        "США"
+      ],
+      "all_mentions": [
+        "America",
+        "united states",
+        "USA",
+        "United States",
+        "us",
+        "america",
+        "US",
+        "США",
+        "сша",
+        "usa"
+      ],
+      "normalized_names": [
+        "america",
+        "united states",
+        "usa",
+        "united states",
+        "us",
+        "america",
+        "us",
+        "сша",
+        "сша",
+        "usa"
+      ]
+    }
+  ],
+  "original_mentioned_actors": [
+    "actor_64c3cc6d7eba",
+    "actor_f7cc169b01aa"
+  ]
+}

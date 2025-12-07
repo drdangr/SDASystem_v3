@@ -9,6 +9,7 @@ import { StoryView } from './views/StoryView.js';
 import { DetailsView } from './views/DetailsView.js';
 import { TimelineView } from './views/TimelineView.js';
 import { LLMSettingsModal } from './ui/llmSettings.js';
+import { InitModal } from './ui/initModal.js';
 import { llmGenerate } from './api/llmClient.js';
 
 const API_BASE = '/api';
@@ -46,6 +47,9 @@ class SDAApp {
             this.llmSettings = state;
         });
         this.llmDebugModal = this.initLLMDebugModal();
+        this.initModal = new InitModal();
+
+        this.isRunningExtraction = false;
 
         this.init();
     }
@@ -58,6 +62,7 @@ class SDAApp {
         this.llmModal.init();
         this.llmSettings = this.llmModal.state;
         this.loadData();
+        this.checkInitialization();
     }
 
     initLLMDebugModal() {
@@ -123,6 +128,39 @@ class SDAApp {
                     this.togglePanel(panel);
                 }
             }
+        });
+
+        const btnAll = document.getElementById('extractAllActors');
+        const btnStory = document.getElementById('extractStoryActors');
+        const btnNews = document.getElementById('extractNewsActors');
+
+        btnAll?.addEventListener('click', async () => {
+            await this.extractAllActors();
+        });
+
+        btnStory?.addEventListener('click', async () => {
+            if (!this.currentStory) {
+                alert('Select a story first');
+                return;
+            }
+            await this.extractStoryActors(this.currentStory.id);
+        });
+
+        btnNews?.addEventListener('click', async () => {
+            if (!this.currentNews) {
+                alert('Select a news item first');
+                return;
+            }
+            await this.extractNewsActors(this.currentNews.id);
+        });
+    }
+
+    setButtonsDisabled(disabled) {
+        this.isRunningExtraction = disabled;
+        const ids = ['extractAllActors', 'extractStoryActors', 'extractNewsActors'];
+        ids.forEach(id => {
+            const btn = document.getElementById(id);
+            if (btn) btn.disabled = disabled;
         });
     }
 
@@ -193,19 +231,121 @@ class SDAApp {
         this.sidebarPanel.updateViewMode();
     }
 
-    updateStats() {
+    async updateStats() {
         const statsStories = document.getElementById('statsStories');
         const statsNews = document.getElementById('statsNews');
         const statsActors = document.getElementById('statsActors');
 
-        if (statsStories) statsStories.textContent = this.stories.length;
+        try {
+            const resp = await fetch(`${API_BASE}/stats`);
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const data = await resp.json();
+            if (statsStories) statsStories.textContent = data.stories_count ?? this.stories.length;
+            if (statsNews) statsNews.textContent = data.news_count ?? 0;
+            if (statsActors) statsActors.textContent = data.actors_count ?? 0;
+        } catch (e) {
+            console.error('Failed to update stats', e);
+            // fallback to old logic
+            if (statsStories) statsStories.textContent = this.stories.length;
+            const totalNews = this.stories.reduce((sum, s) => sum + s.size, 0);
+            if (statsNews) statsNews.textContent = totalNews;
+        }
+    }
 
-        // Calculate total news and actors
-        const totalNews = this.stories.reduce((sum, s) => sum + s.size, 0);
-        const uniqueActors = new Set(this.stories.flatMap(s => s.top_actors));
+    async fetchStatus() {
+        const resp = await fetch(`${API_BASE}/system/init/status`);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        return resp.json();
+    }
 
-        if (statsNews) statsNews.textContent = totalNews;
-        if (statsActors) statsActors.textContent = uniqueActors.size;
+    async checkInitialization() {
+        try {
+            const status = await this.fetchStatus();
+            if (status.initialized) {
+                this.initModal.applyStatus(status);
+                return;
+            }
+
+            // Авто-инициализация
+            this.initModal.show();
+            this.initModal.appendLog('Starting initialization...');
+            this.setButtonsDisabled(true);
+            await fetch(`${API_BASE}/system/init/start`, { method: 'POST' });
+
+            // Poll until done
+            let running = true;
+            while (running) {
+                const st = await this.fetchStatus();
+                this.initModal.applyStatus(st);
+                running = st.progress?.running;
+                if (!running) break;
+                await new Promise(res => setTimeout(res, 500));
+            }
+            await this.refreshStories();
+            await this.updateStats();
+            this.setButtonsDisabled(false);
+            this.eventBus.emit('actors:updated');
+        } catch (error) {
+            console.error('Initialization check failed', error);
+            this.setButtonsDisabled(false);
+        }
+    }
+
+    async extractAllActors() {
+        try {
+            this.setButtonsDisabled(true);
+            this.initModal.show();
+            this.initModal.appendLog('Re-extracting actors for all news...');
+            const resp = await fetch(`${API_BASE}/actors/extract/all`, { method: 'POST' });
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const data = await resp.json();
+            this.initModal.applyStatus(data.status || {});
+            await this.refreshStories();
+            await this.updateStats();
+            this.eventBus.emit('actors:updated');
+        } catch (e) {
+            console.error('extractAllActors failed', e);
+        } finally {
+            this.setButtonsDisabled(false);
+        }
+    }
+
+    async extractStoryActors(storyId) {
+        try {
+            this.setButtonsDisabled(true);
+            this.initModal.show();
+            this.initModal.appendLog(`Re-extracting actors for story ${storyId}...`);
+            const resp = await fetch(`${API_BASE}/actors/extract/story/${storyId}`, { method: 'POST' });
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const data = await resp.json();
+            this.initModal.applyStatus(data.status || {});
+            await this.refreshStories();
+            await this.updateStats();
+            this.eventBus.emit('actors:updated');
+        } catch (e) {
+            console.error('extractStoryActors failed', e);
+        } finally {
+            this.setButtonsDisabled(false);
+        }
+    }
+
+    async extractNewsActors(newsId) {
+        try {
+            this.setButtonsDisabled(true);
+            this.initModal.show();
+            this.initModal.appendLog(`Re-extracting actors for news ${newsId}...`);
+            const resp = await fetch(`${API_BASE}/actors/extract/news/${newsId}`, { method: 'POST' });
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const data = await resp.json();
+            this.initModal.applyStatus(data.status || {});
+            await this.selectNews(newsId);
+            await this.updateStats();
+            this.eventBus.emit('actors:updated');
+        } catch (e) {
+            console.error('extractNewsActors failed', e);
+        } finally {
+            this.setButtonsDisabled(false);
+        }
     }
 
     async refreshStories() {
@@ -228,7 +368,7 @@ class SDAApp {
                 }
             }
 
-            this.updateStats();
+            await this.updateStats();
         } catch (error) {
             console.error('Failed to refresh stories:', error);
         }

@@ -1,0 +1,512 @@
+[
+  {
+    "id": "actor_926db4dcc3ad",
+    "canonical_name": "Russia",
+    "actor_type": "country",
+    "aliases": [
+      {
+        "name": "Russia",
+        "type": "alias"
+      }
+    ],
+    "created_at": "2025-12-07 00:20:20.569620",
+    "updated_at": "2025-12-07 00:20:20.569621",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_e6fa782c8ff7",
+    "canonical_name": "NATO",
+    "actor_type": "organization",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:20.569687",
+    "updated_at": "2025-12-07 00:20:20.569688",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_5b084f0de6ce",
+    "canonical_name": "Ukraine",
+    "actor_type": "country",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:20.569699",
+    "updated_at": "2025-12-07 00:20:20.569700",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_3ac1b9ed152f",
+    "canonical_name": "Vladimir Putin",
+    "actor_type": "person",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:20.569709",
+    "updated_at": "2025-12-07 00:20:20.569709",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_d97977ef6f6d",
+    "canonical_name": "Peace Negotiations",
+    "actor_type": "organization",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:20.587981",
+    "updated_at": "2025-12-07 00:20:20.587982",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_f236aea91324",
+    "canonical_name": "United Nations",
+    "actor_type": "organization",
+    "aliases": [
+      {
+        "name": "United Nations",
+        "type": "alias"
+      }
+    ],
+    "created_at": "2025-12-07 00:20:20.588003",
+    "updated_at": "2025-12-07 00:20:20.588004",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_682ad4b05c50",
+    "canonical_name": "Global Climate Summit Opens",
+    "actor_type": "organization",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:20.606933",
+    "updated_at": "2025-12-07 00:20:20.606935",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_e7eaf5aa20fc",
+    "canonical_name": "today",
+    "actor_type": "organization",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:20.606952",
+    "updated_at": "2025-12-07 00:20:20.606952",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_2b8ee5358662",
+    "canonical_name": "Joe Biden",
+    "actor_type": "person",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:20.606962",
+    "updated_at": "2025-12-07 00:20:20.606963",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_e82d7455d589",
+    "canonical_name": "Xi Jinping",
+    "actor_type": "person",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:20.606973",
+    "updated_at": "2025-12-07 00:20:20.606973",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_cf2edac1a2fa",
+    "canonical_name": "Ursula von der",
+    "actor_type": "person",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:20.606981",
+    "updated_at": "2025-12-07 00:20:20.606982",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_474773436ea7",
+    "canonical_name": "Leyen",
+    "actor_type": "country",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:20.606991",
+    "updated_at": "2025-12-07 00:20:20.606991",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_bb6e68440fcd",
+    "canonical_name": "EU Pledges Carbon Neutrality",
+    "actor_type": "organization",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.392064",
+    "updated_at": "2025-12-07 00:20:25.392074",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_4cac3e53dd6e",
+    "canonical_name": "European Union",
+    "actor_type": "organization",
+    "aliases": [
+      {
+        "name": "European Union",
+        "type": "alias"
+      }
+    ],
+    "created_at": "2025-12-07 00:20:25.392158",
+    "updated_at": "2025-12-07 00:20:25.392159",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_27a85a5980bd",
+    "canonical_name": "ten years",
+    "actor_type": "organization",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.392205",
+    "updated_at": "2025-12-07 00:20:25.392206",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_ac0dc6fb3250",
+    "canonical_name": "von der",
+    "actor_type": "person",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.392223",
+    "updated_at": "2025-12-07 00:20:25.392224",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_5d331902390b",
+    "canonical_name": "Europe",
+    "actor_type": "country",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.392248",
+    "updated_at": "2025-12-07 00:20:25.392248",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_2526385efca8",
+    "canonical_name": "Microsoft",
+    "actor_type": "organization",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.419716",
+    "updated_at": "2025-12-07 00:20:25.419720",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_c26a0c32b1d1",
+    "canonical_name": "AI Investment",
+    "actor_type": "organization",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.419744",
+    "updated_at": "2025-12-07 00:20:25.419744",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_cde4592b97d8",
+    "canonical_name": "multi-billion dollar",
+    "actor_type": "organization",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.419756",
+    "updated_at": "2025-12-07 00:20:25.419756",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_7264d4295152",
+    "canonical_name": "AI",
+    "actor_type": "organization",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.419767",
+    "updated_at": "2025-12-07 00:20:25.419768",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_75a3354807cf",
+    "canonical_name": "OpenAI",
+    "actor_type": "country",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.419777",
+    "updated_at": "2025-12-07 00:20:25.419777",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_85e729a18599",
+    "canonical_name": "Google Responds with Competing AI Strategy",
+    "actor_type": "organization",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.434449",
+    "updated_at": "2025-12-07 00:20:25.434452",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_655f55c388a2",
+    "canonical_name": "Google",
+    "actor_type": "organization",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.434468",
+    "updated_at": "2025-12-07 00:20:25.434468",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_61d667c38b38",
+    "canonical_name": "US",
+    "actor_type": "country",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.451917",
+    "updated_at": "2025-12-07 00:20:25.451920",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_02517adccf0c",
+    "canonical_name": "The United States",
+    "actor_type": "country",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.451936",
+    "updated_at": "2025-12-07 00:20:25.451936",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_fc4cfbd563e2",
+    "canonical_name": "Meta",
+    "actor_type": "organization",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.466836",
+    "updated_at": "2025-12-07 00:20:25.466838",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_0f23abf59aba",
+    "canonical_name": "Tesla Opens New Gigafactory",
+    "actor_type": "organization",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.498982",
+    "updated_at": "2025-12-07 00:20:25.498985",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_fdceb33a1af2",
+    "canonical_name": "Texas",
+    "actor_type": "country",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.499002",
+    "updated_at": "2025-12-07 00:20:25.499002",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_01a2f9f1c1a8",
+    "canonical_name": "Tesla",
+    "actor_type": "organization",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.499012",
+    "updated_at": "2025-12-07 00:20:25.499013",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_54a0746193f1",
+    "canonical_name": "Gigafactory",
+    "actor_type": "organization",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.499022",
+    "updated_at": "2025-12-07 00:20:25.499022",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_f9f6e71a4153",
+    "canonical_name": "Austin",
+    "actor_type": "country",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.499032",
+    "updated_at": "2025-12-07 00:20:25.499032",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_c05ce258eef4",
+    "canonical_name": "Elon Musk",
+    "actor_type": "person",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.499042",
+    "updated_at": "2025-12-07 00:20:25.499042",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_5ddd27b8eab5",
+    "canonical_name": "Cybertruck",
+    "actor_type": "person",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.499050",
+    "updated_at": "2025-12-07 00:20:25.499051",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_ea68965aa67c",
+    "canonical_name": "Model Y",
+    "actor_type": "person",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.499059",
+    "updated_at": "2025-12-07 00:20:25.499060",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_4125e4482772",
+    "canonical_name": "$1.1 billion",
+    "actor_type": "organization",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.499068",
+    "updated_at": "2025-12-07 00:20:25.499068",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_664807e02438",
+    "canonical_name": "thousands",
+    "actor_type": "organization",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.499076",
+    "updated_at": "2025-12-07 00:20:25.499077",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_811dcd9cf0db",
+    "canonical_name": "Tesla Advances Self-Driving Technology",
+    "actor_type": "organization",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.524401",
+    "updated_at": "2025-12-07 00:20:25.524403",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_0a026a3ed438",
+    "canonical_name": "AI Breakthrough",
+    "actor_type": "organization",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.524419",
+    "updated_at": "2025-12-07 00:20:25.524420",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_6094df1476f6",
+    "canonical_name": "Full Self-Driving",
+    "actor_type": "organization",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.524431",
+    "updated_at": "2025-12-07 00:20:25.524431",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_04bd6d62488f",
+    "canonical_name": "FSD",
+    "actor_type": "organization",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.524440",
+    "updated_at": "2025-12-07 00:20:25.524441",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_7447a0f74f76",
+    "canonical_name": "OpenAI Responds",
+    "actor_type": "organization",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.558752",
+    "updated_at": "2025-12-07 00:20:25.558752",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_8466320710b3",
+    "canonical_name": "EU AI Regulations",
+    "actor_type": "organization",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.558767",
+    "updated_at": "2025-12-07 00:20:25.558767",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_e0ee19e94f63",
+    "canonical_name": "AI Safety Framework",
+    "actor_type": "organization",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.575501",
+    "updated_at": "2025-12-07 00:20:25.575502",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_f03ad8b786b8",
+    "canonical_name": "AI Safety Alliance",
+    "actor_type": "organization",
+    "aliases": [],
+    "created_at": "2025-12-07 00:20:25.665976",
+    "updated_at": "2025-12-07 00:20:25.665977",
+    "metadata": {
+      "confidence": 0.9
+    }
+  }
+]

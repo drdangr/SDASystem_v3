@@ -1,0 +1,62 @@
+{
+  "total_news": 14,
+  "total_actors": 19,
+  "news_mapping": {
+    "news_a629774edf14": {
+      "title": "Russia Criticizes NATO Expansion Plans",
+      "expected_actors_count": 4
+    },
+    "news_dabe3f92e926": {
+      "title": "UN Calls for Peace Negotiations",
+      "expected_actors_count": 3
+    },
+    "news_df494fe14ead": {
+      "title": "Global Climate Summit Opens with Ambitious Goals",
+      "expected_actors_count": 6
+    },
+    "news_40edd01c7197": {
+      "title": "EU Pledges Carbon Neutrality by 2040",
+      "expected_actors_count": 2
+    },
+    "news_f663e678e8a1": {
+      "title": "Microsoft Announces Major AI Investment",
+      "expected_actors_count": 2
+    },
+    "news_156a9391baf2": {
+      "title": "Google Responds with Competing AI Strategy",
+      "expected_actors_count": 2
+    },
+    "news_b91dbb24eaa1": {
+      "title": "US Presidential Campaign Intensifies",
+      "expected_actors_count": 2
+    },
+    "news_8f5cb56afdc2": {
+      "title": "Tech Leaders Discuss Election Security",
+      "expected_actors_count": 4
+    },
+    "news_tesla_ev_001": {
+      "title": "Tesla Opens New Gigafactory in Texas",
+      "expected_actors_count": 2
+    },
+    "news_tesla_ai_002": {
+      "title": "Tesla Advances Self-Driving Technology with AI Breakthrough",
+      "expected_actors_count": 2
+    },
+    "news_8f590a0041fe": {
+      "title": "EU Announces New AI Regulation Framework",
+      "expected_actors_count": 0
+    },
+    "news_e3fe34b67bc4": {
+      "title": "OpenAI Responds to EU AI Regulations",
+      "expected_actors_count": 0
+    },
+    "news_444501b64640": {
+      "title": "US Considers Similar AI Safety Framework",
+      "expected_actors_count": 0
+    },
+    "news_4002666e5175": {
+      "title": "Tech Giants Form AI Safety Alliance",
+      "expected_actors_count": 0
+    }
+  }
+}
