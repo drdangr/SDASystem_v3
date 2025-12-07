@@ -104,24 +104,61 @@ class LLMService:
             ]
 
         def _map_type(t: Optional[str]) -> str:
-            allowed = {"person", "company", "country", "organization", "government", "structure", "event"}
+            allowed = {
+                "person", "company", "country", "organization", 
+                "government", "politician", "int_org", 
+                "structure", "event"
+            }
+            # Synonyms mapping
+            synonyms = {
+                "human": "person", "man": "person", "woman": "person", "individual": "person", 
+                
+                # Politician mapping
+                "president": "politician", "prime minister": "politician", 
+                "minister": "politician", "deputy": "politician",
+                "official": "politician", "leader": "politician", 
+                "ambassador": "politician", "diplomat": "politician",
+                "senator": "politician", "governor": "politician",
+
+                # Government mapping
+                "ministry": "government", "department": "government", 
+                "council": "government", "parliament": "government",
+                "court": "government", "administration": "government",
+                "white house": "government", "kremlin": "government",
+
+                # Int Org mapping
+                "alliance": "int_org", "union": "int_org",
+
+                "firm": "company", "corporation": "company", "business": "company", "enterprise": "company",
+                "nation": "country", 
+                "agency": "organization", "association": "organization", "group": "organization", "party": "organization"
+            }
+            
             if not t:
                 return "organization"
-            t_low = str(t).lower()
+            t_low = str(t).lower().strip()
+            
             if t_low in allowed:
                 return t_low
+            
+            if t_low in synonyms:
+                return synonyms[t_low]
+                
             # heuristic: map 'other' and unknown to organization
             return "organization"
 
         prompt = (
-            "Extract ALL named entities (actors) from the text. Focus on:\n"
-            "- Persons (leaders, officials, individuals): use full names when possible (e.g., 'Vladimir Putin' not just 'Putin')\n"
-            "- Companies (e.g., 'Tesla', 'Microsoft', 'OpenAI')\n"
-            "- Countries (e.g., 'United States', 'Russia', 'China' - use full names, not just 'US')\n"
-            "- Organizations (e.g., 'NATO', 'European Union', 'United Nations')\n"
+            "Extract ALL named entities (actors) from the text. Classify them into these types:\n"
+            "- politician: government officials, presidents, ministers, diplomats (e.g., 'Vladimir Putin', 'Joe Biden')\n"
+            "- person: other individuals (non-political)\n"
+            "- company: commercial entities (e.g., 'Tesla', 'Gazprom')\n"
+            "- country: nations (e.g., 'United States', 'Russia')\n"
+            "- government: state bodies, ministries, parliaments (e.g., 'State Department', 'Kremlin')\n"
+            "- int_org: international organizations (e.g., 'NATO', 'UN', 'EU')\n"
+            "- organization: other organizations, parties, NGOs\n\n"
             "- Also extract indirect mentions: if text says 'US' or 'America', extract 'United States'; "
             "if text says 'EU', extract 'European Union'; if text says 'Putin' or 'President Putin', extract 'Vladimir Putin'\n\n"
-            "Return a JSON array. Each item: {\"name\": string, \"type\": \"person|company|country|organization|government\", \"confidence\": number 0-1}\n"
+            "Return a JSON array. Each item: {\"name\": string, \"type\": \"politician|person|company|country|government|int_org|organization\", \"confidence\": number 0-1}\n"
             "- Use canonical/full names when possible (prefer 'United States' over 'US', 'Vladimir Putin' over 'Putin')\n"
             "- Include both canonical and alias mentions if they appear in text\n"
             "- Deduplicate similar entities (merge 'US' and 'United States' as one)\n"
@@ -129,8 +166,8 @@ class LLMService:
             "- confidence: 0.9+ for explicit mentions, 0.7-0.8 for indirect/implied mentions\n\n"
             "Example:\n"
             "Text: 'Putin criticized NATO and the US'\n"
-            "Output: [{\"name\": \"Vladimir Putin\", \"type\": \"person\", \"confidence\": 0.95}, "
-            "{\"name\": \"NATO\", \"type\": \"organization\", \"confidence\": 0.95}, "
+            "Output: [{\"name\": \"Vladimir Putin\", \"type\": \"politician\", \"confidence\": 0.95}, "
+            "{\"name\": \"NATO\", \"type\": \"int_org\", \"confidence\": 0.95}, "
             "{\"name\": \"United States\", \"type\": \"country\", \"confidence\": 0.9}]\n\n"
             f"Text:\n{text}"
         )
@@ -142,8 +179,8 @@ class LLMService:
             # Повторная попытка с упрощенным промптом
             simple_prompt = (
                 "Extract named entities from the text. Return JSON array: "
-                "[{\"name\": string, \"type\": \"person|company|country|organization\", \"confidence\": 0.9}]. "
-                "Extract persons, companies, countries, organizations mentioned in the text.\n"
+                "[{\"name\": string, \"type\": \"politician|person|company|country|organization\", \"confidence\": 0.9}]. "
+                "Extract persons, politicians, companies, countries, organizations mentioned in the text.\n"
                 f"Text:\n{text}"
             )
             raw = self._run(simple_prompt, **{"temperature": 0.2})  # Более детерминированный режим

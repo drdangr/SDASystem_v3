@@ -296,10 +296,21 @@ class SDAApp {
             this.setButtonsDisabled(true);
             this.initModal.show();
             this.initModal.appendLog('Re-extracting actors for all news...');
+            
+            // Start process (now returns immediately)
             const resp = await fetch(`${API_BASE}/actors/extract/all`, { method: 'POST' });
             if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-            const data = await resp.json();
-            this.initModal.applyStatus(data.status || {});
+            
+            // Poll until done
+            let running = true;
+            while (running) {
+                const st = await this.fetchStatus();
+                this.initModal.applyStatus(st);
+                running = st.progress?.running;
+                if (!running) break;
+                await new Promise(res => setTimeout(res, 500));
+            }
+
             await this.refreshStories();
             await this.updateStats();
             this.eventBus.emit('actors:updated');

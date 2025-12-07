@@ -1,611 +1,757 @@
 [
   {
-    "id": "actor_5940378f6197",
+    "id": "actor_523429423d09",
+    "canonical_name": "Russia",
+    "actor_type": "country",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.404509",
+    "updated_at": "2025-12-07 05:16:42.404509",
+    "metadata": {
+      "confidence": 0.9100000000000001
+    }
+  },
+  {
+    "id": "actor_4344db182735",
+    "canonical_name": "Russian",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.404519",
+    "updated_at": "2025-12-07 05:16:42.404519",
+    "metadata": {
+      "confidence": 0.8
+    }
+  },
+  {
+    "id": "actor_8a272b2be91e",
+    "canonical_name": "NATO",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.404524",
+    "updated_at": "2025-12-07 05:16:42.404524",
+    "metadata": {
+      "confidence": 0.9099999999999999
+    }
+  },
+  {
+    "id": "actor_c22c6d199a47",
     "canonical_name": "Ukraine",
     "actor_type": "country",
-    "aliases": [
-      {
-        "name": "Украиной",
-        "type": "original",
-        "language": "ru"
-      },
-      {
-        "name": "Ukrainia",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "Ukr.",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "Ukraina",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "Ukraïna",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "Украины",
-        "type": "original",
-        "language": "ru"
-      }
-    ],
-    "wikidata_qid": "Q212",
-    "created_at": "2025-12-07 01:35:52.190670",
-    "updated_at": "2025-12-07 01:35:52.190683",
-    "metadata": {
-      "description": "государство в Центральной и Восточной Европе",
-      "original_language": "ru",
-      "confidence": 0.9100000000000001
-    }
-  },
-  {
-    "id": "actor_ad04d71183f0",
-    "canonical_name": "Россия",
-    "actor_type": "country",
-    "aliases": [
-      {
-        "name": "Россией",
-        "type": "original",
-        "language": "ru"
-      },
-      {
-        "name": "Российская Федерация",
-        "type": "alias",
-        "language": "ru"
-      },
-      {
-        "name": "РФ",
-        "type": "alias",
-        "language": "ru"
-      },
-      {
-        "name": "Russian Federation",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "Federation of Russia",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "России",
-        "type": "original",
-        "language": "ru"
-      }
-    ],
-    "wikidata_qid": "Q159",
-    "created_at": "2025-12-07 01:35:52.190884",
-    "updated_at": "2025-12-07 01:35:52.190887",
-    "metadata": {
-      "description": "государство в Восточной Европе и Северной Азии, крупнейшее по площади в мире",
-      "original_language": "ru",
-      "confidence": 0.9100000000000001
-    }
-  },
-  {
-    "id": "actor_c20b73f0ad8a",
-    "canonical_name": "США",
-    "actor_type": "country",
-    "aliases": [
-      {
-        "name": "Сша",
-        "type": "lemmatized",
-        "language": "ru"
-      },
-      {
-        "name": "Соединённые Штаты Америки",
-        "type": "alias",
-        "language": "ru"
-      },
-      {
-        "name": "Соединённые Штаты",
-        "type": "alias",
-        "language": "ru"
-      },
-      {
-        "name": "Штаты",
-        "type": "alias",
-        "language": "ru"
-      },
-      {
-        "name": "Америка",
-        "type": "alias",
-        "language": "ru"
-      },
-      {
-        "name": "Соединённые Государства Америки",
-        "type": "alias",
-        "language": "ru"
-      },
-      {
-        "name": "САСШ",
-        "type": "alias",
-        "language": "ru"
-      },
-      {
-        "name": "Северо-Американские Соединённые Штаты",
-        "type": "alias",
-        "language": "ru"
-      },
-      {
-        "name": "the States",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "the United States of America",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "US of America",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "the US",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "the U.S.",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "the US of A",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "U.S. of America",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "the US of America",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "the USA",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "the U.S.A.",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "the U.S. of A",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "US of A",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "the U.S. of America",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "the United States",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "Merica",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "Murica",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "United States of America",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "U.S.",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "U.S.A.",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "U. S.",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "U. S. A.",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "America",
-        "type": "alias",
-        "language": "en"
-      }
-    ],
-    "wikidata_qid": "Q30",
-    "created_at": "2025-12-07 01:35:52.191022",
-    "updated_at": "2025-12-07 01:35:52.191024",
-    "metadata": {
-      "description": "федеративное государство в Северной Америке",
-      "original_language": "ru",
-      "confidence": 0.89
-    }
-  },
-  {
-    "id": "actor_d55266cb1f28",
-    "canonical_name": "Владимир Владимирович Путин",
-    "actor_type": "organization",
-    "aliases": [
-      {
-        "name": "Путина",
-        "type": "original",
-        "language": "ru"
-      },
-      {
-        "name": "Путин",
-        "type": "lemmatized",
-        "language": "ru"
-      },
-      {
-        "name": "Владимир Путин",
-        "type": "alias",
-        "language": "ru"
-      },
-      {
-        "name": "Путин Владимир Владимирович",
-        "type": "alias",
-        "language": "ru"
-      },
-      {
-        "name": "Путин, Владимир Владимирович",
-        "type": "alias",
-        "language": "ru"
-      },
-      {
-        "name": "В. В. Путин",
-        "type": "alias",
-        "language": "ru"
-      },
-      {
-        "name": "Путин В. В.",
-        "type": "alias",
-        "language": "ru"
-      },
-      {
-        "name": "Vladimir Vladimirovich Putin",
-        "type": "alias",
-        "language": "en"
-      }
-    ],
-    "wikidata_qid": "Q7747",
-    "created_at": "2025-12-07 01:35:52.191142",
-    "updated_at": "2025-12-07 01:35:52.191144",
-    "metadata": {
-      "positions": [
-        "президент России",
-        "президент России",
-        "директор ФСБ России",
-        "председатель Правительства Российской Федерации",
-        "заместитель председателя Правительства Российской Федерации",
-        "секретарь Совета безопасности Российской Федерации",
-        "лидер партии",
-        "Верховный Главнокомандующий Вооружёнными Силами Российской Федерации",
-        "Верховный Главнокомандующий Вооружёнными Силами Российской Федерации",
-        "председатель Совета глав государств СНГ",
-        "председатель Совета глав государств СНГ",
-        "председатель",
-        "председатель",
-        "Временное исполнение полномочий президента России",
-        "председатель Правительства Российской Федерации",
-        "председатель Совета глав государств СНГ",
-        "постоянный член Совета безопасности Российской Федерации",
-        "председатель Совета безопасности Российской Федерации",
-        "лидер партии",
-        "пожизненный президент",
-        "рекрутёр",
-        "председатель Совета глав государств СНГ"
-      ],
-      "countries": [
-        "СССР",
-        "Россия"
-      ],
-      "country": "СССР",
-      "birth_date": "+1952-10-07T00:00:00Z",
-      "description": "президент России (2000—2008; 2012 по н. в.)",
-      "original_language": "ru",
-      "confidence": 0.8
-    }
-  },
-  {
-    "id": "actor_48007d8aed3b",
-    "canonical_name": "Дональд Трамп",
-    "actor_type": "organization",
-    "aliases": [
-      {
-        "name": "Трампа",
-        "type": "original",
-        "language": "ru"
-      },
-      {
-        "name": "Трамп",
-        "type": "lemmatized",
-        "language": "ru"
-      },
-      {
-        "name": "Трамп, Дональд",
-        "type": "alias",
-        "language": "ru"
-      },
-      {
-        "name": "Дональд Джон Трамп",
-        "type": "alias",
-        "language": "ru"
-      },
-      {
-        "name": "POTUS 45",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "President Donald Trump",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "President Trump",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "President Donald J. Trump",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "President Donald John Trump",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "President Donald J Trump",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "@realDonaldTrump",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "POTUS 47",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "President DJT",
-        "type": "alias",
-        "language": "en"
-      }
-    ],
-    "wikidata_qid": "Q22686",
-    "created_at": "2025-12-07 01:35:52.191201",
-    "updated_at": "2025-12-07 01:35:52.191202",
-    "metadata": {
-      "positions": [
-        "CEO",
-        "президент",
-        "директор",
-        "Избранный президент США",
-        "президент США",
-        "Избранный президент США",
-        "президент США"
-      ],
-      "countries": [
-        "США"
-      ],
-      "country": "США",
-      "birth_date": "+1946-06-14T00:00:00Z",
-      "description": "45-й (2017–2021) и 47-й (с 2025) президент США, миллиардер",
-      "original_language": "ru",
-      "confidence": 0.8
-    }
-  },
-  {
-    "id": "actor_25b2ea208450",
-    "canonical_name": "Зеленского",
-    "actor_type": "organization",
     "aliases": [],
     "wikidata_qid": null,
-    "created_at": "2025-12-07 01:35:52.191226",
-    "updated_at": "2025-12-07 01:35:52.191227",
+    "created_at": "2025-12-07 05:16:42.404529",
+    "updated_at": "2025-12-07 05:16:42.404529",
     "metadata": {
-      "original_language": "ru",
-      "confidence": 0.8500000000000001
-    }
-  },
-  {
-    "id": "actor_bb84191cc76c",
-    "canonical_name": "Джо Байдена",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 01:35:52.191243",
-    "updated_at": "2025-12-07 01:35:52.191244",
-    "metadata": {
-      "original_language": "ru",
       "confidence": 0.8800000000000001
     }
   },
   {
-    "id": "actor_0c6313014247",
-    "canonical_name": "Белый дом",
-    "actor_type": "country",
-    "aliases": [
-      {
-        "name": "Белом доме",
-        "type": "original",
-        "language": "ru"
-      },
-      {
-        "name": "Белый Дом",
-        "type": "lemmatized",
-        "language": "ru"
-      },
-      {
-        "name": "White House",
-        "type": "alias",
-        "language": "ru"
-      },
-      {
-        "name": "Executive Mansion",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "President's Palace",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "Presidential Mansion",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "President's House",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "the White House",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "1600 Pennsylvania Avenue",
-        "type": "alias",
-        "language": "en"
-      }
-    ],
-    "wikidata_qid": "Q35525",
-    "created_at": "2025-12-07 01:35:52.191278",
-    "updated_at": "2025-12-07 01:35:52.191279",
+    "id": "actor_434682a35eb2",
+    "canonical_name": "Vladimir Putin",
+    "actor_type": "person",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.404534",
+    "updated_at": "2025-12-07 05:16:42.404534",
     "metadata": {
-      "description": "официальная резиденция президента США, расположенная в Вашингтоне (округ Колумбия)",
-      "original_language": "ru",
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": "actor_5825f22f2415",
+    "canonical_name": "UN",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.412523",
+    "updated_at": "2025-12-07 05:16:42.412523",
+    "metadata": {
+      "confidence": 0.9099999999999999
+    }
+  },
+  {
+    "id": "actor_6816b0e280b8",
+    "canonical_name": "Peace Negotiations",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.412534",
+    "updated_at": "2025-12-07 05:16:42.412534",
+    "metadata": {
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": "actor_7b43b80fb978",
+    "canonical_name": "United Nations",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.412542",
+    "updated_at": "2025-12-07 05:16:42.412543",
+    "metadata": {
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": "actor_029b512e9164",
+    "canonical_name": "The United Nations",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.412552",
+    "updated_at": "2025-12-07 05:16:42.412552",
+    "metadata": {
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": "actor_f2ab16a6169e",
+    "canonical_name": "Global Climate Summit Opens",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.421953",
+    "updated_at": "2025-12-07 05:16:42.421953",
+    "metadata": {
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": "actor_94ec41cd8fe1",
+    "canonical_name": "today",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.421961",
+    "updated_at": "2025-12-07 05:16:42.421961",
+    "metadata": {
+      "confidence": 0.75
+    }
+  },
+  {
+    "id": "actor_10e66f86396e",
+    "canonical_name": "Joe Biden",
+    "actor_type": "person",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.421966",
+    "updated_at": "2025-12-07 05:16:42.421966",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_2632829bb661",
+    "canonical_name": "Xi Jinping",
+    "actor_type": "person",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.421971",
+    "updated_at": "2025-12-07 05:16:42.421971",
+    "metadata": {
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": "actor_481b2f3be9e1",
+    "canonical_name": "Ursula von der",
+    "actor_type": "person",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.421976",
+    "updated_at": "2025-12-07 05:16:42.421976",
+    "metadata": {
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": "actor_e601a1ea4b38",
+    "canonical_name": "Leyen",
+    "actor_type": "country",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.421980",
+    "updated_at": "2025-12-07 05:16:42.421980",
+    "metadata": {
+      "confidence": 0.8500000000000001
+    }
+  },
+  {
+    "id": "actor_57239388ad57",
+    "canonical_name": "EU Pledges Carbon Neutrality",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.836906",
+    "updated_at": "2025-12-07 05:16:42.836912",
+    "metadata": {
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": "actor_04272b1fdc08",
+    "canonical_name": "European Union",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.836940",
+    "updated_at": "2025-12-07 05:16:42.836940",
+    "metadata": {
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": "actor_d6470c0f44fa",
+    "canonical_name": "The European Union",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.836953",
+    "updated_at": "2025-12-07 05:16:42.836953",
+    "metadata": {
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": "actor_fcb24b2bf25a",
+    "canonical_name": "ten years",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.836965",
+    "updated_at": "2025-12-07 05:16:42.836965",
+    "metadata": {
+      "confidence": 0.75
+    }
+  },
+  {
+    "id": "actor_fcf2a2f07039",
+    "canonical_name": "von der",
+    "actor_type": "person",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.836976",
+    "updated_at": "2025-12-07 05:16:42.836976",
+    "metadata": {
+      "confidence": 0.85
+    }
+  },
+  {
+    "id": "actor_7497221cc0fd",
+    "canonical_name": "Europe",
+    "actor_type": "country",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.836990",
+    "updated_at": "2025-12-07 05:16:42.836991",
+    "metadata": {
+      "confidence": 0.9100000000000001
+    }
+  },
+  {
+    "id": "actor_e44150723c54",
+    "canonical_name": "Microsoft",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.851005",
+    "updated_at": "2025-12-07 05:16:42.851006",
+    "metadata": {
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": "actor_841676d50253",
+    "canonical_name": "AI Investment",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.851019",
+    "updated_at": "2025-12-07 05:16:42.851019",
+    "metadata": {
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": "actor_6f0708c82338",
+    "canonical_name": "multi-billion dollar",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.851027",
+    "updated_at": "2025-12-07 05:16:42.851027",
+    "metadata": {
+      "confidence": 0.8
+    }
+  },
+  {
+    "id": "actor_7a61668086c4",
+    "canonical_name": "AI",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.851035",
+    "updated_at": "2025-12-07 05:16:42.851035",
+    "metadata": {
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": "actor_1a1bd26b6003",
+    "canonical_name": "OpenAI",
+    "actor_type": "country",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.851042",
+    "updated_at": "2025-12-07 05:16:42.851042",
+    "metadata": {
+      "confidence": 0.8500000000000001
+    }
+  },
+  {
+    "id": "actor_8449417b5228",
+    "canonical_name": "Google Responds with Competing AI Strategy",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.860911",
+    "updated_at": "2025-12-07 05:16:42.860911",
+    "metadata": {
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": "actor_1b12223d3076",
+    "canonical_name": "Google",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.860920",
+    "updated_at": "2025-12-07 05:16:42.860920",
+    "metadata": {
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": "actor_6bbc61578be7",
+    "canonical_name": "US",
+    "actor_type": "country",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.871667",
+    "updated_at": "2025-12-07 05:16:42.871667",
+    "metadata": {
+      "confidence": 0.8300000000000001
+    }
+  },
+  {
+    "id": "actor_ed5b61d910d6",
+    "canonical_name": "The United States",
+    "actor_type": "country",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.871677",
+    "updated_at": "2025-12-07 05:16:42.871678",
+    "metadata": {
       "confidence": 0.9000000000000001
     }
   },
   {
-    "id": "actor_ae8e76123e3a",
-    "canonical_name": "Владимир Александрович Зеленский",
+    "id": "actor_039c497dc18c",
+    "canonical_name": "Meta",
     "actor_type": "organization",
-    "aliases": [
-      {
-        "name": "Владимир Зеленский",
-        "type": "original",
-        "language": "ru"
-      },
-      {
-        "name": "Зеленский, Владимир Александрович",
-        "type": "alias",
-        "language": "ru"
-      },
-      {
-        "name": "Зеленский, Владимир",
-        "type": "alias",
-        "language": "ru"
-      },
-      {
-        "name": "Зеленский Владимир Александрович",
-        "type": "alias",
-        "language": "ru"
-      },
-      {
-        "name": "Зе",
-        "type": "alias",
-        "language": "ru"
-      },
-      {
-        "name": "Volodymyr Zelensky",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "Volodymyr Zelenskiy",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "Volodymyr Oleksandrovych Zelenskyy",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "President Volodymyr Zelenskyy",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "President Volodymyr Oleksandrovych Zelenskyy",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "President Zelenskyy",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "Volodymyr Zelenskyj",
-        "type": "alias",
-        "language": "en"
-      },
-      {
-        "name": "Volodymyr Zelenskyi",
-        "type": "alias",
-        "language": "en"
-      }
-    ],
-    "wikidata_qid": "Q3874799",
-    "created_at": "2025-12-07 01:35:52.191362",
-    "updated_at": "2025-12-07 01:35:52.191363",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.880318",
+    "updated_at": "2025-12-07 05:16:42.880319",
     "metadata": {
-      "positions": [
-        "Президент Украины",
-        "Верховный главнокомандующий Вооружённых сил Украины"
-      ],
-      "countries": [
-        "Украина",
-        "СССР"
-      ],
-      "country": "Украина",
-      "birth_date": "+1978-01-25T00:00:00Z",
-      "description": "президент Украины с 2019 года",
-      "original_language": "ru",
+      "confidence": 0.85
+    }
+  },
+  {
+    "id": "actor_bdaea3523411",
+    "canonical_name": "Tesla Opens New Gigafactory",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.893836",
+    "updated_at": "2025-12-07 05:16:42.893836",
+    "metadata": {
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": "actor_291d6776197f",
+    "canonical_name": "Texas",
+    "actor_type": "country",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.893843",
+    "updated_at": "2025-12-07 05:16:42.893843",
+    "metadata": {
+      "confidence": 0.9100000000000001
+    }
+  },
+  {
+    "id": "actor_e7fb6c83dac4",
+    "canonical_name": "Tesla",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.893848",
+    "updated_at": "2025-12-07 05:16:42.893848",
+    "metadata": {
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": "actor_e8f1373a6c90",
+    "canonical_name": "Gigafactory",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.893854",
+    "updated_at": "2025-12-07 05:16:42.893854",
+    "metadata": {
+      "confidence": 0.9100000000000001
+    }
+  },
+  {
+    "id": "actor_026268ebc637",
+    "canonical_name": "Austin",
+    "actor_type": "country",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.893859",
+    "updated_at": "2025-12-07 05:16:42.893859",
+    "metadata": {
+      "confidence": 0.8800000000000001
+    }
+  },
+  {
+    "id": "actor_f5e0f55b1178",
+    "canonical_name": "Elon Musk",
+    "actor_type": "person",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.893865",
+    "updated_at": "2025-12-07 05:16:42.893865",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_06ff1c6c867f",
+    "canonical_name": "Cybertruck",
+    "actor_type": "person",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.893870",
+    "updated_at": "2025-12-07 05:16:42.893870",
+    "metadata": {
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": "actor_6f132118857e",
+    "canonical_name": "Model Y",
+    "actor_type": "person",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.893875",
+    "updated_at": "2025-12-07 05:16:42.893875",
+    "metadata": {
+      "confidence": 0.9
+    }
+  },
+  {
+    "id": "actor_c9ab0520f08e",
+    "canonical_name": "$1.1 billion",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.893880",
+    "updated_at": "2025-12-07 05:16:42.893881",
+    "metadata": {
+      "confidence": 0.8
+    }
+  },
+  {
+    "id": "actor_e1c2fb4375c5",
+    "canonical_name": "thousands",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.893885",
+    "updated_at": "2025-12-07 05:16:42.893885",
+    "metadata": {
+      "confidence": 0.75
+    }
+  },
+  {
+    "id": "actor_477b2dbcecd6",
+    "canonical_name": "Tesla Advances Self-Driving Technology",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.906323",
+    "updated_at": "2025-12-07 05:16:42.906323",
+    "metadata": {
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": "actor_afc9ff3a60a9",
+    "canonical_name": "AI Breakthrough",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.906331",
+    "updated_at": "2025-12-07 05:16:42.906331",
+    "metadata": {
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": "actor_93adc6840a2a",
+    "canonical_name": "Full Self-Driving",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.906338",
+    "updated_at": "2025-12-07 05:16:42.906338",
+    "metadata": {
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": "actor_6d5dba664be2",
+    "canonical_name": "FSD",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.906343",
+    "updated_at": "2025-12-07 05:16:42.906343",
+    "metadata": {
+      "confidence": 0.85
+    }
+  },
+  {
+    "id": "actor_fde46a9e2d27",
+    "canonical_name": "EU",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.914985",
+    "updated_at": "2025-12-07 05:16:42.914985",
+    "metadata": {
+      "confidence": 0.9099999999999999
+    }
+  },
+  {
+    "id": "actor_8c2a766c781b",
+    "canonical_name": "OpenAI Responds",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.923070",
+    "updated_at": "2025-12-07 05:16:42.923070",
+    "metadata": {
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": "actor_7ee1c0953d6f",
+    "canonical_name": "EU AI Regulations",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.923076",
+    "updated_at": "2025-12-07 05:16:42.923077",
+    "metadata": {
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": "actor_a52b1f56b55b",
+    "canonical_name": "AI Safety Framework",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:42.931382",
+    "updated_at": "2025-12-07 05:16:42.931382",
+    "metadata": {
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": "actor_6c6c3dfbdaf7",
+    "canonical_name": "AI Safety Alliance",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:43.058545",
+    "updated_at": "2025-12-07 05:16:43.058546",
+    "metadata": {
+      "confidence": 0.95
+    }
+  },
+  {
+    "id": "actor_ed68b08db436",
+    "canonical_name": "Украиной",
+    "actor_type": "country",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:43.730348",
+    "updated_at": "2025-12-07 05:16:43.730349",
+    "metadata": {
+      "confidence": 0.9100000000000001
+    }
+  },
+  {
+    "id": "actor_6580f19be13c",
+    "canonical_name": "Россией",
+    "actor_type": "country",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:43.730360",
+    "updated_at": "2025-12-07 05:16:43.730360",
+    "metadata": {
+      "confidence": 0.9100000000000001
+    }
+  },
+  {
+    "id": "actor_88094cdc4649",
+    "canonical_name": "США",
+    "actor_type": "country",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:43.730366",
+    "updated_at": "2025-12-07 05:16:43.730366",
+    "metadata": {
+      "confidence": 0.89
+    }
+  },
+  {
+    "id": "actor_84332d751863",
+    "canonical_name": "Путина",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:43.730371",
+    "updated_at": "2025-12-07 05:16:43.730371",
+    "metadata": {
+      "confidence": 0.8
+    }
+  },
+  {
+    "id": "actor_80ef6679d14d",
+    "canonical_name": "Трампа",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:43.730376",
+    "updated_at": "2025-12-07 05:16:43.730376",
+    "metadata": {
+      "confidence": 0.8
+    }
+  },
+  {
+    "id": "actor_77eeb82e38b5",
+    "canonical_name": "Зеленского",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:43.730381",
+    "updated_at": "2025-12-07 05:16:43.730381",
+    "metadata": {
+      "confidence": 0.8500000000000001
+    }
+  },
+  {
+    "id": "actor_1278fc700b7d",
+    "canonical_name": "Джо Байдена",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:43.730386",
+    "updated_at": "2025-12-07 05:16:43.730386",
+    "metadata": {
+      "confidence": 0.8800000000000001
+    }
+  },
+  {
+    "id": "actor_0ef5214f43c7",
+    "canonical_name": "Белом доме",
+    "actor_type": "country",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:43.730391",
+    "updated_at": "2025-12-07 05:16:43.730391",
+    "metadata": {
+      "confidence": 0.9000000000000001
+    }
+  },
+  {
+    "id": "actor_f8481875ec34",
+    "canonical_name": "России",
+    "actor_type": "country",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:43.730396",
+    "updated_at": "2025-12-07 05:16:43.730396",
+    "metadata": {
+      "confidence": 0.8500000000000001
+    }
+  },
+  {
+    "id": "actor_a35e9c341a0e",
+    "canonical_name": "Владимир Путин",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:43.730400",
+    "updated_at": "2025-12-07 05:16:43.730401",
+    "metadata": {
+      "confidence": 0.8500000000000001
+    }
+  },
+  {
+    "id": "actor_80a68b82b33e",
+    "canonical_name": "Украины",
+    "actor_type": "country",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:43.730405",
+    "updated_at": "2025-12-07 05:16:43.730405",
+    "metadata": {
+      "confidence": 0.8500000000000001
+    }
+  },
+  {
+    "id": "actor_942bbd2e3b01",
+    "canonical_name": "Владимир Зеленский",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:43.730410",
+    "updated_at": "2025-12-07 05:16:43.730410",
+    "metadata": {
+      "confidence": 0.8500000000000001
+    }
+  },
+  {
+    "id": "actor_60bd2ad3b9ee",
+    "canonical_name": "Дональд Трамп",
+    "actor_type": "organization",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-07 05:16:43.730415",
+    "updated_at": "2025-12-07 05:16:43.730415",
+    "metadata": {
       "confidence": 0.8500000000000001
     }
   }

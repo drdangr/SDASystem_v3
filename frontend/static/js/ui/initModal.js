@@ -48,7 +48,7 @@ export class InitModal {
             this.counts.textContent = `Processed: ${progress.processed || 0}/${progress.total || 0} • Actors: ${status.actors_count}`;
         }
 
-        if (status?.initialized) {
+        if (status?.initialized && !progress.running) {
             this.hide();
         } else {
             this.show();

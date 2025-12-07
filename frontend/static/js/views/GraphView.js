@@ -26,7 +26,16 @@ export class GraphView {
             newsNode: '#4a90e2',
             storyNode: '#ffd700',
             actorNode: '#9b59b6',
-            edge: '#3a6ea5',
+            
+            // Detailed actor colors
+            actorPerson: '#9b59b6', // Purple
+            actorPolitician: '#e056fd', // Bright Purple/Pink
+            actorCompany: '#3498db', // Blue
+            actorCountry: '#e67e22', // Orange
+            actorGov: '#95a5a6', // Grey
+            actorIntOrg: '#1abc9c', // Teal
+            actorOrg: '#2ecc71', // Green
+
             edge: '#3a6ea5',
             highlight: '#ff6b6b',
             domainNode: '#2c3e50'
@@ -735,7 +744,16 @@ export class GraphView {
         if (node.type === 'story') {
             color = this.colors.storyNode;
         } else if (node.type === 'actor') {
-            color = this.colors.actorNode;
+            switch(node.actorType) {
+                case 'person': return this.colors.actorPerson;
+                case 'politician': return this.colors.actorPolitician;
+                case 'company': return this.colors.actorCompany;
+                case 'country': return this.colors.actorCountry;
+                case 'government': return this.colors.actorGov;
+                case 'int_org': return this.colors.actorIntOrg;
+                case 'organization': return this.colors.actorOrg;
+                default: return this.colors.actorOrg;
+            }
         } else if (node.type === 'domain') {
             const domainColors = {
                 'politics': '#e74c3c',
@@ -823,9 +841,31 @@ export class GraphView {
                 <div class="legend-color planet"></div>
                 <span>News (Planet)</span>
             </div>
-            <div class="legend-item" id="legendActor" style="display: none;">
-                <div class="legend-color actor"></div>
-                <span>Actor</span>
+            <div class="legend-item" id="legendActor" style="display: none; flex-direction: column; align-items: flex-start;">
+                <div style="display: flex; align-items: center; margin-bottom: 4px;">
+                    <div class="legend-color" style="background: #e056fd;"></div>
+                    <span>Politician</span>
+                </div>
+                <div style="display: flex; align-items: center; margin-bottom: 4px;">
+                    <div class="legend-color" style="background: #9b59b6;"></div>
+                    <span>Person</span>
+                </div>
+                <div style="display: flex; align-items: center; margin-bottom: 4px;">
+                    <div class="legend-color" style="background: #e67e22;"></div>
+                    <span>Country</span>
+                </div>
+                <div style="display: flex; align-items: center; margin-bottom: 4px;">
+                    <div class="legend-color" style="background: #3498db;"></div>
+                    <span>Company</span>
+                </div>
+                <div style="display: flex; align-items: center; margin-bottom: 4px;">
+                    <div class="legend-color" style="background: #95a5a6;"></div>
+                    <span>Gov</span>
+                </div>
+                <div style="display: flex; align-items: center; margin-bottom: 4px;">
+                    <div class="legend-color" style="background: #1abc9c;"></div>
+                    <span>Int Org</span>
+                </div>
             </div>
         `;
         this.container.appendChild(legend);

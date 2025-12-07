@@ -1,7 +1,8 @@
 """
 FastAPI routes for SDASystem API
 """
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, BackgroundTasks
+import fastapi
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -853,26 +854,39 @@ async def get_init_status():
 
 
 @app.post("/api/system/init/start")
-async def start_initialization(low_conf_threshold: float = 0.75):
+async def start_initialization(background_tasks: fastapi.BackgroundTasks, low_conf_threshold: float = 0.75):
     if not actors_extraction_service:
         raise HTTPException(status_code=500, detail="ActorsExtractionService not initialized")
-    actors_extraction_service.start_initialization(low_conf_threshold=low_conf_threshold)
+    
+    if actors_extraction_service.progress.running:
+         return {"message": "Already running", "status": actors_extraction_service.get_status()}
+
+    background_tasks.add_task(actors_extraction_service.start_initialization, low_conf_threshold=low_conf_threshold)
+    
+    actors_extraction_service.progress.running = True
+    actors_extraction_service.progress.message = "Starting initialization..."
+    
     return actors_extraction_service.get_status()
 
 
 # --- Actors extraction triggers ---
 
 @app.post("/api/actors/extract/all")
-async def extract_all_actors(low_conf_threshold: float = 0.75):
+async def extract_all_actors(background_tasks: fastapi.BackgroundTasks, low_conf_threshold: float = 0.75):
     if not actors_extraction_service:
         raise HTTPException(status_code=500, detail="ActorsExtractionService not initialized")
-    try:
-        actors_extraction_service.clear_all(clear_cache=True)
-        result = actors_extraction_service.extract_all(low_conf_threshold=low_conf_threshold)
-        status = actors_extraction_service.get_status()
-        return {"updated": len(result), "status": status}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    
+    if actors_extraction_service.progress.running:
+         return {"message": "Already running", "status": actors_extraction_service.get_status()}
+
+    actors_extraction_service.clear_all(clear_cache=True)
+    
+    background_tasks.add_task(actors_extraction_service.extract_all, low_conf_threshold=low_conf_threshold)
+    
+    actors_extraction_service.progress.running = True
+    actors_extraction_service.progress.message = "Starting full extraction..."
+
+    return actors_extraction_service.get_status()
 
 
 @app.post("/api/actors/extract/story/{story_id}")
