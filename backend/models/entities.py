@@ -68,9 +68,17 @@ class Actor(BaseModel):
     canonical_name: str = Field(..., description="Canonical name")
     actor_type: ActorType = Field(..., description="Type of actor")
     aliases: List[Dict[str, str]] = Field(default_factory=list, description="List of aliases with types")
+    wikidata_qid: Optional[str] = Field(default=None, description="Wikidata QID for canonical entity")
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     metadata: Dict = Field(default_factory=dict, description="Additional metadata")
+    # metadata может содержать:
+    # - positions: List[str] - должности (для людей)
+    # - country: Optional[str] - страна (для людей)
+    # - countries: List[str] - список стран гражданства
+    # - birth_date: Optional[str] - дата рождения
+    # - description: Optional[str] - описание из Wikidata
+    # - original_language: str - язык оригинального имени
 
     class Config:
         use_enum_values = True
