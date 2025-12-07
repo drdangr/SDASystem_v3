@@ -15,6 +15,7 @@ from backend.models.entities import Actor, ActorType, News
 from backend.services.ner_spacy_service import create_hybrid_ner_service, HybridNERService
 from backend.services.graph_manager import GraphManager
 from backend.services.llm_service import LLMService
+from backend.services.actor_canonicalization_service import ActorCanonicalizationService
 
 
 @dataclass
@@ -70,6 +71,14 @@ class ActorsExtractionService:
             auto_detect_language=True,  # Автоматически определять язык
             prefer_large_models=False  # Использовать средние модели для баланса скорости/качества
         )
+        
+        # Сервис канонизации акторов
+        self.canonicalization_service = ActorCanonicalizationService(
+            use_wikidata=True,
+            use_lemmatization=True,
+            prefer_large_models=False
+        )
+        
         # Прогресс инициализации
         self.progress = InitProgress()
 
@@ -136,7 +145,9 @@ class ActorsExtractionService:
     def _normalize_key(self, name: str) -> str:
         import re
         n = name.lower().strip()
-        n = re.sub(r"[^a-z0-9\\s]", "", n)
+        # Разрешаем буквы (включая кириллицу), цифры, пробелы
+        # Явно добавляем диапазон кириллицы для надежности
+        n = re.sub(r"[^\w\s\u0400-\u04FFёЁ]", "", n)
         n = re.sub(r"^the\\s+", "", n)
         n = " ".join(n.split())
         return n
@@ -144,22 +155,122 @@ class ActorsExtractionService:
     def _add_or_get_actor(
         self, name: str, actor_type: str, confidence: Optional[float], canonical_index: Dict[str, str]
     ) -> Actor:
-        key = name.lower().strip()
+        """Старый метод для обратной совместимости"""
+        return self._add_or_get_actor_with_canonicalization(
+            name, actor_type, confidence, canonical_index
+        )
+    
+    def _add_or_get_actor_with_canonicalization(
+        self,
+        canonical_name: str,
+        actor_type: str,
+        confidence: Optional[float],
+        canonical_index: Dict[str, str],
+        wikidata_qid: Optional[str] = None,
+        aliases: Optional[List[Dict[str, str]]] = None,
+        metadata: Optional[Dict] = None
+    ) -> Actor:
+        """
+        Добавить или получить актора с поддержкой канонизации.
+        
+        Args:
+            canonical_name: Каноническое имя актора
+            actor_type: Тип актора
+            confidence: Уверенность
+            canonical_index: Индекс для быстрого поиска
+            wikidata_qid: QID из Wikidata (если есть)
+            aliases: Список алиасов
+            metadata: Дополнительные метаданные
+        """
+        # Сначала проверяем по QID (самый надежный способ)
+        if wikidata_qid:
+            for actor_id, actor in self.graph_manager.actors.items():
+                if actor.wikidata_qid == wikidata_qid:
+                    # Обновляем алиасы и метаданные если нужно
+                    self._update_actor_aliases(actor, aliases or [])
+                    self._update_actor_metadata(actor, metadata or {})
+                    return actor
+        
+        # Проверяем по каноническому имени
+        key = canonical_name.lower().strip()
         if key in canonical_index:
             actor_id = canonical_index[key]
-            return self.graph_manager.actors[actor_id]
+            actor = self.graph_manager.actors[actor_id]
+            # Обновляем QID если его еще нет
+            if wikidata_qid and not actor.wikidata_qid:
+                actor.wikidata_qid = wikidata_qid
+            # Обновляем алиасы и метаданные
+            self._update_actor_aliases(actor, aliases or [])
+            self._update_actor_metadata(actor, metadata or {})
+            return actor
+        
+        # Проверяем по алиасам
+        if aliases:
+            for alias_entry in aliases:
+                alias_name = alias_entry.get("name", "").lower().strip()
+                if alias_name in canonical_index:
+                    actor_id = canonical_index[alias_name]
+                    actor = self.graph_manager.actors[actor_id]
+                    # Обновляем каноническое имя если оно лучше
+                    if canonical_name != actor.canonical_name:
+                        # Добавляем старое каноническое имя как алиас
+                        self._add_alias_if_not_exists(actor, actor.canonical_name, "canonical")
+                        actor.canonical_name = canonical_name
+                    # Обновляем остальное
+                    if wikidata_qid:
+                        actor.wikidata_qid = wikidata_qid
+                    self._update_actor_aliases(actor, aliases)
+                    self._update_actor_metadata(actor, metadata or {})
+                    canonical_index[key] = actor.id
+                    return actor
 
-        # Создать нового
+        # Создать нового актора
+        actor_metadata = metadata.copy() if metadata else {}
+        if confidence is not None:
+            actor_metadata["confidence"] = confidence
+        
         actor = Actor(
             id=self._generate_actor_id(),
-            canonical_name=name,
+            canonical_name=canonical_name,
             actor_type=ActorType(actor_type) if actor_type in ActorType._value2member_map_ else actor_type,
-            aliases=[],
-            metadata={"confidence": confidence} if confidence is not None else {},
+            aliases=aliases.copy() if aliases else [],
+            wikidata_qid=wikidata_qid,
+            metadata=actor_metadata,
         )
         self.graph_manager.add_actor(actor)
         canonical_index[key] = actor.id
+        
+        # Добавляем алиасы в индекс
+        if aliases:
+            for alias_entry in aliases:
+                alias_name = alias_entry.get("name", "").lower().strip()
+                if alias_name and alias_name != key:
+                    canonical_index[alias_name] = actor.id
+        
         return actor
+    
+    def _update_actor_aliases(self, actor: Actor, new_aliases: List[Dict[str, str]]):
+        """Обновить алиасы актора, добавив новые если их еще нет"""
+        existing_aliases = {a.get("name", "").lower() for a in actor.aliases}
+        
+        for alias_entry in new_aliases:
+            alias_name = alias_entry.get("name", "")
+            if alias_name and alias_name.lower() not in existing_aliases:
+                actor.aliases.append(alias_entry)
+                existing_aliases.add(alias_name.lower())
+    
+    def _add_alias_if_not_exists(self, actor: Actor, alias_name: str, alias_type: str = "alias"):
+        """Добавить алиас если его еще нет"""
+        existing_aliases = {a.get("name", "").lower() for a in actor.aliases}
+        if alias_name.lower() not in existing_aliases:
+            actor.aliases.append({
+                "name": alias_name,
+                "type": alias_type
+            })
+    
+    def _update_actor_metadata(self, actor: Actor, new_metadata: Dict):
+        """Обновить метаданные актора, объединив с существующими"""
+        actor.metadata.update(new_metadata)
 
     def _save_actors(self) -> None:
         actors_list = [a.model_dump() for a in self.graph_manager.actors.values()]
@@ -183,39 +294,62 @@ class ActorsExtractionService:
     def deduplicate_actors(self) -> None:
         """
         Дедупликация акторов: одна каноническая запись, остальные в aliases.
+        Использует QID из Wikidata для точного сопоставления.
         Обновляет news.mentioned_actors и mentions_graph.
         """
-        alias_groups = {
-            "European Union": ["eu", "the european union", "european union"],
-            "United Nations": ["un", "the united nations", "united nations"],
-            "Russia": ["russian", "the russian federation", "russia"],
-        }
-        blacklist_keys = {"peace negotiations"}
-
-        variant_to_canonical = {}
-        for canonical, variants in alias_groups.items():
-            for v in variants:
-                variant_to_canonical[self._normalize_key(v)] = canonical
+        # Группировка по QID (самый надежный способ)
+        qid_to_actors: Dict[str, List[str]] = {}
+        for actor_id, actor in self.graph_manager.actors.items():
+            if actor.wikidata_qid:
+                if actor.wikidata_qid not in qid_to_actors:
+                    qid_to_actors[actor.wikidata_qid] = []
+                qid_to_actors[actor.wikidata_qid].append(actor_id)
 
         key_to_id: Dict[str, str] = {}
         to_delete: List[str] = []
         old_to_new: Dict[str, str] = {}
 
-        # Первичный проход: выбрать канон по normalize_key
+        # Первичный проход: объединение по QID
+        for qid, actor_ids in qid_to_actors.items():
+            if len(actor_ids) > 1:
+                # Выбираем первого как основной (можно улучшить логику выбора)
+                primary_id = actor_ids[0]
+                primary_actor = self.graph_manager.actors[primary_id]
+                
+                for secondary_id in actor_ids[1:]:
+                    secondary_actor = self.graph_manager.actors[secondary_id]
+                    old_to_new[secondary_id] = primary_id
+                    
+                    # Переносим алиасы
+                    self._update_actor_aliases(primary_actor, secondary_actor.aliases)
+                    # Добавляем каноническое имя вторичного как алиас
+                    self._add_alias_if_not_exists(primary_actor, secondary_actor.canonical_name, "merged")
+                    # Объединяем метаданные
+                    self._update_actor_metadata(primary_actor, secondary_actor.metadata)
+                    
+                    to_delete.append(secondary_id)
+
+        # Вторичный проход: выбрать канон по normalize_key
+        blacklist_keys = {"peace negotiations"}
+        
         for actor_id, actor in list(self.graph_manager.actors.items()):
-            key_raw = self._normalize_key(actor.canonical_name)
-            if key_raw in blacklist_keys:
+            if actor_id in to_delete:
+                continue
+                
+            key = self._normalize_key(actor.canonical_name)
+            if key in blacklist_keys:
                 to_delete.append(actor_id)
                 continue
-
-            target_name = variant_to_canonical.get(key_raw, actor.canonical_name)
-            if target_name != actor.canonical_name:
-                actor.canonical_name = target_name
-            key = self._normalize_key(target_name)
+            
             if not key:
                 continue
+                
             if key in key_to_id:
                 target_id = key_to_id[key]
+                # Пропускаем если уже объединены по QID
+                if actor_id in old_to_new or target_id in old_to_new:
+                    continue
+                
                 old_to_new[actor_id] = target_id
                 # перенести canonical_name как alias
                 target = self.graph_manager.actors[target_id]
@@ -229,6 +363,11 @@ class ActorsExtractionService:
                     if name and name.lower() not in existing_aliases:
                         target.aliases.append(al)
                         existing_aliases.add(name.lower())
+                # Переносим QID если его еще нет
+                if actor.wikidata_qid and not target.wikidata_qid:
+                    target.wikidata_qid = actor.wikidata_qid
+                # Объединяем метаданные
+                self._update_actor_metadata(target, actor.metadata)
                 to_delete.append(actor_id)
             else:
                 key_to_id[key] = actor_id
@@ -309,14 +448,32 @@ class ActorsExtractionService:
             low_confidence_threshold=low_conf_threshold,
         )
 
+        # Канонизировать извлеченных акторов перед добавлением в граф
+        canonicalized = self.canonicalization_service.canonicalize_batch(extracted)
+
         actor_ids: List[str] = []
-        for item in extracted:
-            name = item.get("name")
+        for item in canonicalized:
+            # Используем каноническое имя вместо оригинального
+            canonical_name = item.get("canonical_name") or item.get("name")
             atype = item.get("type", "organization")
             conf = item.get("confidence")
-            if not name:
+            wikidata_qid = item.get("wikidata_qid")
+            aliases = item.get("aliases", [])
+            metadata = item.get("metadata", {})
+            
+            if not canonical_name:
                 continue
-            actor = self._add_or_get_actor(name, atype, conf, canonical_index)
+            
+            # Проверяем, существует ли актор с таким QID или каноническим именем
+            actor = self._add_or_get_actor_with_canonicalization(
+                canonical_name, 
+                atype, 
+                conf, 
+                canonical_index,
+                wikidata_qid=wikidata_qid,
+                aliases=aliases,
+                metadata=metadata
+            )
             actor_ids.append(actor.id)
 
         # Обновить новость
