@@ -1,0 +1,71 @@
+{
+  "news_id": "news_tesla_ev_001",
+  "news_title": "Tesla Opens New Gigafactory in Texas",
+  "news_text": "Tesla Opens New Gigafactory in Texas\nTesla announced the official opening of its latest Gigafactory in Austin, Texas, expanding US electric vehicle production capacity.\nTesla CEO Elon Musk celebrated the grand opening of the company's newest Gigafactory in Austin, Texas. The facility will produce the Cybertruck and Model Y vehicles, significantly boosting Tesla's manufacturing capacity in the United States. The $1.1 billion investment is expected to create thousands of jobs in the region.",
+  "expected_actors": [
+    {
+      "id": "actor_64c3cc6d7eba",
+      "canonical_name": "Tesla",
+      "actor_type": "company",
+      "aliases": [
+        "Tesla Inc",
+        "TSLA"
+      ],
+      "all_mentions": [
+        "TSLA",
+        "tsla",
+        "Tesla Inc",
+        "tesla inc",
+        "Tesla",
+        "tesla"
+      ],
+      "normalized_names": [
+        "tsla",
+        "tsla",
+        "tesla inc",
+        "tesla inc",
+        "tesla",
+        "tesla"
+      ]
+    },
+    {
+      "id": "actor_f7cc169b01aa",
+      "canonical_name": "United States",
+      "actor_type": "country",
+      "aliases": [
+        "USA",
+        "US",
+        "America",
+        "США"
+      ],
+      "all_mentions": [
+        "America",
+        "united states",
+        "USA",
+        "United States",
+        "us",
+        "america",
+        "US",
+        "США",
+        "сша",
+        "usa"
+      ],
+      "normalized_names": [
+        "america",
+        "united states",
+        "usa",
+        "united states",
+        "us",
+        "america",
+        "us",
+        "сша",
+        "сша",
+        "usa"
+      ]
+    }
+  ],
+  "original_mentioned_actors": [
+    "actor_64c3cc6d7eba",
+    "actor_f7cc169b01aa"
+  ]
+}

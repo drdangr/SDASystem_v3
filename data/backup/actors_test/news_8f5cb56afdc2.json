@@ -1,0 +1,123 @@
+{
+  "news_id": "news_8f5cb56afdc2",
+  "news_title": "Tech Leaders Discuss Election Security",
+  "news_text": "Tech Leaders Discuss Election Security\nMajor technology companies commit to enhanced election security measures.\nLeaders from Microsoft, Google, and Meta met to discuss election security and misinformation prevention. The companies committed to implementing enhanced verification and transparency measures.",
+  "expected_actors": [
+    {
+      "id": "actor_20fea056145e",
+      "canonical_name": "Microsoft",
+      "actor_type": "company",
+      "aliases": [
+        "MSFT",
+        "Microsoft Corp"
+      ],
+      "all_mentions": [
+        "msft",
+        "Microsoft Corp",
+        "microsoft",
+        "microsoft corp",
+        "Microsoft",
+        "MSFT"
+      ],
+      "normalized_names": [
+        "msft",
+        "microsoft corp",
+        "microsoft",
+        "microsoft corp",
+        "microsoft",
+        "msft"
+      ]
+    },
+    {
+      "id": "actor_8ca667afc7f7",
+      "canonical_name": "Google",
+      "actor_type": "company",
+      "aliases": [
+        "Alphabet",
+        "Google Inc"
+      ],
+      "all_mentions": [
+        "google inc",
+        "alphabet",
+        "Alphabet",
+        "google",
+        "Google",
+        "Google Inc"
+      ],
+      "normalized_names": [
+        "google inc",
+        "alphabet",
+        "alphabet",
+        "google",
+        "google",
+        "google inc"
+      ]
+    },
+    {
+      "id": "actor_2dc49c7c08b5",
+      "canonical_name": "Meta",
+      "actor_type": "company",
+      "aliases": [
+        "Facebook",
+        "Meta Platforms"
+      ],
+      "all_mentions": [
+        "Meta Platforms",
+        "meta platforms",
+        "meta",
+        "Facebook",
+        "facebook",
+        "Meta"
+      ],
+      "normalized_names": [
+        "meta platforms",
+        "meta platforms",
+        "meta",
+        "facebook",
+        "facebook",
+        "meta"
+      ]
+    },
+    {
+      "id": "actor_f7cc169b01aa",
+      "canonical_name": "United States",
+      "actor_type": "country",
+      "aliases": [
+        "USA",
+        "US",
+        "America",
+        "США"
+      ],
+      "all_mentions": [
+        "America",
+        "united states",
+        "USA",
+        "United States",
+        "us",
+        "america",
+        "US",
+        "США",
+        "сша",
+        "usa"
+      ],
+      "normalized_names": [
+        "america",
+        "united states",
+        "usa",
+        "united states",
+        "us",
+        "america",
+        "us",
+        "сша",
+        "сша",
+        "usa"
+      ]
+    }
+  ],
+  "original_mentioned_actors": [
+    "actor_20fea056145e",
+    "actor_8ca667afc7f7",
+    "actor_2dc49c7c08b5",
+    "actor_f7cc169b01aa"
+  ]
+}

@@ -1,1 +1,0 @@
-{"text": "```json\n[\n  {\n    \"name\": \"Joe Biden\",\n    \"type\": \"person\",\n    \"confidence\": 0.98\n  },\n  {\n    \"name\": \"US\",\n    \"type\": \"location\",\n    \"confidence\": 0.95\n  }\n]\n```"}

@@ -1,0 +1,76 @@
+{
+  "news_id": "news_b91dbb24eaa1",
+  "news_title": "US Presidential Campaign Intensifies",
+  "news_text": "US Presidential Campaign Intensifies\nPresidential candidates increase campaign activities ahead of upcoming elections.\nThe United States presidential campaign entered a new phase with candidates intensifying their outreach efforts. Joe Biden outlined his vision for the next term, focusing on economic recovery and international leadership.",
+  "expected_actors": [
+    {
+      "id": "actor_f7cc169b01aa",
+      "canonical_name": "United States",
+      "actor_type": "country",
+      "aliases": [
+        "USA",
+        "US",
+        "America",
+        "США"
+      ],
+      "all_mentions": [
+        "America",
+        "united states",
+        "USA",
+        "United States",
+        "us",
+        "america",
+        "US",
+        "США",
+        "сша",
+        "usa"
+      ],
+      "normalized_names": [
+        "america",
+        "united states",
+        "usa",
+        "united states",
+        "us",
+        "america",
+        "us",
+        "сша",
+        "сша",
+        "usa"
+      ]
+    },
+    {
+      "id": "actor_ed2d5daa6f6c",
+      "canonical_name": "Joe Biden",
+      "actor_type": "person",
+      "aliases": [
+        "Biden",
+        "President Biden",
+        "Байден"
+      ],
+      "all_mentions": [
+        "байден",
+        "Байден",
+        "president biden",
+        "Joe Biden",
+        "Biden",
+        "biden",
+        "President Biden",
+        "joe biden"
+      ],
+      "normalized_names": [
+        "байден",
+        "байден",
+        "president biden",
+        "joe biden",
+        "biden",
+        "biden",
+        "president biden",
+        "joe biden"
+      ]
+    }
+  ],
+  "original_mentioned_actors": [
+    "actor_f7cc169b01aa",
+    "actor_ed2d5daa6f6c"
+  ]
+}

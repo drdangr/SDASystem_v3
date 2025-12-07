@@ -18,6 +18,9 @@
                 SDASystem
             </h1>
             <div class="header-actions">
+                <button id="extractAllActors">All Actors</button>
+                <button id="extractStoryActors">Story Actors</button>
+                <button id="extractNewsActors">News Actors</button>
                 <button id="llmDebugBtn">LLM Debug</button>
                 <button id="llmSettingsBtn">LLM Settings</button>
             </div>
@@ -116,6 +119,24 @@
         </section>
     </div>
 
+    <!-- Init Modal -->
+    <div id="initModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>System Initialization</h3>
+                <span class="progress-text">Initializing...</span>
+                <div class="progress-counts"></div>
+            </div>
+            <div class="modal-body">
+                <div class="progress-current"></div>
+                <div class="progress-container">
+                    <div class="progress-bar"></div>
+                </div>
+                <div class="init-log"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- LLM Settings Modal -->
     <div id="llmSettingsModal" class="modal">
         <div class="modal-content">
@@ -124,6 +145,14 @@
                 <button id="llmSettingsClose" class="close-btn">×</button>
             </div>
             <div class="modal-body">
+                <label>Service
+                    <select id="llmServiceSelect">
+                    </select>
+                </label>
+                <label>Profile
+                    <select id="llmProfileSelect">
+                    </select>
+                </label>
                 <label>Model
                     <select id="llmModel">
                         <option value="gemini-2.5-flash">gemini-2.5-flash</option>

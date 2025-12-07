@@ -1,0 +1,61 @@
+{
+  "news_id": "news_40edd01c7197",
+  "news_title": "EU Pledges Carbon Neutrality by 2040",
+  "news_text": "EU Pledges Carbon Neutrality by 2040\nEuropean Union announces accelerated timeline for achieving carbon neutrality.\nThe European Union announced an ambitious plan to achieve carbon neutrality by 2040, ten years ahead of the original target. Ursula von der Leyen stated this demonstrates Europe's commitment to climate leadership.",
+  "expected_actors": [
+    {
+      "id": "actor_58a67d900502",
+      "canonical_name": "European Union",
+      "actor_type": "organization",
+      "aliases": [
+        "EU",
+        "ЕС"
+      ],
+      "all_mentions": [
+        "european union",
+        "ес",
+        "EU",
+        "eu",
+        "ЕС",
+        "European Union"
+      ],
+      "normalized_names": [
+        "european union",
+        "ес",
+        "eu",
+        "eu",
+        "ес",
+        "european union"
+      ]
+    },
+    {
+      "id": "actor_fe2d942a0675",
+      "canonical_name": "Ursula von der Leyen",
+      "actor_type": "person",
+      "aliases": [
+        "von der Leyen",
+        "фон дер Ляйен"
+      ],
+      "all_mentions": [
+        "фон дер ляйен",
+        "ursula von der leyen",
+        "фон дер Ляйен",
+        "von der Leyen",
+        "Ursula von der Leyen",
+        "von der leyen"
+      ],
+      "normalized_names": [
+        "фон дер ляйен",
+        "ursula von der leyen",
+        "фон дер ляйен",
+        "von der leyen",
+        "ursula von der leyen",
+        "von der leyen"
+      ]
+    }
+  ],
+  "original_mentioned_actors": [
+    "actor_58a67d900502",
+    "actor_fe2d942a0675"
+  ]
+}

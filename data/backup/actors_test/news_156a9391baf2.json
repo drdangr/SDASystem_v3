@@ -1,0 +1,61 @@
+{
+  "news_id": "news_156a9391baf2",
+  "news_title": "Google Responds with Competing AI Strategy",
+  "news_text": "Google Responds with Competing AI Strategy\nGoogle unveils comprehensive AI development roadmap to compete with Microsoft.\nIn response to Microsoft's AI investments, Google announced an accelerated AI development strategy. The company emphasized its long-standing AI research and development capabilities.",
+  "expected_actors": [
+    {
+      "id": "actor_8ca667afc7f7",
+      "canonical_name": "Google",
+      "actor_type": "company",
+      "aliases": [
+        "Alphabet",
+        "Google Inc"
+      ],
+      "all_mentions": [
+        "google inc",
+        "alphabet",
+        "Alphabet",
+        "google",
+        "Google",
+        "Google Inc"
+      ],
+      "normalized_names": [
+        "google inc",
+        "alphabet",
+        "alphabet",
+        "google",
+        "google",
+        "google inc"
+      ]
+    },
+    {
+      "id": "actor_20fea056145e",
+      "canonical_name": "Microsoft",
+      "actor_type": "company",
+      "aliases": [
+        "MSFT",
+        "Microsoft Corp"
+      ],
+      "all_mentions": [
+        "msft",
+        "Microsoft Corp",
+        "microsoft",
+        "microsoft corp",
+        "Microsoft",
+        "MSFT"
+      ],
+      "normalized_names": [
+        "msft",
+        "microsoft corp",
+        "microsoft",
+        "microsoft corp",
+        "microsoft",
+        "msft"
+      ]
+    }
+  ],
+  "original_mentioned_actors": [
+    "actor_8ca667afc7f7",
+    "actor_20fea056145e"
+  ]
+}

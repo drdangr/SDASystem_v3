@@ -10,6 +10,8 @@ export class DetailsView {
         this.apiBase = apiBase;
         this.currentNews = null;
         this.currentActor = null;
+        this.escapeHtml = (window && window.escapeHtml) ? window.escapeHtml : (t => String(t ?? ''));
+        this.formatDate = (window && window.formatDate) ? window.formatDate : (t => String(t ?? ''));
     }
 
     /**
@@ -57,33 +59,27 @@ export class DetailsView {
 
             this.container.innerHTML = `
                 <div class="news-detail">
-                    <h3 style="font-size: 18px; color: #fff; margin: 15px 0;">${escapeHtml(news.title)}</h3>
-
-                    <div class="llm-status-line">
-                        <span class="llm-label">LLM actors:</span>
-                        <span class="llm-status" id="llmActorsStatus"></span>
-                        <button class="llm-btn" id="llmActorsRefresh">Refresh</button>
-                    </div>
+                    <h3 style="font-size: 18px; color: #fff; margin: 15px 0;">${this.escapeHtml(news.title)}</h3>
 
                     <div class="detail-section">
                         <h3>Source</h3>
-                        <p>${escapeHtml(news.source)}</p>
+                        <p>${this.escapeHtml(news.source)}</p>
                     </div>
 
                     <div class="detail-section">
                         <h3>Published</h3>
-                        <p>${formatDate(news.published_at)}</p>
+                        <p>${this.escapeHtml(this.formatDate(news.published_at))}</p>
                     </div>
 
                     <div class="detail-section">
                         <h3>Summary</h3>
-                        <p style="line-height: 1.6;">${escapeHtml(news.summary)}</p>
+                        <p style="line-height: 1.6;">${this.escapeHtml(news.summary)}</p>
                     </div>
 
                     ${news.full_text ? `
                         <div class="detail-section">
                             <h3>Full Text</h3>
-                            <p style="line-height: 1.6;">${escapeHtml(news.full_text)}</p>
+                            <p style="line-height: 1.6;">${this.escapeHtml(news.full_text)}</p>
                         </div>
                     ` : ''}
 
@@ -98,7 +94,7 @@ export class DetailsView {
                         <div class="detail-section">
                             <h3>Domains</h3>
                             <div class="aliases-list">
-                                ${news.domains.map(d => `<span class="alias-tag">${escapeHtml(this.formatDomain(d))}</span>`).join('')}
+                                ${news.domains.map(d => `<span class="alias-tag">${this.escapeHtml(this.formatDomain(d))}</span>`).join('')}
                             </div>
                         </div>
                     ` : ''}
@@ -106,7 +102,6 @@ export class DetailsView {
             `;
 
             this.setupEventListeners();
-            this.setupActorsRefresh(news.id);
         } catch (error) {
             console.error('Error rendering news detail:', error);
             this.container.innerHTML = '<div class="error">Failed to load news details</div>';
@@ -134,8 +129,8 @@ export class DetailsView {
 
             this.container.innerHTML = `
                 <div class="actor-detail">
-                    <div class="actor-name">${escapeHtml(actor.canonical_name)}</div>
-                    <span class="actor-type">${escapeHtml(actor.actor_type)}</span>
+                    <div class="actor-name">${this.escapeHtml(actor.canonical_name)}</div>
+                    <span class="actor-type">${this.escapeHtml(actor.actor_type)}</span>
 
                     <div class="detail-section">
                         <h3>Aliases</h3>
@@ -168,11 +163,11 @@ export class DetailsView {
     createNewsItemHtml(news) {
         return `
             <div class="news-item" data-news-id="${news.id}">
-                <h4>${escapeHtml(news.title)}</h4>
-                <p>${escapeHtml(news.summary)}</p>
+                <h4>${this.escapeHtml(news.title)}</h4>
+                <p>${this.escapeHtml(news.summary)}</p>
                 <div class="news-meta">
                     <span>${news.source}</span> •
-                    <span>${formatDate(news.published_at)}</span>
+                    <span>${this.escapeHtml(this.formatDate(news.published_at))}</span>
                 </div>
             </div>
         `;
@@ -196,71 +191,6 @@ export class DetailsView {
                 const newsId = item.dataset.newsId;
                 this.eventBus.emit('news:selected', newsId);
             });
-        });
-    }
-
-    setupActorsRefresh(newsId) {
-        const btn = this.container.querySelector('#llmActorsRefresh');
-        const statusEl = this.container.querySelector('#llmActorsStatus');
-        // preserve reference to current news for update
-        const currentNews = this.currentNews;
-        if (!btn) return;
-
-        btn.addEventListener('click', async () => {
-            try {
-                if (statusEl) statusEl.textContent = 'Loading...';
-                const settings = Storage.load('llmSettings', null) || {};
-                const payload = {
-                    news_id: newsId,
-                    model: settings.model,
-                    temperature: settings.temperature,
-                    top_p: settings.top_p,
-                    top_k: settings.top_k,
-                    max_tokens: settings.max_tokens
-                };
-                const resp = await fetch(`/api/news/${newsId}/actors/refresh`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                if (!resp.ok) {
-                    const txt = await resp.text();
-                    window.lastLLMDebug = `HTTP ${resp.status}: ${txt}`;
-                    throw new Error(`HTTP ${resp.status}`);
-                }
-                const data = await resp.json();
-                console.log('LLM actors response', data);
-                const debugObj = {
-                    actors: data.actors,
-                    actor_ids: data.actor_ids,
-                    raw: data.raw
-                };
-                window.lastLLMDebug = JSON.stringify(debugObj, null, 2);
-
-                // render actors directly from response
-                const actorsList = Array.isArray(data.actors) ? data.actors : [];
-                // re-render with overrides
-                await this.renderNews({
-                    ...currentNews,
-                    mentioned_actors: data.actor_ids || currentNews?.mentioned_actors || []
-                }, actorsList, data.actor_ids);
-
-                // notify app to refresh stories/graph aggregates
-                this.eventBus.emit('actors:updated');
-
-                // re-fetch news to sync with backend, but ensure mentioned_actors are kept
-                const newsResp = await fetch(`/api/news/${newsId}`);
-                const updated = await newsResp.json();
-                if (data.actor_ids && Array.isArray(data.actor_ids)) {
-                    updated.mentioned_actors = data.actor_ids;
-                }
-                await this.renderNews(updated, actorsList, data.actor_ids);
-                if (statusEl) statusEl.textContent = 'Done';
-            } catch (e) {
-                console.error('LLM actors refresh error', e);
-                window.lastLLMDebug = String(e);
-                if (statusEl) statusEl.textContent = 'Error';
-            }
         });
     }
 

@@ -1,0 +1,108 @@
+{
+  "news_id": "news_a629774edf14",
+  "news_title": "Russia Criticizes NATO Expansion Plans",
+  "news_text": "Russia Criticizes NATO Expansion Plans\nRussian officials condemn NATO's military aid to Ukraine as escalation.\nVladimir Putin criticized NATO's decision to increase military support to Ukraine, calling it an escalation of the conflict. Russia warned of potential consequences for regional security.",
+  "expected_actors": [
+    {
+      "id": "actor_67323c41b6eb",
+      "canonical_name": "Russia",
+      "actor_type": "country",
+      "aliases": [
+        "Russian Federation",
+        "Россия"
+      ],
+      "all_mentions": [
+        "россия",
+        "russian federation",
+        "Россия",
+        "Russian Federation",
+        "russia",
+        "Russia"
+      ],
+      "normalized_names": [
+        "россия",
+        "russian federation",
+        "россия",
+        "russian federation",
+        "russia",
+        "russia"
+      ]
+    },
+    {
+      "id": "actor_d201343d1ed5",
+      "canonical_name": "Vladimir Putin",
+      "actor_type": "person",
+      "aliases": [
+        "Путин",
+        "Putin",
+        "President Putin"
+      ],
+      "all_mentions": [
+        "путин",
+        "president putin",
+        "Putin",
+        "putin",
+        "vladimir putin",
+        "Путин",
+        "President Putin",
+        "Vladimir Putin"
+      ],
+      "normalized_names": [
+        "путин",
+        "president putin",
+        "putin",
+        "putin",
+        "vladimir putin",
+        "путин",
+        "president putin",
+        "vladimir putin"
+      ]
+    },
+    {
+      "id": "actor_872f3fc74846",
+      "canonical_name": "NATO",
+      "actor_type": "organization",
+      "aliases": [
+        "North Atlantic Treaty Organization"
+      ],
+      "all_mentions": [
+        "North Atlantic Treaty Organization",
+        "nato",
+        "north atlantic treaty organization",
+        "NATO"
+      ],
+      "normalized_names": [
+        "north atlantic treaty organization",
+        "nato",
+        "north atlantic treaty organization",
+        "nato"
+      ]
+    },
+    {
+      "id": "actor_1dcb1df3d7ba",
+      "canonical_name": "Ukraine",
+      "actor_type": "country",
+      "aliases": [
+        "Украина"
+      ],
+      "all_mentions": [
+        "украина",
+        "ukraine",
+        "Украина",
+        "Ukraine"
+      ],
+      "normalized_names": [
+        "украина",
+        "ukraine",
+        "украина",
+        "ukraine"
+      ]
+    }
+  ],
+  "original_mentioned_actors": [
+    "actor_67323c41b6eb",
+    "actor_d201343d1ed5",
+    "actor_872f3fc74846",
+    "actor_1dcb1df3d7ba"
+  ]
+}
