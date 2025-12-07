@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 from backend.models.entities import Actor, ActorType, News
-from backend.services.ner_spacy_service import create_hybrid_ner_service, HybridNERService
+from backend.services.ner_spacy_service import create_hybrid_ner_service, HybridNERService, detect_language
 from backend.services.graph_manager import GraphManager
 from backend.services.llm_service import LLMService
 from backend.services.actor_canonicalization_service import ActorCanonicalizationService
@@ -44,6 +44,10 @@ class ActorsExtractionService:
     """
     Управляет извлечением акторов из новостей, обновлением графа и файлов данных.
     """
+
+    BLACKLIST_KEYS = {
+        "peace negotiations", "negotiations", "conflict", "war", "peace", "summit", "meeting"
+    }
 
     def __init__(
         self,
@@ -291,86 +295,101 @@ class ActorsExtractionService:
         for sid in list(self.graph_manager.stories.keys()):
             self.graph_manager.update_story_top_actors(sid, top_n=top_n)
 
-    def deduplicate_actors(self) -> None:
+    def _find_merge_candidates(self) -> Tuple[Dict[str, List[str]], Dict[str, List[str]]]:
         """
-        Дедупликация акторов: одна каноническая запись, остальные в aliases.
-        Использует QID из Wikidata для точного сопоставления.
-        Обновляет news.mentioned_actors и mentions_graph.
+        Найти кандидатов на слияние.
+        Returns:
+            Tuple[qid_groups, key_groups]: Группы по QID и по нормализованному имени.
         """
-        # Группировка по QID (самый надежный способ)
         qid_to_actors: Dict[str, List[str]] = {}
+        key_to_actors: Dict[str, List[str]] = {}
+        
         for actor_id, actor in self.graph_manager.actors.items():
+            # 1. Группировка по QID
             if actor.wikidata_qid:
                 if actor.wikidata_qid not in qid_to_actors:
                     qid_to_actors[actor.wikidata_qid] = []
                 qid_to_actors[actor.wikidata_qid].append(actor_id)
-
-        key_to_id: Dict[str, str] = {}
-        to_delete: List[str] = []
-        old_to_new: Dict[str, str] = {}
-
-        # Первичный проход: объединение по QID
-        for qid, actor_ids in qid_to_actors.items():
-            if len(actor_ids) > 1:
-                # Выбираем первого как основной (можно улучшить логику выбора)
-                primary_id = actor_ids[0]
-                primary_actor = self.graph_manager.actors[primary_id]
-                
-                for secondary_id in actor_ids[1:]:
-                    secondary_actor = self.graph_manager.actors[secondary_id]
-                    old_to_new[secondary_id] = primary_id
-                    
-                    # Переносим алиасы
-                    self._update_actor_aliases(primary_actor, secondary_actor.aliases)
-                    # Добавляем каноническое имя вторичного как алиас
-                    self._add_alias_if_not_exists(primary_actor, secondary_actor.canonical_name, "merged")
-                    # Объединяем метаданные
-                    self._update_actor_metadata(primary_actor, secondary_actor.metadata)
-                    
-                    to_delete.append(secondary_id)
-
-        # Вторичный проход: выбрать канон по normalize_key
-        blacklist_keys = {"peace negotiations"}
-        
-        for actor_id, actor in list(self.graph_manager.actors.items()):
-            if actor_id in to_delete:
-                continue
-                
-            key = self._normalize_key(actor.canonical_name)
-            if key in blacklist_keys:
-                to_delete.append(actor_id)
-                continue
             
-            if not key:
+            # 2. Группировка по нормализованному имени (для тех, у кого нет QID или как вторичный критерий)
+            key = self._normalize_key(actor.canonical_name)
+            if key and key not in self.BLACKLIST_KEYS:
+                if key not in key_to_actors:
+                    key_to_actors[key] = []
+                key_to_actors[key].append(actor_id)
+                
+        return qid_to_actors, key_to_actors
+
+    def _merge_actor_groups(self, actor_groups: List[List[str]]) -> Tuple[Dict[str, str], List[str]]:
+        """
+        Выполнить слияние групп акторов.
+        Returns:
+            Tuple[old_to_new_map, ids_to_delete]: Маппинг замен и список на удаление.
+        """
+        old_to_new: Dict[str, str] = {}
+        to_delete: List[str] = []
+        
+        for group in actor_groups:
+            if len(group) < 2:
                 continue
                 
-            if key in key_to_id:
-                target_id = key_to_id[key]
-                # Пропускаем если уже объединены по QID
-                if actor_id in old_to_new or target_id in old_to_new:
+            # Сортируем: сначала те что с QID, потом по длине имени (предпочитаем более полные)
+            # Но для простоты берем первого как target, если у него есть QID, или ищем лучшего
+            target_id = group[0]
+            # Простая эвристика: выбираем актора, у которого есть QID
+            for aid in group:
+                if self.graph_manager.actors[aid].wikidata_qid:
+                    target_id = aid
+                    break
+            
+            target_actor = self.graph_manager.actors[target_id]
+            
+            for source_id in group:
+                if source_id == target_id:
+                    continue
+                    
+                # Проверяем, не был ли этот source_id уже слит (защита от циклов и дублей)
+                if source_id in old_to_new:
                     continue
                 
-                old_to_new[actor_id] = target_id
-                # перенести canonical_name как alias
-                target = self.graph_manager.actors[target_id]
-                existing_aliases = {a.get("name", "").lower() for a in target.aliases}
-                if actor.canonical_name.lower() not in existing_aliases:
-                    target.aliases.append({"name": actor.canonical_name, "type": "alias"})
-                    existing_aliases.add(actor.canonical_name.lower())
-                # перенести aliases
-                for al in actor.aliases:
-                    name = al.get("name")
-                    if name and name.lower() not in existing_aliases:
-                        target.aliases.append(al)
-                        existing_aliases.add(name.lower())
-                # Переносим QID если его еще нет
-                if actor.wikidata_qid and not target.wikidata_qid:
-                    target.wikidata_qid = actor.wikidata_qid
-                # Объединяем метаданные
-                self._update_actor_metadata(target, actor.metadata)
-                to_delete.append(actor_id)
-            else:
-                key_to_id[key] = actor_id
+                source_actor = self.graph_manager.actors[source_id]
+                
+                # Логика слияния
+                old_to_new[source_id] = target_id
+                to_delete.append(source_id)
+                
+                # 1. Перенос алиасов
+                self._update_actor_aliases(target_actor, source_actor.aliases)
+                # 2. Имя сливаемого как алиас
+                self._add_alias_if_not_exists(target_actor, source_actor.canonical_name, "merged")
+                # 3. QID
+                if source_actor.wikidata_qid and not target_actor.wikidata_qid:
+                    target_actor.wikidata_qid = source_actor.wikidata_qid
+                # 4. Metadata
+                self._update_actor_metadata(target_actor, source_actor.metadata)
+        
+        return old_to_new, to_delete
+
+    def deduplicate_actors(self) -> None:
+        """
+        Дедупликация акторов: одна каноническая запись, остальные в aliases.
+        Использует QID из Wikidata и нормализованные имена.
+        """
+        qid_groups, key_groups = self._find_merge_candidates()
+        
+        # Собираем все группы для слияния в один список
+        # Важно: сначала обрабатываем группы по QID, так как они точнее
+        all_groups = list(qid_groups.values())
+        
+        # Затем добавляем группы по имени, но нужно быть осторожным, чтобы не слить то, что уже слито
+        # В текущей реализации _merge_actor_groups проверяет source_id in old_to_new, так что это безопасно
+        all_groups.extend(list(key_groups.values()))
+        
+        # Выполняем слияние
+        old_to_new, to_delete = self._merge_actor_groups(all_groups)
+        
+        if not to_delete:
+            return
 
         # Удалить дубликаты из графа
         for actor_id in to_delete:
@@ -384,29 +403,44 @@ class ActorsExtractionService:
             seen = set()
             for aid in news.mentioned_actors:
                 new_id = old_to_new.get(aid, aid)
-                if new_id not in seen:
-                    seen.add(new_id)
-                    updated_ids.append(new_id)
+                # Если ID был удален, но не замаплен (странная ситуация, но возможна), пропускаем
+                if new_id in to_delete and new_id not in old_to_new:
+                    continue
+                # Берем финальный ID (на случай цепочек слияний a->b->c)
+                final_id = new_id
+                while final_id in old_to_new:
+                    final_id = old_to_new[final_id]
+                
+                if final_id not in seen and final_id not in to_delete:
+                    if final_id in self.graph_manager.actors: # Проверка существования
+                        seen.add(final_id)
+                        updated_ids.append(final_id)
             news.mentioned_actors = updated_ids
 
-        # Перестроить mentions_graph
+        # Перестроить mentions_graph (чистый способ)
         self.graph_manager.mentions_graph.clear()
         for news in self.graph_manager.news.values():
             for aid in news.mentioned_actors:
-                self.graph_manager.mentions_graph.add_edge(
-                    f"news_{news.id}", f"actor_{aid}", news_id=news.id, actor_id=aid
-                )
+                if aid in self.graph_manager.actors:
+                    self.graph_manager.mentions_graph.add_edge(
+                        f"news_{news.id}", f"actor_{aid}", news_id=news.id, actor_id=aid
+                    )
 
-        # Обновить top_actors в историях (заменить id, удалить несуществующие)
+        # Обновить top_actors в историях
         for story in self.graph_manager.stories.values():
             mapped = []
+            seen = set()
             for aid in story.top_actors:
-                new_id = old_to_new.get(aid, aid)
-                if new_id in self.graph_manager.actors:
-                    mapped.append(new_id)
+                final_id = old_to_new.get(aid, aid)
+                while final_id in old_to_new:
+                    final_id = old_to_new[final_id]
+                
+                if final_id in self.graph_manager.actors and final_id not in seen:
+                    mapped.append(final_id)
+                    seen.add(final_id)
             story.top_actors = mapped
 
-        # Пересчитать топ акторов
+        # Пересчитать топ акторов для всех историй
         self._update_all_story_top_actors()
 
     # ------------------------------------------------------------------ #
@@ -448,8 +482,11 @@ class ActorsExtractionService:
             low_confidence_threshold=low_conf_threshold,
         )
 
+        # Определяем язык текста для подсказки канонизатору
+        news_language = detect_language(text)
+
         # Канонизировать извлеченных акторов перед добавлением в граф
-        canonicalized = self.canonicalization_service.canonicalize_batch(extracted)
+        canonicalized = self.canonicalization_service.canonicalize_batch(extracted, default_language=news_language)
 
         actor_ids: List[str] = []
         for item in canonicalized:
@@ -505,15 +542,41 @@ class ActorsExtractionService:
         return result
 
     def extract_all(self, low_conf_threshold: float = 0.75) -> Dict[str, List[str]]:
+        print("DEBUG: extract_all called")
+        # Force update status immediately
+        self.progress.message = "Extracting all actors..."
+        self.progress.total = len(self.graph_manager.news)
+        self.progress.processed = 0
+        self.progress.running = True
+        
         result: Dict[str, List[str]] = {}
-        for news in self.graph_manager.news.values():
-            _, ids = self.extract_for_news(news, low_conf_threshold)
-            result[news.id] = ids
+        
+        canonical_index = self._build_canonical_index()
+        print(f"DEBUG: Starting loop over {len(self.graph_manager.news)} news items")
+        
+        for i, news in enumerate(list(self.graph_manager.news.values()), start=1):
+            print(f"DEBUG: Processing news {i}/{self.progress.total}: {news.id}")
+            self.progress.processed = i
+            self.progress.message = f"Extracting actors for news {i}/{self.progress.total}"
+            self.progress.current_news_id = news.id
+            self.progress.current_news_title = news.title
+            
+            try:
+                _, ids = self.extract_for_news(news, low_conf_threshold)
+                result[news.id] = ids
+            except Exception as e:
+                print(f"Error extracting for news {news.id}: {e}")
+            
+            self.progress.actors_count = len(self.graph_manager.actors)
+
         self.load_gazetteer()
         self.deduplicate_actors()
         self._save_actors()
         self._save_news()
         self._update_all_story_top_actors()
+        
+        self.progress.message = "Completed"
+        self.progress.running = False
         return result
 
     # ------------------------------------------------------------------ #

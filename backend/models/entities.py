@@ -13,7 +13,9 @@ class ActorType(str, Enum):
     COMPANY = "company"
     COUNTRY = "country"
     ORGANIZATION = "organization"
+    POLITICIAN = "politician"
     GOVERNMENT = "government"
+    INT_ORG = "int_org"
     STRUCTURE = "structure"
     EVENT_ENTITY = "event"
 

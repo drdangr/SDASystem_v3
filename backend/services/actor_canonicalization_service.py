@@ -87,6 +87,7 @@ class ActorCanonicalizationService:
     def _lemmatize_russian(self, name: str) -> str:
         """
         Лемматизировать русское имя (привести к именительному падежу).
+        Включает эвристики для исправления ошибок spaCy на одиночных фамилиях.
         
         Args:
             name: Имя в любом падеже (например, "Украиной", "Россией")
@@ -112,6 +113,49 @@ class ActorCanonicalizationService:
             
             lemmatized = " ".join(lemmatized_parts).strip()
             
+            # --- HEURISTIC FIXES ---
+            # Если лемматизация не изменила имя (или изменила только регистр),
+            # а слово похоже на фамилию в косвенном падеже, применяем правила.
+            
+            original_lower = name.lower().strip()
+            lemma_lower = lemmatized.lower().strip() if lemmatized else original_lower
+            
+            # Правила исправления окончаний для русских фамилий
+            # Применяем только если это одно слово (или последнее слово во фразе)
+            if lemma_lower == original_lower:
+                words = lemma_lower.split()
+                if not words:
+                    return name
+                
+                last_word = words[-1]
+                fixed_word = last_word
+                
+                # Правило 1: -ого/-его (Зеленского -> Зеленский)
+                if last_word.endswith("ого") or last_word.endswith("его"):
+                    fixed_word = last_word[:-3] + "ий"
+                # Правило 2: -ова (Трампова -> Трампов - редко для муж, но бывает) 
+                # Рискованно для женщин, но Wikidata должна исправить
+                elif last_word.endswith("ова") and len(last_word) > 4: 
+                     # Пропускаем "Слова", "Корова" и т.д. эвристически длиной
+                     pass 
+                # Правило 3: -ина (Путина -> Путин, Байдена -> Байден - тут сложнее)
+                elif last_word.endswith("ина"):
+                    # Путина -> Путин
+                    fixed_word = last_word[:-1]
+                # Правило 4: -ена (Байдена -> Байден)
+                elif last_word.endswith("ена"):
+                    fixed_word = last_word[:-1]
+                # Правило 5: -ой (Украиной -> Украина) - spaCy обычно справляется, но на всякий случай
+                elif last_word.endswith("ой") and "украин" in last_word:
+                    fixed_word = last_word[:-2] + "а"
+
+                if fixed_word != last_word:
+                    words[-1] = fixed_word
+                    lemmatized = " ".join(words)
+                    logger.debug(f"Heuristic lemmatization applied: {name} -> {lemmatized}")
+
+            # -----------------------
+
             # Если лемматизация не изменила имя, возвращаем оригинал
             if not lemmatized:
                 return name
@@ -182,6 +226,37 @@ class ActorCanonicalizationService:
         if language is None:
             language = detect_language(original_name)
         
+        # --- GARBAGE FILTERING ---
+        # Отфильтровываем слишком длинные имена (вероятно, заголовки или ошибки экстракции)
+        # Если это не организация с QID (которые мы еще не знаем, но если имя длинное и без контекста - подозрительно)
+        if len(original_name) > 50 or len(original_name.split()) > 6:
+            logger.warning(f"Skipping suspiciously long actor name: '{original_name}'")
+            return {
+                "canonical_name": original_name,
+                "aliases": [],
+                "wikidata_qid": None,
+                "metadata": {},
+                "original_name": original_name,
+                "inferred_type": "organization" # Default to generic org if we must keep it
+            }
+
+        # --- KNOWN ENTITY OVERRIDES ---
+        # Принудительное исправление типов для известных личностей, чтобы Wikidata искала правильно
+        # Это временная мера, пока LLM не станет идеальной
+        known_politicians_ru = ["Зеленский", "Путин", "Байден", "Трамп", "Макрон", "Шольц"]
+        known_politicians_en = ["Zelensky", "Putin", "Biden", "Trump", "Macron", "Scholz"]
+        
+        check_name = original_name
+        # Пытаемся нормализовать для проверки
+        if language == 'ru' and self.use_lemmatization:
+             check_name = self._normalize_russian_name(original_name)
+        
+        is_known_politician = False
+        if any(p in check_name for p in known_politicians_ru) or any(p in check_name for p in known_politicians_en):
+            is_known_politician = True
+            actor_type = "politician" # Force type
+            logger.debug(f"Forcing type 'politician' for known entity '{original_name}'")
+
         # Шаг 1: Лемматизация для русского языка
         if language == 'ru' and self.use_lemmatization:
             lemmatized_name = self._normalize_russian_name(original_name)
@@ -193,6 +268,7 @@ class ActorCanonicalizationService:
         wikidata_canonical = None
         wikidata_aliases = []
         wikidata_metadata = {}
+        wikidata_type = None
         
         if self.use_wikidata:
             try:
@@ -202,13 +278,18 @@ class ActorCanonicalizationService:
                     self._wikidata_service = WikidataService()
                 
                 # Поиск по лемматизированному имени
-                search_result = self._wikidata_service.search_entity(lemmatized_name, language)
+                search_result = self._wikidata_service.search_entity(
+                    name=lemmatized_name,
+                    language=language,
+                    expected_type=actor_type
+                )
                 
                 if search_result:
                     wikidata_qid = search_result.get("qid")
                     wikidata_canonical = search_result.get("canonical_name")
                     wikidata_aliases = search_result.get("aliases", [])
                     wikidata_metadata = search_result.get("metadata", {})
+                    wikidata_type = search_result.get("type")
                     
                     logger.debug(f"Found Wikidata entity for '{lemmatized_name}': QID={wikidata_qid}")
             except Exception as e:
@@ -265,10 +346,11 @@ class ActorCanonicalizationService:
             "aliases": aliases,
             "wikidata_qid": wikidata_qid,
             "metadata": metadata,
-            "original_name": original_name
+            "original_name": original_name,
+            "inferred_type": wikidata_type
         }
     
-    def canonicalize_batch(self, actors: List[Dict]) -> List[Dict]:
+    def canonicalize_batch(self, actors: List[Dict], default_language: Optional[str] = None) -> List[Dict]:
         """
         Канонизировать список акторов пакетно.
         
@@ -278,6 +360,7 @@ class ActorCanonicalizationService:
                 - type: тип актора
                 - confidence: уверенность (опционально)
                 - language: язык (опционально, определяется автоматически)
+            default_language: Язык по умолчанию, если не указан для актора
         
         Returns:
             Список канонизированных акторов с дополнительными полями:
@@ -291,18 +374,25 @@ class ActorCanonicalizationService:
                 continue
             
             actor_type = actor.get("type", "organization")
-            language = actor.get("language")
+            language = actor.get("language") or default_language
             confidence = actor.get("confidence")
             
             # Канонизируем актора
             canonical = self.canonicalize_actor(name, actor_type, language)
             
+            # Обновляем тип, если он был уточнен в Wikidata
+            final_type = canonical.get("inferred_type") or actor_type
+            
             # Объединяем с исходными данными
             result = {
                 **actor,
                 **canonical,
+                "type": final_type,
                 "confidence": confidence
             }
+            
+            if "inferred_type" in result:
+                del result["inferred_type"]
             
             canonicalized.append(result)
         
