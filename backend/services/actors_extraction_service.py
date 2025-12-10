@@ -12,7 +12,8 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 from backend.models.entities import Actor, ActorType, News
-from backend.services.ner_spacy_service import create_hybrid_ner_service, HybridNERService, detect_language
+from backend.services.ner_spacy_service import detect_language
+from backend.services.google_ner_service import GoogleNERService
 from backend.services.graph_manager import GraphManager
 from backend.services.llm_service import LLMService
 from backend.services.actor_canonicalization_service import ActorCanonicalizationService
@@ -66,20 +67,14 @@ class ActorsExtractionService:
         self.backup_dir.mkdir(parents=True, exist_ok=True)
         self.backup_file = self.backup_dir / "actors.json.bak"
 
-        # Используем автоматическое определение языка по умолчанию
-        # Если spacy_model указан явно - используем его, иначе автоматически выбираем по языку текста
-        self.hybrid: HybridNERService = create_hybrid_ner_service(
-            llm_service, 
-            use_spacy=use_spacy, 
-            spacy_model=spacy_model if spacy_model != "en_core_web_sm" else None,  # Если дефолтная - используем автоопределение
-            auto_detect_language=True,  # Автоматически определять язык
-            prefer_large_models=False  # Использовать средние модели для баланса скорости/качества
-        )
+        # Используем GoogleNERService (Gemini) как основной сервис
+        self.hybrid = GoogleNERService(llm_service)
         
-        # Сервис канонизации акторов
+        # Сервис канонизации акторов (Wikidata)
+        # Оставляем его для получения QID и метаданных, но полагаемся на имя от LLM
         self.canonicalization_service = ActorCanonicalizationService(
             use_wikidata=True,
-            use_lemmatization=True,
+            use_lemmatization=False, # LLM уже лемматизирует
             prefer_large_models=False
         )
         
@@ -87,8 +82,9 @@ class ActorsExtractionService:
         self.progress = InitProgress()
 
         # Инициализируем gazetteer, если акторы уже загружены
+        # (GoogleNERService не использует gazetteer напрямую, но мы можем загрузить его если понадобится позже)
         if self.graph_manager.actors:
-            self.hybrid.load_gazetteer(list(self.graph_manager.actors.values()))
+            # self.hybrid.load_gazetteer(list(self.graph_manager.actors.values()))
             # Привести к канону и восстановить согласованность
             self.deduplicate_actors()
             self._save_actors()
@@ -299,10 +295,26 @@ class ActorsExtractionService:
         """
         Найти кандидатов на слияние.
         Returns:
-            Tuple[qid_groups, key_groups]: Группы по QID и по нормализованному имени.
+            Tuple[qid_groups, key_groups]: Группы по QID и по нормализованному имени/алиасам.
         """
         qid_to_actors: Dict[str, List[str]] = {}
         key_to_actors: Dict[str, List[str]] = {}
+        
+        # Build alias->actor_id index from actors WITH QID (they are authoritative)
+        alias_to_authoritative: Dict[str, str] = {}
+        for actor_id, actor in self.graph_manager.actors.items():
+            if actor.wikidata_qid:
+                # Index canonical name
+                key = self._normalize_key(actor.canonical_name)
+                if key:
+                    alias_to_authoritative[key] = actor_id
+                # Index all aliases
+                for alias_entry in actor.aliases:
+                    alias_name = alias_entry.get("name", "")
+                    if alias_name:
+                        alias_key = self._normalize_key(alias_name)
+                        if alias_key:
+                            alias_to_authoritative[alias_key] = actor_id
         
         for actor_id, actor in self.graph_manager.actors.items():
             # 1. Группировка по QID
@@ -310,8 +322,21 @@ class ActorsExtractionService:
                 if actor.wikidata_qid not in qid_to_actors:
                     qid_to_actors[actor.wikidata_qid] = []
                 qid_to_actors[actor.wikidata_qid].append(actor_id)
+            else:
+                # 2. Для акторов без QID - проверить совпадение с алиасами авторитетных акторов
+                key = self._normalize_key(actor.canonical_name)
+                if key and key in alias_to_authoritative:
+                    auth_actor_id = alias_to_authoritative[key]
+                    # Group this actor with the authoritative one
+                    auth_qid = self.graph_manager.actors[auth_actor_id].wikidata_qid
+                    if auth_qid:
+                        if auth_qid not in qid_to_actors:
+                            qid_to_actors[auth_qid] = []
+                        if actor_id not in qid_to_actors[auth_qid]:
+                            qid_to_actors[auth_qid].append(actor_id)
+                        continue
             
-            # 2. Группировка по нормализованному имени (для тех, у кого нет QID или как вторичный критерий)
+            # 3. Группировка по нормализованному имени (fallback)
             key = self._normalize_key(actor.canonical_name)
             if key and key not in self.BLACKLIST_KEYS:
                 if key not in key_to_actors:
@@ -466,7 +491,8 @@ class ActorsExtractionService:
 
     def load_gazetteer(self) -> None:
         """Загрузить актуальный gazetteer в гибридный сервис."""
-        self.hybrid.load_gazetteer(list(self.graph_manager.actors.values()))
+        # self.hybrid.load_gazetteer(list(self.graph_manager.actors.values()))
+        pass
 
     def extract_for_news(self, news: News, low_conf_threshold: float = 0.75) -> Tuple[List[Actor], List[str]]:
         """
@@ -475,20 +501,19 @@ class ActorsExtractionService:
         """
         canonical_index = self._build_canonical_index()
         text = self._news_text(news)
-        extracted = self.hybrid.extract_actors(
-            text,
-            use_llm=True,
-            use_llm_for_low_confidence=True,
-            low_confidence_threshold=low_conf_threshold,
-        )
+        
+        # Используем новый сервис (GoogleNERService)
+        # Он не принимает лишние аргументы
+        extracted = self.hybrid.extract_actors(text)
 
         # Определяем язык текста для подсказки канонизатору
         news_language = detect_language(text)
 
         # Канонизировать извлеченных акторов перед добавлением в граф
+        # (GoogleNERService уже чистит, но здесь мы ищем QID)
         canonicalized = self.canonicalization_service.canonicalize_batch(extracted, default_language=news_language)
 
-        actor_ids: List[str] = []
+        actor_ids_set: set = set()  # Use set to avoid duplicates
         for item in canonicalized:
             # Используем каноническое имя вместо оригинального
             canonical_name = item.get("canonical_name") or item.get("name")
@@ -511,8 +536,11 @@ class ActorsExtractionService:
                 aliases=aliases,
                 metadata=metadata
             )
-            actor_ids.append(actor.id)
+            actor_ids_set.add(actor.id)  # Add to set (auto-deduplication)
 
+        # Convert to list for storage
+        actor_ids = list(actor_ids_set)
+        
         # Обновить новость
         self._reset_news_mentions(news.id)
         news.mentioned_actors = actor_ids
@@ -592,31 +620,19 @@ class ActorsExtractionService:
         for i, news in enumerate(self.graph_manager.news.values(), start=1):
             self.progress.processed = i
             self.progress.message = f"Extracting actors for news {i}/{self.progress.total}"
-            news.mentioned_actors = []
             self.progress.current_news_id = news.id
             self.progress.current_news_title = news.title
             # reuse index for dedup across all news
             text = self._news_text(news)
             try:
-                extracted = self.hybrid.extract_actors(
-                    text,
-                    use_llm=True,
-                    use_llm_for_low_confidence=True,
-                    low_confidence_threshold=low_conf_threshold,
-                )
+                # Используем новый метод
+                extracted = self.hybrid.extract_actors(text)
             except Exception as e:
-                # Fallback: spaCy-only if LLM quota or other errors
-                try:
-                    extracted = self.hybrid.extract_actors(
-                        text,
-                        use_llm=False,
-                        use_llm_for_low_confidence=False,
-                        low_confidence_threshold=low_conf_threshold,
-                    )
-                    self.progress.message = f"LLM fallback -> spaCy for news {i}"
-                except Exception:
-                    self.progress.message = f"Failed on news {news.id}: {e}"
-                    continue
+                self.progress.message = f"Failed on news {news.id}: {e}"
+                continue
+            
+            # Use set to avoid duplicates
+            actor_ids_set: set = set()
             for item in extracted:
                 name = item.get("name")
                 atype = item.get("type", "organization")
@@ -624,7 +640,9 @@ class ActorsExtractionService:
                 if not name:
                     continue
                 actor = self._add_or_get_actor(name, atype, conf, canonical_index)
-                news.mentioned_actors.append(actor.id)
+                actor_ids_set.add(actor.id)
+            
+            news.mentioned_actors = list(actor_ids_set)
             self._reset_news_mentions(news.id)
             self._add_mentions_edges(news.id, news.mentioned_actors)
             self.progress.actors_count = len(self.graph_manager.actors)
@@ -644,4 +662,3 @@ class ActorsExtractionService:
             "news_count": len(self.graph_manager.news),
             "progress": self.progress.as_dict(),
         }
-

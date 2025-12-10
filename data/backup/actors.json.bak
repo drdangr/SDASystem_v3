@@ -1,758 +1,850 @@
 [
   {
-    "id": "actor_523429423d09",
+    "id": "actor_612692d0e918",
     "canonical_name": "Russia",
     "actor_type": "country",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.404509",
-    "updated_at": "2025-12-07 05:16:42.404509",
+    "aliases": [
+      {
+        "name": "Russian Federation",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Federation of Russia",
+        "type": "alias",
+        "language": "en"
+      }
+    ],
+    "wikidata_qid": "Q159",
+    "created_at": "2025-12-10 00:52:54.486231",
+    "updated_at": "2025-12-10 00:52:54.486238",
     "metadata": {
-      "confidence": 0.9100000000000001
+      "instance_of_qids": [
+        "Q3624078",
+        "Q859563",
+        "Q6256",
+        "Q1323642",
+        "Q43702",
+        "Q127693126"
+      ],
+      "occupation_qids": [],
+      "description": "country in Eastern Europe and Northern Asia",
+      "original_language": "en",
+      "confidence": 1.0
     }
   },
   {
-    "id": "actor_4344db182735",
-    "canonical_name": "Russian",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.404519",
-    "updated_at": "2025-12-07 05:16:42.404519",
-    "metadata": {
-      "confidence": 0.8
-    }
-  },
-  {
-    "id": "actor_8a272b2be91e",
+    "id": "actor_678a7e8f6fb6",
     "canonical_name": "NATO",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.404524",
-    "updated_at": "2025-12-07 05:16:42.404524",
+    "actor_type": "int_org",
+    "aliases": [
+      {
+        "name": "NATO Alliance",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "North Atlantic Treaty Organisation",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "North Atlantic Alliance",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "North Atlantic Treaty Organization",
+        "type": "alias",
+        "language": "en"
+      }
+    ],
+    "wikidata_qid": "Q7184",
+    "created_at": "2025-12-10 00:52:54.486382",
+    "updated_at": "2025-12-10 00:52:54.486384",
     "metadata": {
-      "confidence": 0.9099999999999999
+      "instance_of_qids": [
+        "Q1127126",
+        "Q245065",
+        "Q484652",
+        "Q100906234"
+      ],
+      "occupation_qids": [],
+      "description": "intergovernmental military alliance between 32 member states",
+      "original_language": "en",
+      "confidence": 1.0
     }
   },
   {
-    "id": "actor_c22c6d199a47",
+    "id": "actor_6e3c52f68bfe",
     "canonical_name": "Ukraine",
     "actor_type": "country",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.404529",
-    "updated_at": "2025-12-07 05:16:42.404529",
+    "aliases": [
+      {
+        "name": "Ukrainia",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Ukr.",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Ukraina",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Ukraïna",
+        "type": "alias",
+        "language": "en"
+      }
+    ],
+    "wikidata_qid": "Q212",
+    "created_at": "2025-12-10 00:52:54.486419",
+    "updated_at": "2025-12-10 00:52:54.486420",
     "metadata": {
-      "confidence": 0.8800000000000001
+      "instance_of_qids": [
+        "Q3624078",
+        "Q6256",
+        "Q179164",
+        "Q7270",
+        "Q619610",
+        "Q4209223",
+        "Q4835091"
+      ],
+      "occupation_qids": [],
+      "description": "country in Eastern Europe",
+      "original_language": "en",
+      "confidence": 1.0
     }
   },
   {
-    "id": "actor_434682a35eb2",
+    "id": "actor_024a6f4c4091",
     "canonical_name": "Vladimir Putin",
-    "actor_type": "person",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.404534",
-    "updated_at": "2025-12-07 05:16:42.404534",
+    "actor_type": "politician",
+    "aliases": [
+      {
+        "name": "Vladimir Vladimirovich Putin",
+        "type": "alias",
+        "language": "en"
+      }
+    ],
+    "wikidata_qid": "Q7747",
+    "created_at": "2025-12-10 00:52:54.486444",
+    "updated_at": "2025-12-10 00:52:54.486445",
     "metadata": {
-      "confidence": 0.95
+      "instance_of_qids": [
+        "Q5"
+      ],
+      "occupation_qids": [
+        "Q6665249",
+        "Q392651",
+        "Q9352089",
+        "Q465501",
+        "Q82955",
+        "Q248577"
+      ],
+      "positions": [
+        "President of Russia",
+        "President of Russia",
+        "Director of the Federal Security Service",
+        "Prime Minister of Russia",
+        "Deputy Chairman of the Government of the Russian Federation",
+        "Secretary of the Security Council of Russia",
+        "party leader",
+        "Supreme Commander-in-Chief of the Armed Forces of the Russian Federation",
+        "Supreme Commander-in-Chief of the Armed Forces of the Russian Federation",
+        "Chairman of the Council of CIS Heads of State",
+        "Chairman of the Council of CIS Heads of State",
+        "chairperson",
+        "chairperson",
+        "Acting President of Russia",
+        "Prime Minister of Russia",
+        "Chairman of the Council of CIS Heads of State",
+        "Permanent member of the Security Council of Russia",
+        "party leader",
+        "president for life",
+        "recruiter",
+        "Chairman of the Council of CIS Heads of State"
+      ],
+      "countries": [
+        "Soviet Union",
+        "Russia"
+      ],
+      "country": "Soviet Union",
+      "birth_date": "+1952-10-07T00:00:00Z",
+      "description": "2nd and 4th President of Russia (2000-2008, 2012-present), 7th and 11th Prime Minister of Russia (1999-2000, 2008-2012), Director of the Federal Security Service (1998-1999) and Deputy Mayor of Saint Petersburg (1994-1996)",
+      "original_language": "en",
+      "confidence": 1.0
     }
   },
   {
-    "id": "actor_5825f22f2415",
-    "canonical_name": "UN",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.412523",
-    "updated_at": "2025-12-07 05:16:42.412523",
-    "metadata": {
-      "confidence": 0.9099999999999999
-    }
-  },
-  {
-    "id": "actor_6816b0e280b8",
-    "canonical_name": "Peace Negotiations",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.412534",
-    "updated_at": "2025-12-07 05:16:42.412534",
-    "metadata": {
-      "confidence": 0.95
-    }
-  },
-  {
-    "id": "actor_7b43b80fb978",
+    "id": "actor_dc85cc362998",
     "canonical_name": "United Nations",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.412542",
-    "updated_at": "2025-12-07 05:16:42.412543",
+    "actor_type": "int_org",
+    "aliases": [
+      {
+        "name": "United Nations Organization",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "UNO",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "UN",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "U.N.",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "the UN",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "the U.N.",
+        "type": "alias",
+        "language": "en"
+      }
+    ],
+    "wikidata_qid": "Q1065",
+    "created_at": "2025-12-10 00:52:58.758454",
+    "updated_at": "2025-12-10 00:52:58.758454",
     "metadata": {
-      "confidence": 0.95
+      "instance_of_qids": [
+        "Q245065",
+        "Q484652",
+        "Q163740"
+      ],
+      "occupation_qids": [],
+      "description": "global international and intergovernmental organization",
+      "original_language": "en",
+      "confidence": 1.0
     }
   },
   {
-    "id": "actor_029b512e9164",
-    "canonical_name": "The United Nations",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.412552",
-    "updated_at": "2025-12-07 05:16:42.412552",
-    "metadata": {
-      "confidence": 0.95
-    }
-  },
-  {
-    "id": "actor_f2ab16a6169e",
-    "canonical_name": "Global Climate Summit Opens",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.421953",
-    "updated_at": "2025-12-07 05:16:42.421953",
-    "metadata": {
-      "confidence": 0.95
-    }
-  },
-  {
-    "id": "actor_94ec41cd8fe1",
-    "canonical_name": "today",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.421961",
-    "updated_at": "2025-12-07 05:16:42.421961",
-    "metadata": {
-      "confidence": 0.75
-    }
-  },
-  {
-    "id": "actor_10e66f86396e",
+    "id": "actor_66f8f47f95f1",
     "canonical_name": "Joe Biden",
-    "actor_type": "person",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.421966",
-    "updated_at": "2025-12-07 05:16:42.421966",
+    "actor_type": "politician",
+    "aliases": [
+      {
+        "name": "Joseph R. Biden",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Joseph R. Biden Jr.",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Joseph R. Biden, Jr.",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "JRB",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "POTUS 46",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Joe R. Biden Jr.",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Joseph Robinette Biden",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "President Biden",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "President Joe Biden",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "President Joseph Biden",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "President Joseph R. Biden",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Joseph Robinette Biden Jr.",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "President Joseph Biden Jr.",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "President Joseph Robinette Biden",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "President Joseph R. Biden Jr.",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Joe R. Biden",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "President Joseph Robinette Biden Jr.",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Joe Biden Jr.",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Joseph Robinette Biden, Jr.",
+        "type": "alias",
+        "language": "en"
+      }
+    ],
+    "wikidata_qid": "Q6279",
+    "created_at": "2025-12-10 00:53:16.427554",
+    "updated_at": "2025-12-10 00:53:16.427556",
     "metadata": {
-      "confidence": 0.9
+      "instance_of_qids": [
+        "Q5"
+      ],
+      "occupation_qids": [
+        "Q82955",
+        "Q40348",
+        "Q1622272",
+        "Q36180",
+        "Q193391",
+        "Q185351"
+      ],
+      "positions": [
+        "Vice President of the United States",
+        "United States senator",
+        "United States senator",
+        "United States senator",
+        "United States senator",
+        "United States senator",
+        "United States senator",
+        "United States senator",
+        "United States senator",
+        "United States senator",
+        "United States senator",
+        "United States senator",
+        "United States senator",
+        "United States senator",
+        "United States senator",
+        "United States senator",
+        "United States senator",
+        "United States senator",
+        "United States senator",
+        "United States senator",
+        "President of the United States",
+        "President-elect of the United States",
+        "council member"
+      ],
+      "countries": [
+        "United States"
+      ],
+      "country": "United States",
+      "birth_date": "+1942-11-20T00:00:00Z",
+      "description": "46th President of the United States (2021–2025)",
+      "original_language": "en",
+      "confidence": 1.0
     }
   },
   {
-    "id": "actor_2632829bb661",
+    "id": "actor_ce428c491ec7",
     "canonical_name": "Xi Jinping",
-    "actor_type": "person",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.421971",
-    "updated_at": "2025-12-07 05:16:42.421971",
+    "actor_type": "politician",
+    "aliases": [
+      {
+        "name": "General Secretary Xi Jinping",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Xi-Jinping",
+        "type": "alias",
+        "language": "en"
+      }
+    ],
+    "wikidata_qid": "Q15031",
+    "created_at": "2025-12-10 00:53:16.427732",
+    "updated_at": "2025-12-10 00:53:16.427733",
     "metadata": {
-      "confidence": 0.95
+      "instance_of_qids": [
+        "Q5"
+      ],
+      "occupation_qids": [
+        "Q372436",
+        "Q82955"
+      ],
+      "positions": [
+        "General Secretary of the Chinese Communist Party",
+        "President of the People's Republic of China",
+        "member of the Politburo of the Chinese Communist Party",
+        "Chairman of the Central Military Commission of the Chinese Communist Party",
+        "First Secretary of the Chinese Communist Party",
+        "Governor of Fujian",
+        "Vice President of the People's Republic of China",
+        "President of the Central Party School of the Chinese Communist Party",
+        "member of the Politburo Standing Committee of the Chinese Communist Party",
+        "Chairman of the Central Military Commission of the People's Republic of China",
+        "National People's Congress deputy",
+        "Secretary of the Shanghai Committee of the Chinese Communist Party",
+        "deputy mayor"
+      ],
+      "countries": [
+        "People's Republic of China"
+      ],
+      "country": "People's Republic of China",
+      "birth_date": "+1953-06-15T00:00:00Z",
+      "description": "General Secretary of the Chinese Communist Party since 2012",
+      "original_language": "en",
+      "confidence": 1.0
     }
   },
   {
-    "id": "actor_481b2f3be9e1",
-    "canonical_name": "Ursula von der",
-    "actor_type": "person",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.421976",
-    "updated_at": "2025-12-07 05:16:42.421976",
+    "id": "actor_3e9e30016aa2",
+    "canonical_name": "Ursula von der Leyen",
+    "actor_type": "politician",
+    "aliases": [
+      {
+        "name": "Ursula Gertrud von der Leyen",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Ursula Gertrud Albrecht",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Ursula Albrecht",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Zensursula",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Ursula Von der Leyen",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Rose Ladson",
+        "type": "alias",
+        "language": "en"
+      }
+    ],
+    "wikidata_qid": "Q60772",
+    "created_at": "2025-12-10 00:53:16.427760",
+    "updated_at": "2025-12-10 00:53:16.427761",
     "metadata": {
-      "confidence": 0.95
+      "instance_of_qids": [
+        "Q5"
+      ],
+      "occupation_qids": [
+        "Q39631",
+        "Q82955",
+        "Q2730732"
+      ],
+      "positions": [
+        "Federal Minister of Defence",
+        "Federal Minister for Education, Family Affairs, Senior Citizens, Women and Youth",
+        "Federal Minister of Labour and Social Affairs",
+        "member of the German Bundestag",
+        "member of the Landtag of Lower Saxony",
+        "President of the European Commission",
+        "member of the German Bundestag",
+        "member of the German Bundestag",
+        "minister of social affairs"
+      ],
+      "countries": [
+        "Germany"
+      ],
+      "country": "Germany",
+      "birth_date": "+1958-10-08T00:00:00Z",
+      "description": "President of the European Commission since 2019",
+      "original_language": "en",
+      "confidence": 1.0
     }
   },
   {
-    "id": "actor_e601a1ea4b38",
-    "canonical_name": "Leyen",
-    "actor_type": "country",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.421980",
-    "updated_at": "2025-12-07 05:16:42.421980",
-    "metadata": {
-      "confidence": 0.8500000000000001
-    }
-  },
-  {
-    "id": "actor_57239388ad57",
-    "canonical_name": "EU Pledges Carbon Neutrality",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.836906",
-    "updated_at": "2025-12-07 05:16:42.836912",
-    "metadata": {
-      "confidence": 0.95
-    }
-  },
-  {
-    "id": "actor_04272b1fdc08",
+    "id": "actor_ef744c85d242",
     "canonical_name": "European Union",
-    "actor_type": "organization",
+    "actor_type": "int_org",
     "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.836940",
-    "updated_at": "2025-12-07 05:16:42.836940",
+    "wikidata_qid": "Q458",
+    "created_at": "2025-12-10 00:53:22.616542",
+    "updated_at": "2025-12-10 00:53:22.616544",
     "metadata": {
-      "confidence": 0.95
+      "instance_of_qids": [
+        "Q4120211",
+        "Q120121699",
+        "Q1335818",
+        "Q170156"
+      ],
+      "occupation_qids": [],
+      "description": "political and economic union of 27 European states",
+      "original_language": "en",
+      "confidence": 1.0
     }
   },
   {
-    "id": "actor_d6470c0f44fa",
-    "canonical_name": "The European Union",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.836953",
-    "updated_at": "2025-12-07 05:16:42.836953",
-    "metadata": {
-      "confidence": 0.95
-    }
-  },
-  {
-    "id": "actor_fcb24b2bf25a",
-    "canonical_name": "ten years",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.836965",
-    "updated_at": "2025-12-07 05:16:42.836965",
-    "metadata": {
-      "confidence": 0.75
-    }
-  },
-  {
-    "id": "actor_fcf2a2f07039",
-    "canonical_name": "von der",
-    "actor_type": "person",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.836976",
-    "updated_at": "2025-12-07 05:16:42.836976",
-    "metadata": {
-      "confidence": 0.85
-    }
-  },
-  {
-    "id": "actor_7497221cc0fd",
-    "canonical_name": "Europe",
-    "actor_type": "country",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.836990",
-    "updated_at": "2025-12-07 05:16:42.836991",
-    "metadata": {
-      "confidence": 0.9100000000000001
-    }
-  },
-  {
-    "id": "actor_e44150723c54",
+    "id": "actor_a3eb4859aaf3",
     "canonical_name": "Microsoft",
+    "actor_type": "company",
+    "aliases": [],
+    "wikidata_qid": "Q2283",
+    "created_at": "2025-12-10 00:53:27.576964",
+    "updated_at": "2025-12-10 00:53:27.576965",
+    "metadata": {
+      "instance_of_qids": [
+        "Q1058914",
+        "Q4830453",
+        "Q18388277",
+        "Q891723",
+        "Q43229"
+      ],
+      "occupation_qids": [],
+      "description": "American multinational technology corporation",
+      "original_language": "en",
+      "confidence": 1.0
+    }
+  },
+  {
+    "id": "actor_57e4f0404aa5",
+    "canonical_name": "OpenAI Foundation",
     "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.851005",
-    "updated_at": "2025-12-07 05:16:42.851006",
+    "aliases": [
+      {
+        "name": "OpenAI",
+        "type": "original",
+        "language": "en"
+      }
+    ],
+    "wikidata_qid": "Q21708200",
+    "created_at": "2025-12-10 00:53:27.577005",
+    "updated_at": "2025-12-10 00:53:27.577009",
     "metadata": {
-      "confidence": 0.95
+      "instance_of_qids": [
+        "Q43229",
+        "Q163740"
+      ],
+      "occupation_qids": [],
+      "description": "American artificial intelligence research organization",
+      "original_language": "en",
+      "confidence": 1.0
     }
   },
   {
-    "id": "actor_841676d50253",
-    "canonical_name": "AI Investment",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.851019",
-    "updated_at": "2025-12-07 05:16:42.851019",
-    "metadata": {
-      "confidence": 0.95
-    }
-  },
-  {
-    "id": "actor_6f0708c82338",
-    "canonical_name": "multi-billion dollar",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.851027",
-    "updated_at": "2025-12-07 05:16:42.851027",
-    "metadata": {
-      "confidence": 0.8
-    }
-  },
-  {
-    "id": "actor_7a61668086c4",
-    "canonical_name": "AI",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.851035",
-    "updated_at": "2025-12-07 05:16:42.851035",
-    "metadata": {
-      "confidence": 0.95
-    }
-  },
-  {
-    "id": "actor_1a1bd26b6003",
-    "canonical_name": "OpenAI",
-    "actor_type": "country",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.851042",
-    "updated_at": "2025-12-07 05:16:42.851042",
-    "metadata": {
-      "confidence": 0.8500000000000001
-    }
-  },
-  {
-    "id": "actor_8449417b5228",
-    "canonical_name": "Google Responds with Competing AI Strategy",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.860911",
-    "updated_at": "2025-12-07 05:16:42.860911",
-    "metadata": {
-      "confidence": 0.95
-    }
-  },
-  {
-    "id": "actor_1b12223d3076",
+    "id": "actor_9262c62b6594",
     "canonical_name": "Google",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.860920",
-    "updated_at": "2025-12-07 05:16:42.860920",
+    "actor_type": "company",
+    "aliases": [
+      {
+        "name": "Big G",
+        "type": "alias",
+        "language": "en"
+      }
+    ],
+    "wikidata_qid": "Q95",
+    "created_at": "2025-12-10 00:53:32.300925",
+    "updated_at": "2025-12-10 00:53:32.300927",
     "metadata": {
-      "confidence": 0.95
+      "instance_of_qids": [
+        "Q4830453",
+        "Q18388277",
+        "Q5988403",
+        "Q891723",
+        "Q19967801"
+      ],
+      "occupation_qids": [],
+      "description": "American multinational technology company, a subsidiary of Alphabet Inc.",
+      "original_language": "en",
+      "confidence": 1.0
     }
   },
   {
-    "id": "actor_6bbc61578be7",
-    "canonical_name": "US",
+    "id": "actor_c482e7f505d1",
+    "canonical_name": "United States",
     "actor_type": "country",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.871667",
-    "updated_at": "2025-12-07 05:16:42.871667",
+    "aliases": [
+      {
+        "name": "the States",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "the United States of America",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "US of America",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "the US",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "the U.S.",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "the US of A",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "U.S. of America",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "the US of America",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "the USA",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "the U.S.A.",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "the U.S. of A",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "US of A",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "the U.S. of America",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "the United States",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Merica",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Murica",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "United States of America",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "U.S.",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "U.S.A.",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "U. S.",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "U. S. A.",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "America",
+        "type": "alias",
+        "language": "en"
+      }
+    ],
+    "wikidata_qid": "Q30",
+    "created_at": "2025-12-10 00:53:38.818707",
+    "updated_at": "2025-12-10 00:53:38.818708",
     "metadata": {
-      "confidence": 0.8300000000000001
+      "instance_of_qids": [
+        "Q3624078",
+        "Q1520223",
+        "Q5255892",
+        "Q512187",
+        "Q1489259",
+        "Q6256",
+        "Q99541706"
+      ],
+      "occupation_qids": [],
+      "description": "country located primarily in North America",
+      "original_language": "en",
+      "confidence": 1.0
     }
   },
   {
-    "id": "actor_ed5b61d910d6",
-    "canonical_name": "The United States",
-    "actor_type": "country",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.871677",
-    "updated_at": "2025-12-07 05:16:42.871678",
-    "metadata": {
-      "confidence": 0.9000000000000001
-    }
-  },
-  {
-    "id": "actor_039c497dc18c",
+    "id": "actor_ce599517895b",
     "canonical_name": "Meta",
-    "actor_type": "organization",
+    "actor_type": "company",
     "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.880318",
-    "updated_at": "2025-12-07 05:16:42.880319",
+    "wikidata_qid": "Q380",
+    "created_at": "2025-12-10 00:53:43.446134",
+    "updated_at": "2025-12-10 00:53:43.446136",
     "metadata": {
-      "confidence": 0.85
+      "instance_of_qids": [
+        "Q891723",
+        "Q18388277",
+        "Q1641122",
+        "Q4830453"
+      ],
+      "occupation_qids": [],
+      "description": "American multinational technology corporation",
+      "original_language": "en",
+      "confidence": 1.0
     }
   },
   {
-    "id": "actor_bdaea3523411",
-    "canonical_name": "Tesla Opens New Gigafactory",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.893836",
-    "updated_at": "2025-12-07 05:16:42.893836",
+    "id": "actor_166d696f17a1",
+    "canonical_name": "Tesla, Inc.",
+    "actor_type": "company",
+    "aliases": [
+      {
+        "name": "Tesla",
+        "type": "original",
+        "language": "en"
+      },
+      {
+        "name": "Tesla Inc.",
+        "type": "alias",
+        "language": "en"
+      }
+    ],
+    "wikidata_qid": "Q478214",
+    "created_at": "2025-12-10 00:53:55.263640",
+    "updated_at": "2025-12-10 00:53:55.263641",
     "metadata": {
-      "confidence": 0.95
+      "instance_of_qids": [
+        "Q167037",
+        "Q6881511",
+        "Q4830453"
+      ],
+      "occupation_qids": [],
+      "description": "American automotive, energy storage and solar power company",
+      "original_language": "en",
+      "confidence": 1.0
     }
   },
   {
-    "id": "actor_291d6776197f",
-    "canonical_name": "Texas",
-    "actor_type": "country",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.893843",
-    "updated_at": "2025-12-07 05:16:42.893843",
-    "metadata": {
-      "confidence": 0.9100000000000001
-    }
-  },
-  {
-    "id": "actor_e7fb6c83dac4",
-    "canonical_name": "Tesla",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.893848",
-    "updated_at": "2025-12-07 05:16:42.893848",
-    "metadata": {
-      "confidence": 0.95
-    }
-  },
-  {
-    "id": "actor_e8f1373a6c90",
-    "canonical_name": "Gigafactory",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.893854",
-    "updated_at": "2025-12-07 05:16:42.893854",
-    "metadata": {
-      "confidence": 0.9100000000000001
-    }
-  },
-  {
-    "id": "actor_026268ebc637",
-    "canonical_name": "Austin",
-    "actor_type": "country",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.893859",
-    "updated_at": "2025-12-07 05:16:42.893859",
-    "metadata": {
-      "confidence": 0.8800000000000001
-    }
-  },
-  {
-    "id": "actor_f5e0f55b1178",
+    "id": "actor_352daed0c4e5",
     "canonical_name": "Elon Musk",
     "actor_type": "person",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.893865",
-    "updated_at": "2025-12-07 05:16:42.893865",
+    "aliases": [
+      {
+        "name": "Elon Reeve Musk",
+        "type": "alias",
+        "language": "en"
+      }
+    ],
+    "wikidata_qid": "Q317521",
+    "created_at": "2025-12-10 00:53:55.263747",
+    "updated_at": "2025-12-10 00:53:55.263748",
     "metadata": {
-      "confidence": 0.9
+      "instance_of_qids": [
+        "Q5"
+      ],
+      "occupation_qids": [
+        "Q5482740",
+        "Q81096",
+        "Q131524",
+        "Q557880",
+        "Q82955",
+        "Q212238",
+        "Q133253419",
+        "Q205375"
+      ],
+      "positions": [
+        "chief executive officer",
+        "chairperson",
+        "chief executive officer",
+        "co-president",
+        "chief executive officer",
+        "Senior Advisor to the President of the United States"
+      ],
+      "countries": [
+        "South Africa",
+        "Canada",
+        "United States"
+      ],
+      "country": "South Africa",
+      "birth_date": "+1971-06-28T00:00:00Z",
+      "description": "businessman and entrepreneur (born 1971)",
+      "original_language": "en",
+      "confidence": 1.0
     }
   },
   {
-    "id": "actor_06ff1c6c867f",
-    "canonical_name": "Cybertruck",
-    "actor_type": "person",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.893870",
-    "updated_at": "2025-12-07 05:16:42.893870",
-    "metadata": {
-      "confidence": 0.95
-    }
-  },
-  {
-    "id": "actor_6f132118857e",
-    "canonical_name": "Model Y",
-    "actor_type": "person",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.893875",
-    "updated_at": "2025-12-07 05:16:42.893875",
-    "metadata": {
-      "confidence": 0.9
-    }
-  },
-  {
-    "id": "actor_c9ab0520f08e",
-    "canonical_name": "$1.1 billion",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.893880",
-    "updated_at": "2025-12-07 05:16:42.893881",
-    "metadata": {
-      "confidence": 0.8
-    }
-  },
-  {
-    "id": "actor_e1c2fb4375c5",
-    "canonical_name": "thousands",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.893885",
-    "updated_at": "2025-12-07 05:16:42.893885",
-    "metadata": {
-      "confidence": 0.75
-    }
-  },
-  {
-    "id": "actor_477b2dbcecd6",
-    "canonical_name": "Tesla Advances Self-Driving Technology",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.906323",
-    "updated_at": "2025-12-07 05:16:42.906323",
-    "metadata": {
-      "confidence": 0.95
-    }
-  },
-  {
-    "id": "actor_afc9ff3a60a9",
-    "canonical_name": "AI Breakthrough",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.906331",
-    "updated_at": "2025-12-07 05:16:42.906331",
-    "metadata": {
-      "confidence": 0.95
-    }
-  },
-  {
-    "id": "actor_93adc6840a2a",
-    "canonical_name": "Full Self-Driving",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.906338",
-    "updated_at": "2025-12-07 05:16:42.906338",
-    "metadata": {
-      "confidence": 0.95
-    }
-  },
-  {
-    "id": "actor_6d5dba664be2",
-    "canonical_name": "FSD",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.906343",
-    "updated_at": "2025-12-07 05:16:42.906343",
-    "metadata": {
-      "confidence": 0.85
-    }
-  },
-  {
-    "id": "actor_fde46a9e2d27",
-    "canonical_name": "EU",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.914985",
-    "updated_at": "2025-12-07 05:16:42.914985",
-    "metadata": {
-      "confidence": 0.9099999999999999
-    }
-  },
-  {
-    "id": "actor_8c2a766c781b",
-    "canonical_name": "OpenAI Responds",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.923070",
-    "updated_at": "2025-12-07 05:16:42.923070",
-    "metadata": {
-      "confidence": 0.95
-    }
-  },
-  {
-    "id": "actor_7ee1c0953d6f",
-    "canonical_name": "EU AI Regulations",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.923076",
-    "updated_at": "2025-12-07 05:16:42.923077",
-    "metadata": {
-      "confidence": 0.95
-    }
-  },
-  {
-    "id": "actor_a52b1f56b55b",
-    "canonical_name": "AI Safety Framework",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:42.931382",
-    "updated_at": "2025-12-07 05:16:42.931382",
-    "metadata": {
-      "confidence": 0.95
-    }
-  },
-  {
-    "id": "actor_6c6c3dfbdaf7",
+    "id": "actor_c5167888a269",
     "canonical_name": "AI Safety Alliance",
     "actor_type": "organization",
     "aliases": [],
     "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:43.058545",
-    "updated_at": "2025-12-07 05:16:43.058546",
+    "created_at": "2025-12-10 00:54:14.732218",
+    "updated_at": "2025-12-10 00:54:14.732224",
     "metadata": {
-      "confidence": 0.95
-    }
-  },
-  {
-    "id": "actor_ed68b08db436",
-    "canonical_name": "Украиной",
-    "actor_type": "country",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:43.730348",
-    "updated_at": "2025-12-07 05:16:43.730349",
-    "metadata": {
-      "confidence": 0.9100000000000001
-    }
-  },
-  {
-    "id": "actor_6580f19be13c",
-    "canonical_name": "Россией",
-    "actor_type": "country",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:43.730360",
-    "updated_at": "2025-12-07 05:16:43.730360",
-    "metadata": {
-      "confidence": 0.9100000000000001
-    }
-  },
-  {
-    "id": "actor_88094cdc4649",
-    "canonical_name": "США",
-    "actor_type": "country",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:43.730366",
-    "updated_at": "2025-12-07 05:16:43.730366",
-    "metadata": {
-      "confidence": 0.89
-    }
-  },
-  {
-    "id": "actor_84332d751863",
-    "canonical_name": "Путина",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:43.730371",
-    "updated_at": "2025-12-07 05:16:43.730371",
-    "metadata": {
-      "confidence": 0.8
-    }
-  },
-  {
-    "id": "actor_80ef6679d14d",
-    "canonical_name": "Трампа",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:43.730376",
-    "updated_at": "2025-12-07 05:16:43.730376",
-    "metadata": {
-      "confidence": 0.8
-    }
-  },
-  {
-    "id": "actor_77eeb82e38b5",
-    "canonical_name": "Зеленского",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:43.730381",
-    "updated_at": "2025-12-07 05:16:43.730381",
-    "metadata": {
-      "confidence": 0.8500000000000001
-    }
-  },
-  {
-    "id": "actor_1278fc700b7d",
-    "canonical_name": "Джо Байдена",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:43.730386",
-    "updated_at": "2025-12-07 05:16:43.730386",
-    "metadata": {
-      "confidence": 0.8800000000000001
-    }
-  },
-  {
-    "id": "actor_0ef5214f43c7",
-    "canonical_name": "Белом доме",
-    "actor_type": "country",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:43.730391",
-    "updated_at": "2025-12-07 05:16:43.730391",
-    "metadata": {
-      "confidence": 0.9000000000000001
-    }
-  },
-  {
-    "id": "actor_f8481875ec34",
-    "canonical_name": "России",
-    "actor_type": "country",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:43.730396",
-    "updated_at": "2025-12-07 05:16:43.730396",
-    "metadata": {
-      "confidence": 0.8500000000000001
-    }
-  },
-  {
-    "id": "actor_a35e9c341a0e",
-    "canonical_name": "Владимир Путин",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:43.730400",
-    "updated_at": "2025-12-07 05:16:43.730401",
-    "metadata": {
-      "confidence": 0.8500000000000001
-    }
-  },
-  {
-    "id": "actor_80a68b82b33e",
-    "canonical_name": "Украины",
-    "actor_type": "country",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:43.730405",
-    "updated_at": "2025-12-07 05:16:43.730405",
-    "metadata": {
-      "confidence": 0.8500000000000001
-    }
-  },
-  {
-    "id": "actor_942bbd2e3b01",
-    "canonical_name": "Владимир Зеленский",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:43.730410",
-    "updated_at": "2025-12-07 05:16:43.730410",
-    "metadata": {
-      "confidence": 0.8500000000000001
-    }
-  },
-  {
-    "id": "actor_60bd2ad3b9ee",
-    "canonical_name": "Дональд Трамп",
-    "actor_type": "organization",
-    "aliases": [],
-    "wikidata_qid": null,
-    "created_at": "2025-12-07 05:16:43.730415",
-    "updated_at": "2025-12-07 05:16:43.730415",
-    "metadata": {
-      "confidence": 0.8500000000000001
+      "original_language": "en",
+      "confidence": 1.0
     }
   }
 ]

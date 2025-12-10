@@ -335,6 +335,7 @@ class LLMService:
             return cached
 
         if self.use_mock or not self.client:
+            print(f"DEBUG: LLM _run using mock. use_mock={self.use_mock}, client={self.client}, api_key_len={len(str(self.api_key)) if self.api_key else 0}")
             text = f"[mock response] {prompt[:80]}..."
             self._cache_set(cache_key, text)
             self.last_raw = text
