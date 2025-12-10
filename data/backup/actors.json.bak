@@ -1,6 +1,6 @@
 [
   {
-    "id": "actor_612692d0e918",
+    "id": "actor_b6686f9bc253",
     "canonical_name": "Russia",
     "actor_type": "country",
     "aliases": [
@@ -13,11 +13,26 @@
         "name": "Federation of Russia",
         "type": "alias",
         "language": "en"
+      },
+      {
+        "name": "Россия",
+        "type": "original",
+        "language": "ru"
+      },
+      {
+        "name": "Российская Федерация",
+        "type": "alias",
+        "language": "ru"
+      },
+      {
+        "name": "РФ",
+        "type": "alias",
+        "language": "ru"
       }
     ],
     "wikidata_qid": "Q159",
-    "created_at": "2025-12-10 00:52:54.486231",
-    "updated_at": "2025-12-10 00:52:54.486238",
+    "created_at": "2025-12-10 01:09:00.902719",
+    "updated_at": "2025-12-10 01:09:00.902724",
     "metadata": {
       "instance_of_qids": [
         "Q3624078",
@@ -28,13 +43,13 @@
         "Q127693126"
       ],
       "occupation_qids": [],
-      "description": "country in Eastern Europe and Northern Asia",
-      "original_language": "en",
+      "description": "государство в Восточной Европе и Северной Азии, крупнейшее по площади в мире",
+      "original_language": "ru",
       "confidence": 1.0
     }
   },
   {
-    "id": "actor_678a7e8f6fb6",
+    "id": "actor_0b06855a5684",
     "canonical_name": "NATO",
     "actor_type": "int_org",
     "aliases": [
@@ -60,8 +75,8 @@
       }
     ],
     "wikidata_qid": "Q7184",
-    "created_at": "2025-12-10 00:52:54.486382",
-    "updated_at": "2025-12-10 00:52:54.486384",
+    "created_at": "2025-12-10 01:09:00.902854",
+    "updated_at": "2025-12-10 01:09:00.902855",
     "metadata": {
       "instance_of_qids": [
         "Q1127126",
@@ -76,7 +91,7 @@
     }
   },
   {
-    "id": "actor_6e3c52f68bfe",
+    "id": "actor_d5f02a8606cd",
     "canonical_name": "Ukraine",
     "actor_type": "country",
     "aliases": [
@@ -99,11 +114,16 @@
         "name": "Ukraïna",
         "type": "alias",
         "language": "en"
+      },
+      {
+        "name": "Украина",
+        "type": "original",
+        "language": "ru"
       }
     ],
     "wikidata_qid": "Q212",
-    "created_at": "2025-12-10 00:52:54.486419",
-    "updated_at": "2025-12-10 00:52:54.486420",
+    "created_at": "2025-12-10 01:09:00.902952",
+    "updated_at": "2025-12-10 01:09:00.902953",
     "metadata": {
       "instance_of_qids": [
         "Q3624078",
@@ -115,13 +135,13 @@
         "Q4835091"
       ],
       "occupation_qids": [],
-      "description": "country in Eastern Europe",
-      "original_language": "en",
+      "description": "государство в Центральной и Восточной Европе",
+      "original_language": "ru",
       "confidence": 1.0
     }
   },
   {
-    "id": "actor_024a6f4c4091",
+    "id": "actor_443db5aef127",
     "canonical_name": "Vladimir Putin",
     "actor_type": "politician",
     "aliases": [
@@ -129,11 +149,41 @@
         "name": "Vladimir Vladimirovich Putin",
         "type": "alias",
         "language": "en"
+      },
+      {
+        "name": "Владимир Путин",
+        "type": "original",
+        "language": "ru"
+      },
+      {
+        "name": "Путин Владимир Владимирович",
+        "type": "alias",
+        "language": "ru"
+      },
+      {
+        "name": "Путин, Владимир Владимирович",
+        "type": "alias",
+        "language": "ru"
+      },
+      {
+        "name": "В. В. Путин",
+        "type": "alias",
+        "language": "ru"
+      },
+      {
+        "name": "Путин В. В.",
+        "type": "alias",
+        "language": "ru"
+      },
+      {
+        "name": "Путин",
+        "type": "alias",
+        "language": "ru"
       }
     ],
     "wikidata_qid": "Q7747",
-    "created_at": "2025-12-10 00:52:54.486444",
-    "updated_at": "2025-12-10 00:52:54.486445",
+    "created_at": "2025-12-10 01:09:00.902981",
+    "updated_at": "2025-12-10 01:09:00.902993",
     "metadata": {
       "instance_of_qids": [
         "Q5"
@@ -147,41 +197,42 @@
         "Q248577"
       ],
       "positions": [
-        "President of Russia",
-        "President of Russia",
-        "Director of the Federal Security Service",
-        "Prime Minister of Russia",
-        "Deputy Chairman of the Government of the Russian Federation",
-        "Secretary of the Security Council of Russia",
-        "party leader",
-        "Supreme Commander-in-Chief of the Armed Forces of the Russian Federation",
-        "Supreme Commander-in-Chief of the Armed Forces of the Russian Federation",
-        "Chairman of the Council of CIS Heads of State",
-        "Chairman of the Council of CIS Heads of State",
-        "chairperson",
-        "chairperson",
-        "Acting President of Russia",
-        "Prime Minister of Russia",
-        "Chairman of the Council of CIS Heads of State",
-        "Permanent member of the Security Council of Russia",
-        "party leader",
-        "president for life",
-        "recruiter",
-        "Chairman of the Council of CIS Heads of State"
+        "президент России",
+        "президент России",
+        "директор ФСБ России",
+        "председатель Правительства Российской Федерации",
+        "заместитель председателя Правительства Российской Федерации",
+        "секретарь Совета безопасности Российской Федерации",
+        "лидер партии",
+        "Верховный Главнокомандующий Вооружёнными Силами Российской Федерации",
+        "Верховный Главнокомандующий Вооружёнными Силами Российской Федерации",
+        "председатель Совета глав государств СНГ",
+        "председатель Совета глав государств СНГ",
+        "председатель",
+        "председатель",
+        "Временное исполнение полномочий президента России",
+        "председатель Правительства Российской Федерации",
+        "председатель Совета глав государств СНГ",
+        "постоянный член Совета безопасности Российской Федерации",
+        "председатель Совета безопасности Российской Федерации",
+        "лидер партии",
+        "пожизненный президент",
+        "рекрутёр",
+        "председатель Совета глав государств СНГ"
       ],
       "countries": [
-        "Soviet Union",
-        "Russia"
+        "СССР",
+        "Россия"
       ],
-      "country": "Soviet Union",
+      "country": "СССР",
       "birth_date": "+1952-10-07T00:00:00Z",
-      "description": "2nd and 4th President of Russia (2000-2008, 2012-present), 7th and 11th Prime Minister of Russia (1999-2000, 2008-2012), Director of the Federal Security Service (1998-1999) and Deputy Mayor of Saint Petersburg (1994-1996)",
-      "original_language": "en",
+      "description": "президент России (2000—2008; 2012 по н. в.)",
+      "original_language": "ru",
       "confidence": 1.0
     }
   },
   {
-    "id": "actor_dc85cc362998",
+    "id": "actor_8e1afebeeccd",
     "canonical_name": "United Nations",
     "actor_type": "int_org",
     "aliases": [
@@ -217,8 +268,8 @@
       }
     ],
     "wikidata_qid": "Q1065",
-    "created_at": "2025-12-10 00:52:58.758454",
-    "updated_at": "2025-12-10 00:52:58.758454",
+    "created_at": "2025-12-10 01:09:03.960306",
+    "updated_at": "2025-12-10 01:09:03.960313",
     "metadata": {
       "instance_of_qids": [
         "Q245065",
@@ -232,7 +283,7 @@
     }
   },
   {
-    "id": "actor_66f8f47f95f1",
+    "id": "actor_941e0b6d41e8",
     "canonical_name": "Joe Biden",
     "actor_type": "politician",
     "aliases": [
@@ -330,11 +381,36 @@
         "name": "Joseph Robinette Biden, Jr.",
         "type": "alias",
         "language": "en"
+      },
+      {
+        "name": "Джо Байден",
+        "type": "original",
+        "language": "ru"
+      },
+      {
+        "name": "Байден, Джо",
+        "type": "alias",
+        "language": "ru"
+      },
+      {
+        "name": "Джозеф Байден",
+        "type": "alias",
+        "language": "ru"
+      },
+      {
+        "name": "Джозеф Робинетт Байден-мл.",
+        "type": "alias",
+        "language": "ru"
+      },
+      {
+        "name": "Джозеф Робинетт Байден",
+        "type": "alias",
+        "language": "ru"
       }
     ],
     "wikidata_qid": "Q6279",
-    "created_at": "2025-12-10 00:53:16.427554",
-    "updated_at": "2025-12-10 00:53:16.427556",
+    "created_at": "2025-12-10 01:09:09.726464",
+    "updated_at": "2025-12-10 01:09:09.726466",
     "metadata": {
       "instance_of_qids": [
         "Q5"
@@ -348,42 +424,42 @@
         "Q185351"
       ],
       "positions": [
-        "Vice President of the United States",
-        "United States senator",
-        "United States senator",
-        "United States senator",
-        "United States senator",
-        "United States senator",
-        "United States senator",
-        "United States senator",
-        "United States senator",
-        "United States senator",
-        "United States senator",
-        "United States senator",
-        "United States senator",
-        "United States senator",
-        "United States senator",
-        "United States senator",
-        "United States senator",
-        "United States senator",
-        "United States senator",
-        "United States senator",
-        "President of the United States",
-        "President-elect of the United States",
-        "council member"
+        "вице-президент США",
+        "сенатор США",
+        "сенатор США",
+        "сенатор США",
+        "сенатор США",
+        "сенатор США",
+        "сенатор США",
+        "сенатор США",
+        "сенатор США",
+        "сенатор США",
+        "сенатор США",
+        "сенатор США",
+        "сенатор США",
+        "сенатор США",
+        "сенатор США",
+        "сенатор США",
+        "сенатор США",
+        "сенатор США",
+        "сенатор США",
+        "сенатор США",
+        "президент США",
+        "Избранный президент США",
+        "член местного совета"
       ],
       "countries": [
-        "United States"
+        "США"
       ],
-      "country": "United States",
+      "country": "США",
       "birth_date": "+1942-11-20T00:00:00Z",
-      "description": "46th President of the United States (2021–2025)",
-      "original_language": "en",
+      "description": "46-й президент США (2021—2025), американский политик",
+      "original_language": "ru",
       "confidence": 1.0
     }
   },
   {
-    "id": "actor_ce428c491ec7",
+    "id": "actor_29a8a44b3746",
     "canonical_name": "Xi Jinping",
     "actor_type": "politician",
     "aliases": [
@@ -399,8 +475,8 @@
       }
     ],
     "wikidata_qid": "Q15031",
-    "created_at": "2025-12-10 00:53:16.427732",
-    "updated_at": "2025-12-10 00:53:16.427733",
+    "created_at": "2025-12-10 01:09:09.726561",
+    "updated_at": "2025-12-10 01:09:09.726562",
     "metadata": {
       "instance_of_qids": [
         "Q5"
@@ -435,7 +511,7 @@
     }
   },
   {
-    "id": "actor_3e9e30016aa2",
+    "id": "actor_bc26cdeeece9",
     "canonical_name": "Ursula von der Leyen",
     "actor_type": "politician",
     "aliases": [
@@ -471,8 +547,8 @@
       }
     ],
     "wikidata_qid": "Q60772",
-    "created_at": "2025-12-10 00:53:16.427760",
-    "updated_at": "2025-12-10 00:53:16.427761",
+    "created_at": "2025-12-10 01:09:09.726595",
+    "updated_at": "2025-12-10 01:09:09.726596",
     "metadata": {
       "instance_of_qids": [
         "Q5"
@@ -504,13 +580,13 @@
     }
   },
   {
-    "id": "actor_ef744c85d242",
+    "id": "actor_16a2e773ea45",
     "canonical_name": "European Union",
     "actor_type": "int_org",
     "aliases": [],
     "wikidata_qid": "Q458",
-    "created_at": "2025-12-10 00:53:22.616542",
-    "updated_at": "2025-12-10 00:53:22.616544",
+    "created_at": "2025-12-10 01:09:16.516992",
+    "updated_at": "2025-12-10 01:09:16.516995",
     "metadata": {
       "instance_of_qids": [
         "Q4120211",
@@ -525,13 +601,13 @@
     }
   },
   {
-    "id": "actor_a3eb4859aaf3",
+    "id": "actor_805c00659edb",
     "canonical_name": "Microsoft",
     "actor_type": "company",
     "aliases": [],
     "wikidata_qid": "Q2283",
-    "created_at": "2025-12-10 00:53:27.576964",
-    "updated_at": "2025-12-10 00:53:27.576965",
+    "created_at": "2025-12-10 01:09:20.201735",
+    "updated_at": "2025-12-10 01:09:20.201736",
     "metadata": {
       "instance_of_qids": [
         "Q1058914",
@@ -547,7 +623,7 @@
     }
   },
   {
-    "id": "actor_57e4f0404aa5",
+    "id": "actor_21370bb46f53",
     "canonical_name": "OpenAI Foundation",
     "actor_type": "organization",
     "aliases": [
@@ -558,8 +634,8 @@
       }
     ],
     "wikidata_qid": "Q21708200",
-    "created_at": "2025-12-10 00:53:27.577005",
-    "updated_at": "2025-12-10 00:53:27.577009",
+    "created_at": "2025-12-10 01:09:20.201753",
+    "updated_at": "2025-12-10 01:09:20.201753",
     "metadata": {
       "instance_of_qids": [
         "Q43229",
@@ -572,7 +648,7 @@
     }
   },
   {
-    "id": "actor_9262c62b6594",
+    "id": "actor_096d797ed5b1",
     "canonical_name": "Google",
     "actor_type": "company",
     "aliases": [
@@ -583,8 +659,8 @@
       }
     ],
     "wikidata_qid": "Q95",
-    "created_at": "2025-12-10 00:53:32.300925",
-    "updated_at": "2025-12-10 00:53:32.300927",
+    "created_at": "2025-12-10 01:09:23.748040",
+    "updated_at": "2025-12-10 01:09:23.748042",
     "metadata": {
       "instance_of_qids": [
         "Q4830453",
@@ -600,7 +676,7 @@
     }
   },
   {
-    "id": "actor_c482e7f505d1",
+    "id": "actor_5efdf5a634e0",
     "canonical_name": "United States",
     "actor_type": "country",
     "aliases": [
@@ -713,11 +789,51 @@
         "name": "America",
         "type": "alias",
         "language": "en"
+      },
+      {
+        "name": "Соединенные Штаты",
+        "type": "original",
+        "language": "ru"
+      },
+      {
+        "name": "Соединённые Штаты Америки",
+        "type": "alias",
+        "language": "ru"
+      },
+      {
+        "name": "Соединённые Штаты",
+        "type": "alias",
+        "language": "ru"
+      },
+      {
+        "name": "Штаты",
+        "type": "alias",
+        "language": "ru"
+      },
+      {
+        "name": "Америка",
+        "type": "alias",
+        "language": "ru"
+      },
+      {
+        "name": "Соединённые Государства Америки",
+        "type": "alias",
+        "language": "ru"
+      },
+      {
+        "name": "САСШ",
+        "type": "alias",
+        "language": "ru"
+      },
+      {
+        "name": "Северо-Американские Соединённые Штаты",
+        "type": "alias",
+        "language": "ru"
       }
     ],
     "wikidata_qid": "Q30",
-    "created_at": "2025-12-10 00:53:38.818707",
-    "updated_at": "2025-12-10 00:53:38.818708",
+    "created_at": "2025-12-10 01:09:30.495701",
+    "updated_at": "2025-12-10 01:09:30.495704",
     "metadata": {
       "instance_of_qids": [
         "Q3624078",
@@ -729,19 +845,19 @@
         "Q99541706"
       ],
       "occupation_qids": [],
-      "description": "country located primarily in North America",
-      "original_language": "en",
+      "description": "федеративное государство в Северной Америке",
+      "original_language": "ru",
       "confidence": 1.0
     }
   },
   {
-    "id": "actor_ce599517895b",
+    "id": "actor_0182c4e970f8",
     "canonical_name": "Meta",
     "actor_type": "company",
     "aliases": [],
     "wikidata_qid": "Q380",
-    "created_at": "2025-12-10 00:53:43.446134",
-    "updated_at": "2025-12-10 00:53:43.446136",
+    "created_at": "2025-12-10 01:09:36.757899",
+    "updated_at": "2025-12-10 01:09:36.757900",
     "metadata": {
       "instance_of_qids": [
         "Q891723",
@@ -756,7 +872,7 @@
     }
   },
   {
-    "id": "actor_166d696f17a1",
+    "id": "actor_deb9902e7442",
     "canonical_name": "Tesla, Inc.",
     "actor_type": "company",
     "aliases": [
@@ -772,8 +888,8 @@
       }
     ],
     "wikidata_qid": "Q478214",
-    "created_at": "2025-12-10 00:53:55.263640",
-    "updated_at": "2025-12-10 00:53:55.263641",
+    "created_at": "2025-12-10 01:09:46.698084",
+    "updated_at": "2025-12-10 01:09:46.698086",
     "metadata": {
       "instance_of_qids": [
         "Q167037",
@@ -787,7 +903,87 @@
     }
   },
   {
-    "id": "actor_352daed0c4e5",
+    "id": "actor_cc8a8bd1bd01",
+    "canonical_name": "Texas",
+    "actor_type": "government",
+    "aliases": [
+      {
+        "name": "TX",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Lone Star State",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Texas, United States",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "State of Texas",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "US-TX",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Tex.",
+        "type": "alias",
+        "language": "en"
+      }
+    ],
+    "wikidata_qid": "Q1439",
+    "created_at": "2025-12-10 01:09:46.698183",
+    "updated_at": "2025-12-10 01:09:46.698183",
+    "metadata": {
+      "instance_of_qids": [
+        "Q35657"
+      ],
+      "occupation_qids": [],
+      "description": "state of the United States of America",
+      "original_language": "en",
+      "confidence": 1.0
+    }
+  },
+  {
+    "id": "actor_97dfb10f4ef8",
+    "canonical_name": "Austin",
+    "actor_type": "government",
+    "aliases": [
+      {
+        "name": "Austin, Texas",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Austin, TX",
+        "type": "alias",
+        "language": "en"
+      }
+    ],
+    "wikidata_qid": "Q16559",
+    "created_at": "2025-12-10 01:09:46.698220",
+    "updated_at": "2025-12-10 01:09:46.698220",
+    "metadata": {
+      "instance_of_qids": [
+        "Q1093829",
+        "Q1549591",
+        "Q62049"
+      ],
+      "occupation_qids": [],
+      "description": "seat of Travis County, and capital of the State of Texas",
+      "original_language": "en",
+      "confidence": 1.0
+    }
+  },
+  {
+    "id": "actor_c413835d39bc",
     "canonical_name": "Elon Musk",
     "actor_type": "person",
     "aliases": [
@@ -798,8 +994,8 @@
       }
     ],
     "wikidata_qid": "Q317521",
-    "created_at": "2025-12-10 00:53:55.263747",
-    "updated_at": "2025-12-10 00:53:55.263748",
+    "created_at": "2025-12-10 01:09:46.698287",
+    "updated_at": "2025-12-10 01:09:46.698288",
     "metadata": {
       "instance_of_qids": [
         "Q5"
@@ -835,15 +1031,375 @@
     }
   },
   {
-    "id": "actor_c5167888a269",
+    "id": "actor_128f4b72cd8c",
     "canonical_name": "AI Safety Alliance",
     "actor_type": "organization",
     "aliases": [],
     "wikidata_qid": null,
-    "created_at": "2025-12-10 00:54:14.732218",
-    "updated_at": "2025-12-10 00:54:14.732224",
+    "created_at": "2025-12-10 01:10:06.587478",
+    "updated_at": "2025-12-10 01:10:06.587485",
     "metadata": {
       "original_language": "en",
+      "confidence": 1.0
+    }
+  },
+  {
+    "id": "actor_2bf146189d2b",
+    "canonical_name": "Donald Trump",
+    "actor_type": "politician",
+    "aliases": [
+      {
+        "name": "Дональд Трамп",
+        "type": "original",
+        "language": "ru"
+      },
+      {
+        "name": "Трамп",
+        "type": "alias",
+        "language": "ru"
+      },
+      {
+        "name": "Трамп, Дональд",
+        "type": "alias",
+        "language": "ru"
+      },
+      {
+        "name": "Дональд Джон Трамп",
+        "type": "alias",
+        "language": "ru"
+      },
+      {
+        "name": "POTUS 45",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "President Donald Trump",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "President Trump",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "President Donald J. Trump",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "President Donald John Trump",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "President Donald J Trump",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "@realDonaldTrump",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "POTUS 47",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "President DJT",
+        "type": "alias",
+        "language": "en"
+      }
+    ],
+    "wikidata_qid": "Q22686",
+    "created_at": "2025-12-10 01:18:09.433896",
+    "updated_at": "2025-12-10 01:18:09.433898",
+    "metadata": {
+      "instance_of_qids": [
+        "Q5"
+      ],
+      "occupation_qids": [
+        "Q911554",
+        "Q557880",
+        "Q82955",
+        "Q22662561",
+        "Q7301138",
+        "Q578109",
+        "Q3282637",
+        "Q36180",
+        "Q33999",
+        "Q484876",
+        "Q215536",
+        "Q43845",
+        "Q131524"
+      ],
+      "positions": [
+        "CEO",
+        "президент",
+        "директор",
+        "Избранный президент США",
+        "президент США",
+        "Избранный президент США",
+        "президент США"
+      ],
+      "countries": [
+        "США"
+      ],
+      "country": "США",
+      "birth_date": "+1946-06-14T00:00:00Z",
+      "description": "45-й (2017–2021) и 47-й (с 2025) президент США, миллиардер",
+      "original_language": "ru",
+      "confidence": 1.0
+    }
+  },
+  {
+    "id": "actor_f526b2b99fe5",
+    "canonical_name": "Volodymyr Zelenskyy",
+    "actor_type": "politician",
+    "aliases": [
+      {
+        "name": "Владимир Зеленский",
+        "type": "original",
+        "language": "ru"
+      },
+      {
+        "name": "Зеленский, Владимир Александрович",
+        "type": "alias",
+        "language": "ru"
+      },
+      {
+        "name": "Зеленский, Владимир",
+        "type": "alias",
+        "language": "ru"
+      },
+      {
+        "name": "Зеленский Владимир Александрович",
+        "type": "alias",
+        "language": "ru"
+      },
+      {
+        "name": "Зе",
+        "type": "alias",
+        "language": "ru"
+      },
+      {
+        "name": "Volodymyr Zelensky",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Volodymyr Zelenskiy",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Volodymyr Oleksandrovych Zelenskyy",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "President Volodymyr Zelenskyy",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "President Volodymyr Oleksandrovych Zelenskyy",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "President Zelenskyy",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Volodymyr Zelenskyj",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Volodymyr Zelenskyi",
+        "type": "alias",
+        "language": "en"
+      }
+    ],
+    "wikidata_qid": "Q3874799",
+    "created_at": "2025-12-10 01:18:09.433986",
+    "updated_at": "2025-12-10 01:18:09.433987",
+    "metadata": {
+      "instance_of_qids": [
+        "Q5"
+      ],
+      "occupation_qids": [
+        "Q82955",
+        "Q245068",
+        "Q13590141",
+        "Q3282637",
+        "Q28389",
+        "Q33999",
+        "Q578109",
+        "Q947873",
+        "Q138858",
+        "Q177220",
+        "Q12406482",
+        "Q1414443",
+        "Q355242",
+        "Q98925420",
+        "Q1148872",
+        "Q248577"
+      ],
+      "positions": [
+        "Президент Украины",
+        "Верховный главнокомандующий Вооружённых сил Украины"
+      ],
+      "countries": [
+        "Украина",
+        "СССР"
+      ],
+      "country": "Украина",
+      "birth_date": "+1978-01-25T00:00:00Z",
+      "description": "президент Украины с 2019 года",
+      "original_language": "ru",
+      "confidence": 1.0
+    }
+  },
+  {
+    "id": "actor_be5dd7543b5c",
+    "canonical_name": "Администрация Соединенных Штатов",
+    "actor_type": "government",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-10 01:18:09.434059",
+    "updated_at": "2025-12-10 01:18:09.434059",
+    "metadata": {
+      "original_language": "ru",
+      "confidence": 1.0
+    }
+  },
+  {
+    "id": "actor_ff5579f27365",
+    "canonical_name": "White House",
+    "actor_type": "government",
+    "aliases": [
+      {
+        "name": "Белый дом",
+        "type": "original",
+        "language": "ru"
+      },
+      {
+        "name": "Executive Mansion",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "President's Palace",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Presidential Mansion",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "President's House",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "the White House",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "1600 Pennsylvania Avenue",
+        "type": "alias",
+        "language": "en"
+      }
+    ],
+    "wikidata_qid": "Q35525",
+    "created_at": "2025-12-10 01:18:09.434105",
+    "updated_at": "2025-12-10 01:18:09.434106",
+    "metadata": {
+      "instance_of_qids": [
+        "Q1802963",
+        "Q52177058",
+        "Q570116",
+        "Q2114972"
+      ],
+      "occupation_qids": [],
+      "description": "официальная резиденция президента США, расположенная в Вашингтоне (округ Колумбия)",
+      "original_language": "ru",
+      "confidence": 1.0
+    }
+  },
+  {
+    "id": "actor_dab979135fb1",
+    "canonical_name": "Администрация Джо Байдена",
+    "actor_type": "government",
+    "aliases": [],
+    "wikidata_qid": null,
+    "created_at": "2025-12-10 01:18:09.434215",
+    "updated_at": "2025-12-10 01:18:09.434215",
+    "metadata": {
+      "original_language": "ru",
+      "confidence": 1.0
+    }
+  },
+  {
+    "id": "actor_747f2ada6a18",
+    "canonical_name": "Joe Biden Administration cabinet",
+    "actor_type": "government",
+    "aliases": [
+      {
+        "name": "Biden Administration",
+        "type": "original",
+        "language": "ru"
+      },
+      {
+        "name": "Cabinet of Joe Biden",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Biden Administration cabinet",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Joe Biden's Cabinet",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Joe Biden Cabinet",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Biden's Cabinet",
+        "type": "alias",
+        "language": "en"
+      },
+      {
+        "name": "Biden Cabinet",
+        "type": "alias",
+        "language": "en"
+      }
+    ],
+    "wikidata_qid": "Q101250904",
+    "created_at": "2025-12-10 01:22:41.617565",
+    "updated_at": "2025-12-10 01:22:41.617567",
+    "metadata": {
+      "instance_of_qids": [
+        "Q639738"
+      ],
+      "occupation_qids": [],
+      "description": "лица, входящие в кабинет в администрации 46-го президента США Джо Байдена",
+      "original_language": "ru",
       "confidence": 1.0
     }
   }
