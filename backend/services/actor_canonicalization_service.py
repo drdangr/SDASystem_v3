@@ -8,6 +8,7 @@
 from typing import List, Dict, Optional
 import logging
 import os
+import re
 
 from backend.services.ner_spacy_service import detect_language, get_model_for_language, check_model_available
 
@@ -225,6 +226,52 @@ class ActorCanonicalizationService:
         # Определяем язык, если не указан
         if language is None:
             language = detect_language(original_name)
+
+        def _is_latin_like(s: str) -> bool:
+            # латиница/цифры/пробел/пунктуация, без кириллицы
+            if not s:
+                return False
+            return not bool(re.search(r"[\u0400-\u04FF]", s))
+
+        def _wikidata_search_with_fallback(name: str, primary_lang: str) -> Optional[Dict]:
+            """
+            Искать в Wikidata с fallback по языкам интерфейса/поиска.
+            Важно: в нашем пайплайне имена часто уже в латинице (из LLM),
+            поэтому для надежности всегда добавляем fallback на 'en'.
+            """
+            langs: List[str] = []
+            if primary_lang:
+                langs.append(primary_lang)
+            # для uk -> ru (часто алиасы/описания в ru присутствуют лучше)
+            if primary_lang == "uk":
+                langs.append("ru")
+            # если имя латиницей — 'en' чаще всего дает лучший hit
+            if _is_latin_like(name):
+                langs.append("en")
+            else:
+                # если имя кириллицей — пробуем ru/en тоже
+                langs.extend(["ru", "en"])
+
+            # уникализируем, сохраняя порядок
+            seen = set()
+            ordered_langs = []
+            for l in langs:
+                if l and l not in seen:
+                    ordered_langs.append(l)
+                    seen.add(l)
+
+            for lang in ordered_langs:
+                try:
+                    res = self._wikidata_service.search_entity(
+                        name=name,
+                        language=lang,
+                        expected_type=actor_type
+                    )
+                    if res:
+                        return res
+                except Exception:
+                    continue
+            return None
         
         # --- GARBAGE FILTERING ---
         # Отфильтровываем слишком длинные имена (вероятно, заголовки или ошибки экстракции)
@@ -257,7 +304,7 @@ class ActorCanonicalizationService:
             actor_type = "politician" # Force type
             logger.debug(f"Forcing type 'politician' for known entity '{original_name}'")
 
-        # Шаг 1: Лемматизация для русского языка
+        # Шаг 1: Лемматизация для русского языка (uk пока не лемматизируем)
         if language == 'ru' and self.use_lemmatization:
             lemmatized_name = self._normalize_russian_name(original_name)
         else:
@@ -277,12 +324,8 @@ class ActorCanonicalizationService:
                 if self._wikidata_service is None:
                     self._wikidata_service = WikidataService()
                 
-                # Поиск по лемматизированному имени
-                search_result = self._wikidata_service.search_entity(
-                    name=lemmatized_name,
-                    language=language,
-                    expected_type=actor_type
-                )
+                # Поиск по лемматизированному имени с fallback uk->ru->en
+                search_result = _wikidata_search_with_fallback(lemmatized_name, language)
                 
                 if search_result:
                     wikidata_qid = search_result.get("qid")
@@ -374,11 +417,36 @@ class ActorCanonicalizationService:
                 continue
             
             actor_type = actor.get("type", "organization")
+            # Язык для канонизации:
+            # - если у актора есть original_name, определяем язык по нему (это устойчивее для LLM-канона)
+            # - иначе берём language/default_language как раньше
             language = actor.get("language") or default_language
+            original_name = actor.get("original_name")
+            if original_name:
+                language = detect_language(str(original_name))
             confidence = actor.get("confidence")
             
             # Канонизируем актора
             canonical = self.canonicalize_actor(name, actor_type, language)
+
+            # Важно для дедупликации: если LLM дал original_name (как в тексте),
+            # добавляем его как алиас, даже если canonicalize_actor() получал уже латинское имя.
+            # (иначе теряем связь Zelenskyy <-> Зеленский/Зеленський)
+            if original_name:
+                try:
+                    orig_str = str(original_name).strip()
+                except Exception:
+                    orig_str = ""
+                if orig_str:
+                    aliases = canonical.get("aliases") or []
+                    # проверка на дубль
+                    if not any((a.get("name", "").lower() == orig_str.lower()) for a in aliases if isinstance(a, dict)):
+                        aliases.append({
+                            "name": orig_str,
+                            "type": "original_text",
+                            "language": detect_language(orig_str)
+                        })
+                        canonical["aliases"] = aliases
             
             # Обновляем тип, если он был уточнен в Wikidata
             final_type = canonical.get("inferred_type") or actor_type
