@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 """
-Initialize SDASystem with mock data
+Initialize SDASystem with mock data (legacy helper).
+
+NOTE:
+Default startup no longer generates mock data. Prefer:
+  python scripts/generate_mock_data.py --force
+and then start the server.
 """
 import sys
 import os
