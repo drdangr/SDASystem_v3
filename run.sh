@@ -23,11 +23,8 @@ if [ ! -f "venv/.installed" ]; then
     touch venv/.installed
 fi
 
-# Check if mock data exists
-if [ ! -f "data/mock_data.json" ]; then
-    echo "Generating mock data..."
-    python -m backend.utils.mock_data_generator
-fi
+echo "Note: Mock-data generation is NOT part of the default startup anymore."
+echo "If you need mock data, run: python scripts/generate_mock_data.py --force"
 
 echo "[run] Backend (serves frontend static) → http://localhost:8000/ui"
 echo "[run] API docs → http://localhost:8000/docs"

@@ -23,11 +23,8 @@ if not exist "venv\.installed" (
     type nul > venv\.installed
 )
 
-REM Check if mock data exists
-if not exist "data\mock_data.json" (
-    echo Generating mock data...
-    python -m backend.utils.mock_data_generator
-)
+echo Note: Mock-data generation is NOT part of the default startup anymore.
+echo If you need mock data, run: python scripts\generate_mock_data.py --force
 
 echo.
 echo Starting server...

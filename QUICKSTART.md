@@ -22,8 +22,7 @@ run.bat            # Windows
 The script will:
 1. Create virtual environment
 2. Install dependencies
-3. Generate mock data
-4. Start the server
+3. Start the server
 
 ### Access
 
@@ -83,8 +82,8 @@ source venv/bin/activate  # or venv\Scripts\activate
 # 2. Install deps
 pip install -r requirements.txt
 
-# 3. Generate data
-python -m backend.utils.mock_data_generator
+# 3. (Optional) Generate mock data (WILL OVERWRITE data/*.json)
+python scripts/generate_mock_data.py --force
 
 # 4. Start server
 python main.py
