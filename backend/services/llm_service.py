@@ -164,6 +164,7 @@ class LLMService:
             "- Deduplicate similar entities (merge 'US' and 'United States' as one)\n"
             "- Keep top 8-10 most relevant actors\n"
             "- confidence: 0.9+ for explicit mentions, 0.7-0.8 for indirect/implied mentions\n\n"
+            "- Output JSON ONLY. No markdown fences.\n\n"
             "Example:\n"
             "Text: 'Putin criticized NATO and the US'\n"
             "Output: [{\"name\": \"Vladimir Putin\", \"type\": \"politician\", \"confidence\": 0.95}, "
@@ -171,7 +172,7 @@ class LLMService:
             "{\"name\": \"United States\", \"type\": \"country\", \"confidence\": 0.9}]\n\n"
             f"Text:\n{text}"
         )
-        raw = self._run(prompt)
+        raw = self._run(prompt, **{"temperature": 0.2, "max_output_tokens": 2048})
         self.last_raw = raw
         
         # Проверка на пустой ответ
@@ -183,12 +184,22 @@ class LLMService:
                 "Extract persons, politicians, companies, countries, organizations mentioned in the text.\n"
                 f"Text:\n{text}"
             )
-            raw = self._run(simple_prompt, **{"temperature": 0.2})  # Более детерминированный режим
+            raw = self._run(simple_prompt, **{"temperature": 0.2, "max_output_tokens": 2048})  # Более детерминированный режим
             self.last_raw = raw
         
         data = self._parse_json_array(raw)
-        if not isinstance(data, list):
-            data = []
+        if not isinstance(data, list) or not data:
+            # Частый кейс: ответ обрезан/невалидный JSON. Повторяем коротким промптом.
+            simple_prompt = (
+                "Extract named entities from the text. Return JSON array ONLY (no markdown fences): "
+                "[{\"name\": string, \"type\": \"politician|person|company|country|organization\", \"confidence\": 0.9}].\n"
+                f"Text:\n{text}"
+            )
+            raw = self._run(simple_prompt, **{"temperature": 0.1, "max_output_tokens": 2048})
+            self.last_raw = raw
+            data = self._parse_json_array(raw)
+            if not isinstance(data, list):
+                data = []
 
         normalized = []
         seen_names = set()  # Для дедупликации

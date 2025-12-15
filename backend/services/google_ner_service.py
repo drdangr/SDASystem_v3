@@ -67,20 +67,52 @@ class GoogleNERService:
             "- 'description': Short 3-5 word identity in English.\n\n"
             "Rules:\n"
             "- EXTRACT ALL ENTITIES found in text. Be exhaustive.\n"
+            "- Return up to 15 entities (focus on the most important).\n"
+            "- You MUST return a JSON ARRAY (even if it has only 1 element). Never return a single JSON object.\n"
+            "- If the text mentions Zelensky/Zelenskyy/Зеленський/Зеленский, Putin/Путін/Путин, Biden/Байден, you MUST include them.\n"
+            "- Also include key implied state/org actors when present in the text: Ukraine, Russia, United States, NATO, United Nations, White House, Kremlin.\n"
             "- ALL canonical_name MUST use LATIN script (a-z, A-Z). Never Cyrillic or other scripts.\n"
             "- Skip generic terms like 'president' alone, 'ministry' without country.\n"
             "- Output JSON ONLY. No markdown fences.\n\n"
             f"Text:\n{text[:15000]}"
         )
 
-        raw_response = self.llm._run(prompt, temperature=0.1) # Low temp for precision
+        raw_response = self.llm._run(
+            prompt,
+            temperature=0.0,  # максимально детерминированно, чтобы JSON не разваливался
+            max_output_tokens=2048,  # JSON может быть длинным; избегаем обрезаний
+        )
         
         # Parse JSON
         try:
             # Clean markdown if present
             cleaned = self.llm._strip_code_fences(raw_response)
-            data = json.loads(cleaned)
+
+            def _try_parse(s: str):
+                return json.loads(s)
+
+            data = None
+            try:
+                data = _try_parse(cleaned)
+            except Exception:
+                # Fallback 1: try raw (sometimes fences already stripped or formatting differs)
+                try:
+                    data = _try_parse(raw_response)
+                except Exception:
+                    # Fallback 2: extract first JSON array/object from the text
+                    # Handles cases where model adds commentary after JSON.
+                    m = re.search(r"(\[[\s\S]*\])", cleaned)
+                    if not m:
+                        m = re.search(r"(\{[\s\S]*\})", cleaned)
+                    if m:
+                        data = _try_parse(m.group(1))
+                    else:
+                        raise
             
+            # Иногда модель возвращает один объект вместо массива — нормализуем
+            if isinstance(data, dict):
+                data = [data]
+
             if isinstance(data, list):
                 # Post-processing normalization
                 results = []

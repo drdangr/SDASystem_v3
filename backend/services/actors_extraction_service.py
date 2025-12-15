@@ -152,6 +152,48 @@ class ActorsExtractionService:
         n = " ".join(n.split())
         return n
 
+    def _has_cyrillic(self, s: str) -> bool:
+        if not s:
+            return False
+        import re
+        return bool(re.search(r"[\u0400-\u04FF]", s))
+
+    def _pick_best_latin_alias(self, actor: Actor) -> Optional[str]:
+        """
+        Выбрать лучший вариант имени в латинице из canonical_name/aliases.
+        Эвристика: предпочитаем более длинные (обычно полные имена), без кириллицы.
+        """
+        candidates: List[str] = []
+        if actor.canonical_name and not self._has_cyrillic(actor.canonical_name):
+            candidates.append(actor.canonical_name)
+        for a in actor.aliases or []:
+            nm = (a or {}).get("name")
+            if nm and not self._has_cyrillic(nm):
+                candidates.append(nm)
+        if not candidates:
+            return None
+        # длиннее = лучше, если равны — лексикографически стабильно
+        candidates = sorted(set(candidates), key=lambda x: (-len(x), x))
+        return candidates[0]
+
+    def _late_latinize_actor_names(self) -> None:
+        """
+        Пост-обработка: если у актора canonical_name в кириллице,
+        но уже есть латинский алиас (или Wikidata дала латинский label),
+        то переносим латиницу в canonical_name, а старое имя оставляем алиасом.
+        """
+        for actor in self.graph_manager.actors.values():
+            if not actor.canonical_name or not self._has_cyrillic(actor.canonical_name):
+                continue
+            best = self._pick_best_latin_alias(actor)
+            if not best:
+                continue
+            if best == actor.canonical_name:
+                continue
+            # сохранить старое имя как алиас и переключить canonical_name
+            self._add_alias_if_not_exists(actor, actor.canonical_name, "canonical_prev")
+            actor.canonical_name = best
+
     def _add_or_get_actor(
         self, name: str, actor_type: str, confidence: Optional[float], canonical_index: Dict[str, str]
     ) -> Actor:
@@ -502,9 +544,39 @@ class ActorsExtractionService:
         canonical_index = self._build_canonical_index()
         text = self._news_text(news)
         
-        # Используем новый сервис (GoogleNERService)
-        # Он не принимает лишние аргументы
+        # Основной метод: GoogleNERService (Gemini) — возвращает канонику в латинице.
         extracted = self.hybrid.extract_actors(text)
+
+        # Fallback: иногда LLM возвращает слишком мало сущностей (или только одну).
+        # Тогда дополняем результат вторым, более “жадным” промптом (LLMService.extract_actors),
+        # чтобы гарантировать покрытие ключевых акторов (Biden/Putin/etc.).
+        try:
+            if not extracted or len(extracted) < 3:
+                fallback = self.llm_service.extract_actors(text) or []
+                # Нормализуем формат, чтобы дальше канонизация работала одинаково
+                normalized = []
+                for a in fallback:
+                    if not isinstance(a, dict):
+                        continue
+                    nm = a.get("name")
+                    if not nm:
+                        continue
+                    normalized.append({
+                        "name": nm,
+                        "type": a.get("type", "organization"),
+                        "confidence": a.get("confidence", 0.7),
+                        # original_name отсутствует в этом пути
+                    })
+                # merge by lowercase name to avoid duplicates
+                seen = {str(x.get("name", "")).lower() for x in extracted if isinstance(x, dict)}
+                for a in normalized:
+                    key = str(a.get("name", "")).lower()
+                    if key and key not in seen:
+                        extracted.append(a)
+                        seen.add(key)
+        except Exception:
+            # если fallback сломался — продолжаем с тем, что есть
+            pass
 
         # Определяем язык текста для подсказки канонизатору
         news_language = detect_language(text)
@@ -538,6 +610,10 @@ class ActorsExtractionService:
             )
             actor_ids_set.add(actor.id)  # Add to set (auto-deduplication)
 
+        # После добавления/обновления акторов пробуем улучшить canonical_name до латиницы
+        # (закрывает кейсы “поздней латинизации”, когда латинская форма появляется позже)
+        self._late_latinize_actor_names()
+
         # Convert to list for storage
         actor_ids = list(actor_ids_set)
         
@@ -564,6 +640,7 @@ class ActorsExtractionService:
                 result[news_id] = ids
         self.load_gazetteer()
         self.deduplicate_actors()
+        self._late_latinize_actor_names()
         self._save_actors()
         self._save_news()
         self._update_all_story_top_actors()
@@ -599,6 +676,7 @@ class ActorsExtractionService:
 
         self.load_gazetteer()
         self.deduplicate_actors()
+        self._late_latinize_actor_names()
         self._save_actors()
         self._save_news()
         self._update_all_story_top_actors()
@@ -648,6 +726,7 @@ class ActorsExtractionService:
             self.progress.actors_count = len(self.graph_manager.actors)
 
         self.deduplicate_actors()
+        self._late_latinize_actor_names()
         self.load_gazetteer()
         self._save_actors()
         self._save_news()

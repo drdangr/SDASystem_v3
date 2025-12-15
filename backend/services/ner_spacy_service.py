@@ -25,7 +25,12 @@ logger = logging.getLogger(__name__)
 
 def detect_language(text: str) -> str:
     """
-    Определить язык текста на основе наличия кириллицы.
+    Определить язык текста.
+
+    Простая эвристика:
+    - 'uk' если встречаются украинские буквы (і/ї/є/ґ)
+    - 'ru' если встречается кириллица, но нет украинских букв
+    - иначе 'en'
     
     Args:
         text: Текст для анализа
@@ -36,8 +41,13 @@ def detect_language(text: str) -> str:
     if not text:
         return 'en'
     
-    # Проверяем наличие кириллических символов
-    cyrillic_pattern = re.compile(r'[А-Яа-яЁё]')
+    # Украинские специфические буквы (в русском их нет)
+    ukrainian_pattern = re.compile(r'[ІіЇїЄєҐґ]')
+    if ukrainian_pattern.search(text):
+        return 'uk'
+
+    # Проверяем наличие кириллических символов (RU/UA/etc.)
+    cyrillic_pattern = re.compile(r'[А-Яа-яЁёІіЇїЄєҐґ]')
     has_cyrillic = bool(cyrillic_pattern.search(text))
     
     # Подсчитываем процент кириллицы
@@ -49,7 +59,7 @@ def detect_language(text: str) -> str:
     
     cyrillic_ratio = cyrillic_chars / total_chars
     
-    # Если больше 30% кириллицы - считаем русским
+    # Если больше 30% кириллицы - считаем русским (если не uk — см. выше)
     if cyrillic_ratio > 0.3 or has_cyrillic:
         return 'ru'
     
@@ -72,6 +82,10 @@ def get_model_for_language(language: str, prefer_large: bool = False) -> str:
             return 'ru_core_news_lg'
         else:
             return 'ru_core_news_md'  # Средняя модель - хороший баланс
+    elif language == 'uk':
+        # У spaCy нет стандартной официальной uk-модели в базовой поставке.
+        # Для best-effort используем многоязычную NER-модель.
+        return 'xx_ent_wiki_sm'
     else:
         if prefer_large:
             return 'en_core_web_lg'

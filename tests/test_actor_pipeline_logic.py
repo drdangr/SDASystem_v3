@@ -29,7 +29,7 @@ class TestActorPipelineLogic:
     def service(self, mock_graph_manager, mock_llm_service):
         # We use real ActorsExtractionService but with mocked dependencies
         # preventing actual file IO or heavy model loading where possible
-        with patch('backend.services.actors_extraction_service.HybridNERService') as MockHybrid, \
+        with patch('backend.services.actors_extraction_service.GoogleNERService') as MockHybrid, \
              patch('backend.services.actors_extraction_service.ActorCanonicalizationService') as MockCanon:
             
             service = ActorsExtractionService(
@@ -50,6 +50,7 @@ class TestActorPipelineLogic:
         
         assert detect_language("Hello world") == "en"
         assert detect_language("Привет мир") == "ru"
+        assert detect_language("Привіт світе") == "uk"
         assert detect_language("Ukraine is a country. Украина - это страна.") == "ru" # Mixed, dominant Cyrillic? Or presence.
         
     def test_flow_step_3_extraction_orchestration(self, service):
@@ -106,7 +107,7 @@ class TestActorPipelineLogic:
         actors, ids = service.extract_for_news(news)
         
         # Verify Canonicalization was called
-        service.canonicalization_service.canonicalize_batch.assert_called_with(raw_actors)
+        service.canonicalization_service.canonicalize_batch.assert_called_with(raw_actors, default_language="en")
         
         # Verify Actor was created with canonical data
         added_actor = service.graph_manager.actors[ids[0]]
