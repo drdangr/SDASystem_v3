@@ -237,13 +237,17 @@ class ActorsExtractionService:
         key = canonical_name.lower().strip()
         if key in canonical_index:
             actor_id = canonical_index[key]
-            actor = self.graph_manager.actors[actor_id]
+            actor = self.graph_manager.get_actor(actor_id)
+            if not actor:
+                return None
             # Обновляем QID если его еще нет
             if wikidata_qid and not actor.wikidata_qid:
                 actor.wikidata_qid = wikidata_qid
             # Обновляем алиасы и метаданные
             self._update_actor_aliases(actor, aliases or [])
             self._update_actor_metadata(actor, metadata or {})
+            # Сохраняем изменения в БД
+            self.graph_manager.add_actor(actor)
             return actor
         
         # Проверяем по алиасам
@@ -252,7 +256,9 @@ class ActorsExtractionService:
                 alias_name = alias_entry.get("name", "").lower().strip()
                 if alias_name in canonical_index:
                     actor_id = canonical_index[alias_name]
-                    actor = self.graph_manager.actors[actor_id]
+                    actor = self.graph_manager.get_actor(actor_id)
+                    if not actor:
+                        continue
                     # Обновляем каноническое имя если оно лучше
                     if canonical_name != actor.canonical_name:
                         # Добавляем старое каноническое имя как алиас
@@ -262,6 +268,8 @@ class ActorsExtractionService:
                     if wikidata_qid:
                         actor.wikidata_qid = wikidata_qid
                     self._update_actor_aliases(actor, aliases)
+                    # Сохраняем изменения в БД
+                    self.graph_manager.add_actor(actor)
                     self._update_actor_metadata(actor, metadata or {})
                     canonical_index[key] = actor.id
                     return actor
@@ -315,19 +323,18 @@ class ActorsExtractionService:
         actor.metadata.update(new_metadata)
 
     def _save_actors(self) -> None:
-        actors_list = [a.model_dump() for a in self.graph_manager.actors.values()]
-        self.actors_file.parent.mkdir(parents=True, exist_ok=True)
-        with self.actors_file.open("w", encoding="utf-8") as f:
-            json.dump(actors_list, f, ensure_ascii=False, indent=2, default=str)
+        """Save actors to database (via GraphManager)"""
+        # Actors are automatically saved to database when added via graph_manager.add_actor()
+        # This method is kept for backward compatibility but now does nothing
+        # as all saves go through GraphManager -> DatabaseManager
+        pass
 
     def _save_news(self) -> None:
-        news_list = []
-        for n in self.graph_manager.news.values():
-            data = n.model_dump()
-            news_list.append(data)
-        self.news_file.parent.mkdir(parents=True, exist_ok=True)
-        with self.news_file.open("w", encoding="utf-8") as f:
-            json.dump(news_list, f, ensure_ascii=False, indent=2, default=str)
+        """Save news to database (via GraphManager)"""
+        # News are automatically saved to database when added via graph_manager.add_news()
+        # This method is kept for backward compatibility but now does nothing
+        # as all saves go through GraphManager -> DatabaseManager
+        pass
 
     def _update_all_story_top_actors(self, top_n: int = 5) -> None:
         for sid in list(self.graph_manager.stories.keys()):
@@ -370,7 +377,8 @@ class ActorsExtractionService:
                 if key and key in alias_to_authoritative:
                     auth_actor_id = alias_to_authoritative[key]
                     # Group this actor with the authoritative one
-                    auth_qid = self.graph_manager.actors[auth_actor_id].wikidata_qid
+                    auth_actor = self.graph_manager.get_actor(auth_actor_id)
+                    auth_qid = auth_actor.wikidata_qid if auth_actor else None
                     if auth_qid:
                         if auth_qid not in qid_to_actors:
                             qid_to_actors[auth_qid] = []
@@ -395,6 +403,7 @@ class ActorsExtractionService:
         """
         old_to_new: Dict[str, str] = {}
         to_delete: List[str] = []
+        updated_target_actors = {}  # Track updated target actors per group
         
         for group in actor_groups:
             if len(group) < 2:
@@ -405,11 +414,14 @@ class ActorsExtractionService:
             target_id = group[0]
             # Простая эвристика: выбираем актора, у которого есть QID
             for aid in group:
-                if self.graph_manager.actors[aid].wikidata_qid:
+                actor = self.graph_manager.get_actor(aid)
+                if actor and actor.wikidata_qid:
                     target_id = aid
                     break
             
-            target_actor = self.graph_manager.actors[target_id]
+            target_actor = self.graph_manager.get_actor(target_id)
+            if not target_actor:
+                continue
             
             for source_id in group:
                 if source_id == target_id:
@@ -419,7 +431,9 @@ class ActorsExtractionService:
                 if source_id in old_to_new:
                     continue
                 
-                source_actor = self.graph_manager.actors[source_id]
+                source_actor = self.graph_manager.get_actor(source_id)
+                if not source_actor:
+                    continue
                 
                 # Логика слияния
                 old_to_new[source_id] = target_id
@@ -434,6 +448,13 @@ class ActorsExtractionService:
                     target_actor.wikidata_qid = source_actor.wikidata_qid
                 # 4. Metadata
                 self._update_actor_metadata(target_actor, source_actor.metadata)
+            
+            # Сохраняем обновленного target_actor для этой группы
+            updated_target_actors[target_id] = target_actor
+        
+        # Сохраняем все обновленные target_actors в БД
+        for target_actor in updated_target_actors.values():
+            self.graph_manager.add_actor(target_actor)
         
         return old_to_new, to_delete
 
@@ -458,9 +479,12 @@ class ActorsExtractionService:
         if not to_delete:
             return
 
-        # Удалить дубликаты из графа
+        # Удалить дубликаты из графа (удаление из БД не выполняется для сохранения целостности)
+        # Акторы остаются в БД, но ссылки обновляются
         for actor_id in to_delete:
-            self.graph_manager.actors.pop(actor_id, None)
+            # Удаляем из кэша и графа
+            if actor_id in self.graph_manager._actors_cache:
+                del self.graph_manager._actors_cache[actor_id]
             if actor_id in self.graph_manager.actors_graph:
                 self.graph_manager.actors_graph.remove_node(actor_id)
 
@@ -479,10 +503,16 @@ class ActorsExtractionService:
                     final_id = old_to_new[final_id]
                 
                 if final_id not in seen and final_id not in to_delete:
-                    if final_id in self.graph_manager.actors: # Проверка существования
+                    # Проверяем существование актора через БД
+                    actor = self.graph_manager.get_actor(final_id)
+                    if actor:
                         seen.add(final_id)
                         updated_ids.append(final_id)
-            news.mentioned_actors = updated_ids
+            
+            if news.mentioned_actors != updated_ids:
+                news.mentioned_actors = updated_ids
+                # Сохраняем обновленную новость в БД
+                self.graph_manager.add_news(news)
 
         # Перестроить mentions_graph (чистый способ)
         self.graph_manager.mentions_graph.clear()
@@ -631,11 +661,13 @@ class ActorsExtractionService:
     def extract_for_story(self, story_id: str, low_conf_threshold: float = 0.75) -> Dict[str, List[str]]:
         if story_id not in self.graph_manager.stories:
             raise ValueError(f"Story {story_id} not found")
-        story = self.graph_manager.stories[story_id]
+        story = self.graph_manager.get_story(story_id)
+        if not story:
+            raise ValueError(f"Story {story_id} not found")
         result: Dict[str, List[str]] = {}
         for news_id in story.news_ids:
-            if news_id in self.graph_manager.news:
-                news = self.graph_manager.news[news_id]
+            news = self.graph_manager.get_news(news_id)
+            if news:
                 _, ids = self.extract_for_news(news, low_conf_threshold)
                 result[news_id] = ids
         self.load_gazetteer()

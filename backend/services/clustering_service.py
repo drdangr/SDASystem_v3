@@ -64,8 +64,9 @@ class ClusteringService:
 
     def _cluster_by_embeddings(self, min_size: int, eps: float) -> List[Story]:
         """Cluster using DBSCAN on embeddings"""
-        # Get news with embeddings
-        news_items = [n for n in self.graph.news.values() if n.embedding is not None]
+        # Get news with embeddings (using property for backward compatibility)
+        all_news = self.graph.news.values()
+        news_items = [n for n in all_news if n.embedding is not None]
 
         if len(news_items) < min_size:
             return []
@@ -96,8 +97,12 @@ class ClusteringService:
 
     def _create_story_from_news_ids(self, news_ids: List[str]) -> Story:
         """Create a Story object from a cluster of news IDs"""
-        # Get news objects
-        news_items = [self.graph.news[nid] for nid in news_ids if nid in self.graph.news]
+        # Get news objects (using get_news method for efficiency)
+        news_items = []
+        for nid in news_ids:
+            news = self.graph.get_news(nid)
+            if news:
+                news_items.append(news)
 
         if not news_items:
             raise ValueError("No valid news items in cluster")
@@ -183,8 +188,10 @@ class ClusteringService:
         base_title = news_items[0].title
 
         # If we have top actors, try to incorporate them
-        if top_actors and top_actors[0] in self.graph.actors:
-            actor_name = self.graph.actors[top_actors[0]].canonical_name
+        if top_actors:
+            actor = self.graph.get_actor(top_actors[0])
+            if actor:
+                actor_name = actor.canonical_name
             # Simple heuristic: if actor not in title, prepend
             if actor_name.lower() not in base_title.lower():
                 return f"{actor_name}: {base_title}"
@@ -245,7 +252,11 @@ class ClusteringService:
 
     def merge_stories(self, story_ids: List[str]) -> Optional[Story]:
         """Merge multiple stories into one"""
-        stories = [self.graph.stories[sid] for sid in story_ids if sid in self.graph.stories]
+        stories = []
+        for sid in story_ids:
+            story = self.graph.get_story(sid)
+            if story:
+                stories.append(story)
 
         if len(stories) < 2:
             return None
@@ -262,17 +273,20 @@ class ClusteringService:
         merged_story = self._create_story_from_news_ids(all_news_ids)
         merged_story.is_editorial = True
 
-        # Remove old stories
+        # Remove old stories (stories are managed by database, just remove from cache)
         for sid in story_ids:
-            if sid in self.graph.stories:
-                del self.graph.stories[sid]
+            if sid in self.graph._stories_cache:
+                del self.graph._stories_cache[sid]
+            # Note: Stories are not deleted from DB, they should be marked as inactive
+            # or deleted through proper API endpoints
 
         self.graph.add_story(merged_story)
         return merged_story
 
     def split_story(self, story_id: str, news_groups: List[List[str]]) -> List[Story]:
         """Split a story into multiple stories"""
-        if story_id not in self.graph.stories:
+        story = self.graph.get_story(story_id)
+        if not story:
             return []
 
         new_stories = []
@@ -283,13 +297,17 @@ class ClusteringService:
                 new_stories.append(story)
                 self.graph.add_story(story)
 
-        # Remove original story
-        del self.graph.stories[story_id]
+        # Remove original story from cache (DB deletion should be handled separately)
+        if story_id in self.graph._stories_cache:
+            del self.graph._stories_cache[story_id]
 
         return new_stories
 
     def update_story_relevance(self, story_id: str) -> None:
         """Recalculate story metrics"""
-        if story_id in self.graph.stories:
-            story = self.graph.stories[story_id]
+        story = self.graph.get_story(story_id)
+        if story:
             self._calculate_story_metrics(story)
+            # Save updated story to database
+            self.graph.db.save_story(story)
+            self.graph._stories_cache[story_id] = story

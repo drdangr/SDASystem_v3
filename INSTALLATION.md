@@ -10,7 +10,37 @@ Story Driven Analytical System (SDASystem) is a prototype for analyzing news and
 
 - Python 3.10 or higher
 - pip (Python package manager)
+- PostgreSQL 12 or higher (with pgvector extension)
 - Modern web browser (Chrome, Firefox, Safari, Edge)
+
+### PostgreSQL Setup
+
+SDASystem v3 requires PostgreSQL with pgvector extension for vector similarity search.
+
+**Quick setup:**
+
+1. Install PostgreSQL (see [docs/database_setup.md](docs/database_setup.md) for detailed instructions)
+2. Install pgvector extension
+3. Create database:
+   ```bash
+   psql -U postgres
+   CREATE DATABASE sdas_db;
+   CREATE EXTENSION vector;
+   ```
+4. Apply schema:
+   ```bash
+   psql -U postgres -d sdas_db -f backend/db/schema.sql
+   ```
+5. Set environment variables (create `.env` file):
+   ```env
+   POSTGRES_DB=sdas_db
+   POSTGRES_USER=postgres
+   POSTGRES_PASSWORD=yourpassword
+   POSTGRES_HOST=localhost
+   POSTGRES_PORT=5432
+   ```
+
+For detailed database setup instructions, see [docs/database_setup.md](docs/database_setup.md).
 
 ## Installation
 

@@ -1,0 +1,57 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.11.14, pytest-7.4.4, pluggy-1.6.0 -- /Users/drdangr/Desktop/dev/SDAS_proto/v3/venv/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/drdangr/Desktop/dev/SDAS_proto/v3
+plugins: asyncio-0.23.3, anyio-4.12.0
+asyncio: mode=Mode.STRICT
+collecting ... collected 36 items
+
+tests/test_database_manager.py::TestNewsOperations::test_save_news PASSED [  2%]
+tests/test_database_manager.py::TestNewsOperations::test_update_news PASSED [  5%]
+tests/test_database_manager.py::TestNewsOperations::test_get_all_news PASSED [  8%]
+tests/test_database_manager.py::TestNewsOperations::test_get_all_news_with_limit PASSED [ 11%]
+tests/test_database_manager.py::TestNewsOperations::test_news_without_embedding PASSED [ 13%]
+tests/test_database_manager.py::TestActorOperations::test_save_actor PASSED [ 16%]
+tests/test_database_manager.py::TestActorOperations::test_actor_aliases PASSED [ 19%]
+tests/test_database_manager.py::TestActorOperations::test_update_actor PASSED [ 22%]
+tests/test_database_manager.py::TestActorOperations::test_get_all_actors PASSED [ 25%]
+tests/test_database_manager.py::TestActorOperations::test_actor_metadata PASSED [ 27%]
+tests/test_database_manager.py::TestStoryOperations::test_save_story PASSED [ 30%]
+tests/test_database_manager.py::TestStoryOperations::test_story_news_relationship PASSED [ 33%]
+tests/test_database_manager.py::TestStoryOperations::test_story_actors_relationship PASSED [ 36%]
+tests/test_database_manager.py::TestStoryOperations::test_get_all_stories PASSED [ 38%]
+tests/test_database_manager.py::TestEventOperations::test_save_event PASSED [ 41%]
+tests/test_database_manager.py::TestEventOperations::test_event_actors_relationship PASSED [ 44%]
+tests/test_database_manager.py::TestEventOperations::test_get_story_events PASSED [ 47%]
+tests/test_database_manager.py::TestRelationships::test_news_actors_relationship PASSED [ 50%]
+tests/test_database_manager.py::TestRelationships::test_multiple_news_actors PASSED [ 52%]
+tests/test_database_manager.py::TestRelationships::test_actor_multiple_news PASSED [ 55%]
+tests/test_database_manager.py::TestVectorSearch::test_find_similar_news PASSED [ 58%]
+tests/test_database_manager.py::TestVectorSearch::test_compute_news_similarities PASSED [ 61%]
+tests/test_database_manager.py::TestVectorSearch::test_vector_search_without_embedding PASSED [ 63%]
+tests/test_database_manager.py::TestTransactions::test_connection_pool PASSED [ 66%]
+tests/test_database_manager.py::TestTransactions::test_multiple_connections PASSED [ 69%]
+tests/test_database_manager.py::TestTransactions::test_transaction_rollback PASSED [ 72%]
+tests/test_database_manager.py::TestFullWorkflow::test_complete_news_to_story_workflow PASSED [ 75%]
+tests/test_database_manager.py::TestFullWorkflow::test_update_story_with_new_news PASSED [ 77%]
+tests/test_database_manager.py::TestEdgeCases::test_get_nonexistent_news PASSED [ 80%]
+tests/test_database_manager.py::TestEdgeCases::test_get_nonexistent_actor PASSED [ 83%]
+tests/test_database_manager.py::TestEdgeCases::test_get_nonexistent_story PASSED [ 86%]
+tests/test_database_manager.py::TestEdgeCases::test_empty_relationships PASSED [ 88%]
+tests/test_database_manager.py::TestEdgeCases::test_news_with_very_long_text PASSED [ 91%]
+tests/test_database_manager.py::TestEdgeCases::test_actor_with_many_aliases PASSED [ 94%]
+tests/test_database_manager.py::TestPerformance::test_bulk_news_insert PASSED [ 97%]
+tests/test_database_manager.py::TestPerformance::test_vector_search_performance PASSED [100%]
+
+=============================== warnings summary ===============================
+venv/lib/python3.11/site-packages/pydantic/_internal/_config.py:271
+venv/lib/python3.11/site-packages/pydantic/_internal/_config.py:271
+venv/lib/python3.11/site-packages/pydantic/_internal/_config.py:271
+venv/lib/python3.11/site-packages/pydantic/_internal/_config.py:271
+venv/lib/python3.11/site-packages/pydantic/_internal/_config.py:271
+venv/lib/python3.11/site-packages/pydantic/_internal/_config.py:271
+  /Users/drdangr/Desktop/dev/SDAS_proto/v3/venv/lib/python3.11/site-packages/pydantic/_internal/_config.py:271: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.5/migration/
+    warnings.warn(DEPRECATION_MESSAGE, DeprecationWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 36 passed, 6 warnings in 0.77s ========================

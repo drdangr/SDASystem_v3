@@ -21,13 +21,17 @@ from backend.services.event_extraction_service import EventExtractionService
 from backend.services.embedding_service import EmbeddingService
 from backend.services.llm_service import LLMService
 from backend.services.llm_registry import ServiceRegistry
+from backend.services.database_manager import DatabaseManager
 from backend.api import graph_routes
 
 from pydantic import BaseModel
 from pydantic import Field
 
+# Initialize database manager
+db_manager = DatabaseManager()
+
 # Initialize services
-graph_manager = GraphManager()
+graph_manager = GraphManager(db_manager=db_manager)
 embedding_service = EmbeddingService(use_mock=True)
 ner_service = NERService()
 event_service = EventExtractionService()
@@ -49,8 +53,64 @@ default_llm_service = LLMService(api_key=os.getenv("GEMINI_API_KEY"))
 actors_extraction_service: Optional[ActorsExtractionService] = None
 
 def load_data():
-    """Load mock data from JSON files"""
+    """Load data from database or JSON files (for migration)"""
     data_dir = "data"
+    
+    # Check if database has data
+    all_news = db_manager.get_all_news(limit=1)
+    has_db_data = len(all_news) > 0
+    
+    if has_db_data:
+        print("Loading data from database...")
+        # Data is already in database, just load into graph for graph operations
+        all_news = db_manager.get_all_news()
+        all_actors = db_manager.get_all_actors()
+        all_stories = db_manager.get_all_stories(active_only=False)
+        
+        # Build graph from database data
+        for news in all_news:
+            graph_manager.news_graph.add_node(
+                news.id,
+                title=news.title,
+                published_at=news.published_at,
+                embedding=news.embedding,
+                story_id=news.story_id,
+                is_pinned=news.is_pinned,
+                domains=news.domains
+            )
+            for actor_id in news.mentioned_actors:
+                graph_manager.mentions_graph.add_edge(
+                    f"news_{news.id}",
+                    f"actor_{actor_id}",
+                    news_id=news.id,
+                    actor_id=actor_id
+                )
+        
+        for actor in all_actors:
+            graph_manager.actors_graph.add_node(
+                actor.id,
+                canonical_name=actor.canonical_name,
+                actor_type=actor.actor_type,
+                aliases=actor.aliases
+            )
+        
+        # Load news relations for graph
+        with db_manager.get_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT source_news_id, target_news_id, similarity, weight, is_editorial FROM news_relations")
+                for row in cur.fetchall():
+                    graph_manager.news_graph.add_edge(
+                        row[0], row[1],
+                        similarity=row[2],
+                        weight=row[3],
+                        is_editorial=row[4]
+                    )
+        
+        print(f"Loaded {len(all_news)} news, {len(all_actors)} actors, {len(all_stories)} stories from database")
+        return
+    
+    # Fallback: Load from JSON files (for migration)
+    print("Loading data from JSON files (migration mode)...")
     
     # Load actors
     if os.path.exists(f"{data_dir}/actors.json"):
@@ -470,10 +530,10 @@ async def get_stories(
 @app.get("/api/stories/{story_id}", response_model=Story)
 async def get_story(story_id: str):
     """Get specific story by ID"""
-    if story_id not in graph_manager.stories:
+    story = graph_manager.get_story(story_id)
+    if not story:
         raise HTTPException(status_code=404, detail="Story not found")
-
-    return graph_manager.stories[story_id]
+    return story
 
 
 @app.post("/api/stories/{story_id}/merge")
@@ -530,16 +590,17 @@ async def get_news(
 @app.get("/api/news/{news_id}", response_model=News)
 async def get_news_item(news_id: str):
     """Get specific news item by ID"""
-    if news_id not in graph_manager.news:
+    news = graph_manager.get_news(news_id)
+    if not news:
         raise HTTPException(status_code=404, detail="News not found")
-
-    return graph_manager.news[news_id]
+    return news
 
 
 @app.get("/api/news/{news_id}/related")
 async def get_related_news(news_id: str, limit: int = 10):
     """Get related news items"""
-    if news_id not in graph_manager.news:
+    news = graph_manager.get_news(news_id)
+    if not news:
         raise HTTPException(status_code=404, detail="News not found")
 
     # Get neighbors in graph
@@ -583,10 +644,10 @@ async def get_actors(
 @app.get("/api/actors/{actor_id}", response_model=Actor)
 async def get_actor(actor_id: str):
     """Get specific actor by ID"""
-    if actor_id not in graph_manager.actors:
+    actor = graph_manager.get_actor(actor_id)
+    if not actor:
         raise HTTPException(status_code=404, detail="Actor not found")
-
-    return graph_manager.actors[actor_id]
+    return actor
 
 
 @app.get("/api/actors/{actor_id}/mentions")
@@ -922,7 +983,9 @@ async def extract_news_actors(news_id: str, low_conf_threshold: float = 0.75):
     if news_id not in graph_manager.news:
         raise HTTPException(status_code=404, detail="News not found")
     try:
-        news = graph_manager.news[news_id]
+        news = graph_manager.get_news(news_id)
+        if not news:
+            raise HTTPException(status_code=404, detail="News not found")
         _, ids = actors_extraction_service.extract_for_news(news, low_conf_threshold=low_conf_threshold)
         actors_extraction_service.load_gazetteer()
         actors_extraction_service._save_actors()

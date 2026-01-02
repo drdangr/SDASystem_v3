@@ -1,41 +1,55 @@
 """
 Graph manager for two-layer graph: News and Actors
+Now uses PostgreSQL + pgvector for persistence
 """
 import networkx as nx
 from typing import List, Dict, Tuple, Optional
 from datetime import datetime
 import numpy as np
-from sklearn.metrics.pairwise import cosine_similarity
 
 from backend.models.entities import (
     News, Actor, ActorRelation, NewsRelation, Story, Event
 )
+from backend.services.database_manager import DatabaseManager
 
 
 class GraphManager:
-    """Manages the two-layer graph structure"""
+    """Manages the two-layer graph structure with PostgreSQL backend"""
 
-    def __init__(self):
-        # Layer 1: News graph
+    def __init__(self, db_manager: Optional[DatabaseManager] = None):
+        """
+        Initialize graph manager
+        
+        Args:
+            db_manager: DatabaseManager instance (creates new if None)
+        """
+        self.db = db_manager or DatabaseManager()
+        
+        # Layer 1: News graph (kept for graph operations, synced with DB)
         self.news_graph = nx.Graph()
 
-        # Layer 2: Actors graph
+        # Layer 2: Actors graph (kept for graph operations, synced with DB)
         self.actors_graph = nx.DiGraph()  # Directed for relationships
 
-        # Cross-layer: News ↔ Actors mentions
+        # Cross-layer: News ↔ Actors mentions (kept for graph operations)
         self.mentions_graph = nx.Graph()  # Bipartite graph
-
-        # Storage
-        self.news: Dict[str, News] = {}
-        self.actors: Dict[str, Actor] = {}
-        self.stories: Dict[str, Story] = {}
-        self.events: Dict[str, Event] = {}
+        
+        # Cache for frequently accessed items (optional optimization)
+        self._news_cache: Dict[str, News] = {}
+        self._actors_cache: Dict[str, Actor] = {}
+        self._stories_cache: Dict[str, Story] = {}
 
     # --- News Layer ---
 
     def add_news(self, news: News) -> None:
-        """Add news item to graph"""
-        self.news[news.id] = news
+        """Add news item to graph and database"""
+        # Save to database
+        self.db.save_news(news)
+        
+        # Update cache
+        self._news_cache[news.id] = news
+        
+        # Update graph (for graph operations)
         self.news_graph.add_node(
             news.id,
             title=news.title,
@@ -57,7 +71,12 @@ class GraphManager:
 
     def add_news_relation(self, relation: NewsRelation) -> None:
         """Add relationship between news items"""
-        if relation.source_news_id in self.news and relation.target_news_id in self.news:
+        # Save to database (handled in compute_news_similarities or explicitly)
+        # Update graph
+        source_news = self.get_news(relation.source_news_id)
+        target_news = self.get_news(relation.target_news_id)
+        
+        if source_news and target_news:
             self.news_graph.add_edge(
                 relation.source_news_id,
                 relation.target_news_id,
@@ -67,55 +86,61 @@ class GraphManager:
             )
 
     def compute_news_similarities(self, threshold: float = 0.5) -> List[NewsRelation]:
-        """Compute cosine similarities between all news items"""
-        relations = []
-        news_items = list(self.news.values())
-
-        # Filter items with embeddings
-        embedded_news = [n for n in news_items if n.embedding is not None]
-
-        if len(embedded_news) < 2:
-            return relations
-
-        # Create embedding matrix
-        embeddings = np.array([n.embedding for n in embedded_news])
-        similarities = cosine_similarity(embeddings)
-
-        # Create relations
-        for i in range(len(embedded_news)):
-            for j in range(i + 1, len(embedded_news)):
-                sim = float(similarities[i, j])
-                if sim >= threshold:
-                    sim = min(1.0, sim)  # Clamp to avoid float precision issues > 1.0
-                    relation = NewsRelation(
-                        source_news_id=embedded_news[i].id,
-                        target_news_id=embedded_news[j].id,
-                        similarity=sim,
-                        weight=sim
-                    )
-                    relations.append(relation)
-                    self.add_news_relation(relation)
-
+        """Compute cosine similarities between all news items using pgvector"""
+        # Use DatabaseManager's optimized pgvector implementation
+        relations = self.db.compute_news_similarities(threshold=threshold)
+        
+        # Update graph with relations
+        for relation in relations:
+            self.news_graph.add_edge(
+                relation.source_news_id,
+                relation.target_news_id,
+                similarity=relation.similarity,
+                weight=relation.weight,
+                is_editorial=relation.is_editorial
+            )
+        
         return relations
 
     def boost_similarity_by_shared_actors(self, boost_factor: float = 0.1) -> None:
         """Boost edge weights for news sharing actors"""
         for edge in self.news_graph.edges(data=True):
             source_id, target_id, data = edge
-            source_actors = set(self.news[source_id].mentioned_actors)
-            target_actors = set(self.news[target_id].mentioned_actors)
+            source_news = self.get_news(source_id)
+            target_news = self.get_news(target_id)
+            
+            if not source_news or not target_news:
+                continue
+                
+            source_actors = set(source_news.mentioned_actors)
+            target_actors = set(target_news.mentioned_actors)
 
             shared = len(source_actors & target_actors)
             if shared > 0:
                 current_weight = data.get('weight', 1.0)
                 new_weight = min(1.0, current_weight + (boost_factor * shared))
                 self.news_graph[source_id][target_id]['weight'] = new_weight
+                
+                # Update in database
+                with self.db.get_connection() as conn:
+                    with conn.cursor() as cur:
+                        cur.execute("""
+                            UPDATE news_relations
+                            SET weight = %s
+                            WHERE source_news_id = %s AND target_news_id = %s
+                        """, (new_weight, source_id, target_id))
 
     # --- Actor Layer ---
 
     def add_actor(self, actor: Actor) -> None:
-        """Add actor to graph"""
-        self.actors[actor.id] = actor
+        """Add actor to graph and database"""
+        # Save to database
+        self.db.save_actor(actor)
+        
+        # Update cache
+        self._actors_cache[actor.id] = actor
+        
+        # Update graph
         self.actors_graph.add_node(
             actor.id,
             canonical_name=actor.canonical_name,
@@ -126,15 +151,21 @@ class GraphManager:
     def ensure_actor(self, name: str, actor_type: str = "person", confidence: float = 0.5) -> str:
         """Find actor by name (case-insensitive) or create new one"""
         actor_type = self._normalize_actor_type(actor_type)
-        for actor in self.actors.values():
+        
+        # Search in database
+        all_actors = self.db.get_all_actors()
+        for actor in all_actors:
             if actor.canonical_name.lower() == name.lower():
                 return actor.id
-        actor_id = f"actor_{len(self.actors) + 1}"
+        
+        # Create new actor
+        import uuid
+        actor_id = f"actor_{uuid.uuid4().hex[:12]}"
+        from backend.models.entities import ActorType
         new_actor = Actor(
             id=actor_id,
             canonical_name=name,
-            actor_type=actor_type or "person",
-            confidence=confidence
+            actor_type=ActorType(actor_type or "person")
         )
         self.add_actor(new_actor)
         return actor_id
@@ -150,25 +181,32 @@ class GraphManager:
             actor_node,
             confidence=confidence
         )
-        # update news object cache
-        if news_id in self.news:
-            if actor_id not in self.news[news_id].mentioned_actors:
-                self.news[news_id].mentioned_actors.append(actor_id)
+        # Update news object (mention is saved via save_news when news is updated)
+        news = self.get_news(news_id)
+        if news and actor_id not in news.mentioned_actors:
+            news.mentioned_actors.append(actor_id)
+            self.db.save_news(news)
 
     def update_story_top_actors(self, story_id: str, top_n: int = 5) -> None:
         """Recompute top actors for a story based on mentions in its news"""
-        if story_id not in self.stories:
+        story = self.get_story(story_id)
+        if not story:
             return
-        story = self.stories[story_id]
+        
         counts = {}
         for news_id in story.news_ids:
-            if news_id in self.news:
-                for aid in self.news[news_id].mentioned_actors:
+            news = self.get_news(news_id)
+            if news:
+                for aid in news.mentioned_actors:
                     counts[aid] = counts.get(aid, 0) + 1
         # sort by frequency desc
         sorted_ids = [aid for aid, _ in sorted(counts.items(), key=lambda x: x[1], reverse=True)]
         top_ids = sorted_ids[:top_n]
         story.top_actors = top_ids
+        
+        # Save updated story
+        self.db.save_story(story)
+        self._stories_cache[story_id] = story
 
     def _normalize_actor_type(self, actor_type: str) -> str:
         allowed = {"person", "company", "country", "organization", "government", "structure", "event"}
@@ -184,7 +222,29 @@ class GraphManager:
 
     def add_actor_relation(self, relation: ActorRelation) -> None:
         """Add relationship between actors"""
-        if relation.source_actor_id in self.actors and relation.target_actor_id in self.actors:
+        source_actor = self.get_actor(relation.source_actor_id)
+        target_actor = self.get_actor(relation.target_actor_id)
+        
+        if source_actor and target_actor:
+            # Save to database
+            with self.db.get_connection() as conn:
+                with conn.cursor() as cur:
+                    cur.execute("""
+                        INSERT INTO actor_relations (id, source_actor_id, target_actor_id, relation_type,
+                                                     weight, confidence, is_ephemeral, ttl_days, expires_at,
+                                                     source, created_at)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                        ON CONFLICT (source_actor_id, target_actor_id, relation_type) DO UPDATE SET
+                            weight = EXCLUDED.weight,
+                            confidence = EXCLUDED.confidence
+                    """, (
+                        relation.id, relation.source_actor_id, relation.target_actor_id,
+                        relation.relation_type.value, relation.weight, relation.confidence,
+                        relation.is_ephemeral, relation.ttl_days, relation.expires_at,
+                        relation.source, relation.created_at
+                    ))
+            
+            # Update graph
             self.actors_graph.add_edge(
                 relation.source_actor_id,
                 relation.target_actor_id,
@@ -204,71 +264,56 @@ class GraphManager:
 
     def get_news_actors(self, news_id: str) -> List[str]:
         """Get all actors mentioned in a news item"""
-        news_node = f"news_{news_id}"
-        if news_node in self.mentions_graph:
-            return [
-                n.replace("actor_", "")
-                for n in self.mentions_graph.neighbors(news_node)
-                if n.startswith("actor_")
-            ]
-        return []
+        return self.db.get_news_actors(news_id)
 
     def get_actor_news(self, actor_id: str) -> List[str]:
         """Get all news mentioning this actor"""
-        # Normalize actor_id (ensure it has actor_ prefix)
-        normalized_actor_id = actor_id if actor_id.startswith("actor_") else f"actor_{actor_id}"
-        
-        # Search through all edges in mentions_graph to find matches by actor_id in edge data
-        news_ids = []
-        for u, v, data in self.mentions_graph.edges(data=True):
-            # Check if edge data contains our actor_id
-            if data.get('actor_id') == normalized_actor_id or data.get('actor_id') == actor_id:
-                news_id = data.get('news_id')
-                if news_id and news_id not in news_ids:
-                    news_ids.append(news_id)
-        
-        return news_ids
+        return self.db.get_actor_news(actor_id)
 
     # --- Stories ---
 
     def add_story(self, story: Story) -> None:
-        """Add story to storage"""
-        self.stories[story.id] = story
+        """Add story to storage and database"""
+        # Save to database
+        self.db.save_story(story)
+        
+        # Update cache
+        self._stories_cache[story.id] = story
 
         # Update news with story assignment
         for news_id in story.news_ids:
-            if news_id in self.news:
-                self.news[news_id].story_id = story.id
+            news = self.get_news(news_id)
+            if news:
+                news.story_id = story.id
+                self.db.save_news(news)
                 self.news_graph.nodes[news_id]['story_id'] = story.id
 
     def get_story_subgraph(self, story_id: str) -> nx.Graph:
         """Get subgraph of news in a story"""
-        if story_id not in self.stories:
+        story = self.get_story(story_id)
+        if not story:
             return nx.Graph()
 
-        story = self.stories[story_id]
         return self.news_graph.subgraph(story.news_ids).copy()
 
     # --- Events ---
 
     def add_event(self, event: Event) -> None:
-        """Add timeline event"""
-        self.events[event.id] = event
+        """Add timeline event to database"""
+        # Save to database
+        self.db.save_event(event)
 
         # Link to story
-        if event.story_id and event.story_id in self.stories:
-            story = self.stories[event.story_id]
-            if event.id not in story.event_ids:
+        if event.story_id:
+            story = self.get_story(event.story_id)
+            if story and event.id not in story.event_ids:
                 story.event_ids.append(event.id)
+                self.db.save_story(story)
+                self._stories_cache[story.id] = story
 
     def get_story_events(self, story_id: str) -> List[Event]:
         """Get all events for a story, sorted by date"""
-        if story_id not in self.stories:
-            return []
-
-        story = self.stories[story_id]
-        events = [self.events[eid] for eid in story.event_ids if eid in self.events]
-        return sorted(events, key=lambda e: e.event_date)
+        return self.db.get_story_events(story_id)
 
     # --- Graph Analytics ---
 
@@ -320,11 +365,21 @@ class GraphManager:
 
     def get_graph_stats(self) -> Dict:
         """Get overall graph statistics"""
+        all_news = self.db.get_all_news()
+        all_actors = self.db.get_all_actors()
+        all_stories = self.db.get_all_stories(active_only=False)
+        
+        # Count events (approximate, could be optimized)
+        with self.db.get_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute("SELECT COUNT(*) FROM events")
+                events_count = cur.fetchone()[0]
+        
         return {
-            "news_count": len(self.news),
-            "actors_count": len(self.actors),
-            "stories_count": len(self.stories),
-            "events_count": len(self.events),
+            "news_count": len(all_news),
+            "actors_count": len(all_actors),
+            "stories_count": len(all_stories),
+            "events_count": events_count,
             "news_edges": self.news_graph.number_of_edges(),
             "actor_edges": self.actors_graph.number_of_edges(),
             "mention_edges": self.mentions_graph.number_of_edges(),
@@ -336,6 +391,15 @@ class GraphManager:
         if self.news_graph.has_edge(source_id, target_id):
             self.news_graph[source_id][target_id]['weight'] = weight
             self.news_graph[source_id][target_id]['is_editorial'] = True
+            
+            # Update in database
+            with self.db.get_connection() as conn:
+                with conn.cursor() as cur:
+                    cur.execute("""
+                        UPDATE news_relations
+                        SET weight = %s, is_editorial = TRUE
+                        WHERE source_news_id = %s AND target_news_id = %s
+                    """, (weight, source_id, target_id))
         else:
             # Create new editorial edge
             relation = NewsRelation(
@@ -343,6 +407,81 @@ class GraphManager:
                 target_news_id=target_id,
                 similarity=weight,
                 weight=weight,
-                is_editorial=True
+                is_editorial=True,
+                created_at=datetime.utcnow()
             )
             self.add_news_relation(relation)
+            
+            # Save to database
+            with self.db.get_connection() as conn:
+                with conn.cursor() as cur:
+                    cur.execute("""
+                        INSERT INTO news_relations (source_news_id, target_news_id, similarity, weight, is_editorial, created_at)
+                        VALUES (%s, %s, %s, %s, %s, %s)
+                        ON CONFLICT (source_news_id, target_news_id) DO UPDATE SET
+                            weight = EXCLUDED.weight,
+                            is_editorial = EXCLUDED.is_editorial
+                    """, (relation.source_news_id, relation.target_news_id, relation.similarity,
+                          relation.weight, relation.is_editorial, relation.created_at))
+    
+    # --- Helper methods for getting entities ---
+    
+    def get_news(self, news_id: str) -> Optional[News]:
+        """Get news by ID (with cache)"""
+        if news_id in self._news_cache:
+            return self._news_cache[news_id]
+        news = self.db.get_news(news_id)
+        if news:
+            self._news_cache[news_id] = news
+        return news
+    
+    def get_actor(self, actor_id: str) -> Optional[Actor]:
+        """Get actor by ID (with cache)"""
+        if actor_id in self._actors_cache:
+            return self._actors_cache[actor_id]
+        actor = self.db.get_actor(actor_id)
+        if actor:
+            self._actors_cache[actor_id] = actor
+        return actor
+    
+    def get_story(self, story_id: str) -> Optional[Story]:
+        """Get story by ID (with cache)"""
+        if story_id in self._stories_cache:
+            return self._stories_cache[story_id]
+        story = self.db.get_story(story_id)
+        if story:
+            self._stories_cache[story_id] = story
+        return story
+    
+    @property
+    def news(self) -> Dict[str, News]:
+        """Get all news (for backward compatibility)"""
+        all_news = self.db.get_all_news()
+        return {n.id: n for n in all_news}
+    
+    @property
+    def actors(self) -> Dict[str, Actor]:
+        """Get all actors (for backward compatibility)"""
+        all_actors = self.db.get_all_actors()
+        return {a.id: a for a in all_actors}
+    
+    @property
+    def stories(self) -> Dict[str, Story]:
+        """Get all stories (for backward compatibility)"""
+        all_stories = self.db.get_all_stories(active_only=False)
+        return {s.id: s for s in all_stories}
+    
+    @property
+    def events(self) -> Dict[str, Event]:
+        """Get all events (for backward compatibility)"""
+        # This is less efficient, but needed for compatibility
+        # Could be optimized with a get_all_events method
+        from psycopg2.extras import RealDictCursor
+        result = {}
+        with self.db.get_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cur:
+                cur.execute("SELECT * FROM events")
+                for row in cur.fetchall():
+                    event = self.db._row_to_event(row)
+                    result[event.id] = event
+        return result
