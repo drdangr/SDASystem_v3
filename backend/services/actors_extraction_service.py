@@ -705,6 +705,16 @@ class ActorsExtractionService:
             try:
                 # Используем новый метод
                 extracted = self.hybrid.extract_actors(text)
+            except ValueError as e:
+                # Ошибка API ключа - логируем и пропускаем эту новость
+                error_str = str(e)
+                if "API КЛЮЧА" in error_str or "leaked" in error_str.lower():
+                    if i == 1:  # Выводим сообщение только один раз
+                        print(f"\n⚠️  ВНИМАНИЕ: Обнаружена ошибка API ключа при извлечении акторов.\n")
+                    self.progress.message = f"API ключ недействителен (новость {i}/{self.progress.total})"
+                else:
+                    self.progress.message = f"Failed on news {news.id}: {e}"
+                continue
             except Exception as e:
                 self.progress.message = f"Failed on news {news.id}: {e}"
                 continue

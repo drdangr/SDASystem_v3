@@ -3,12 +3,15 @@ LLM service for Gemini with mock fallback and simple file cache.
 """
 import hashlib
 import json
+import logging
 import os
 import traceback
 from pathlib import Path
 from typing import List, Dict, Optional
 
 import google.generativeai as genai
+
+logger = logging.getLogger(__name__)
 
 
 class LLMService:
@@ -377,6 +380,29 @@ class LLMService:
             self.last_raw = text
             return text
         except Exception as e:
+            # Проверяем на ошибку API ключа (403 - leaked/invalid key)
+            error_str = str(e).lower()
+            if "403" in error_str or "forbidden" in error_str:
+                if "leaked" in error_str or "reported" in error_str:
+                    error_msg = (
+                        "❌ ОШИБКА API КЛЮЧА: Ваш ключ Google Gemini был помечен как утечённый (leaked) и заблокирован.\n"
+                        "📝 РЕШЕНИЕ: Получите новый API ключ на https://aistudio.google.com/app/apikey\n"
+                        "   Обновите GEMINI_API_KEY в файле .env и перезапустите сервер."
+                    )
+                    print(f"\n{error_msg}\n")
+                    logger.error(error_msg)
+                    self.last_raw = error_msg
+                    raise ValueError(error_msg) from e
+                else:
+                    error_msg = (
+                        "❌ ОШИБКА API КЛЮЧА: Неверный или недействительный API ключ Google Gemini.\n"
+                        "📝 РЕШЕНИЕ: Проверьте GEMINI_API_KEY в файле .env и убедитесь, что ключ корректен."
+                    )
+                    print(f"\n{error_msg}\n")
+                    logger.error(error_msg)
+                    self.last_raw = error_msg
+                    raise ValueError(error_msg) from e
+            
             # store error text for debug
             self.last_raw = f"LLM error: {e}\n{traceback.format_exc()}"
             raise

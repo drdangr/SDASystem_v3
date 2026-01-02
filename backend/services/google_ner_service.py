@@ -134,6 +134,24 @@ class GoogleNERService:
         except json.JSONDecodeError:
             logger.error(f"Failed to parse Google NER response. Raw: {raw_response[:200]}...")
             return []
+        except ValueError as e:
+            # Специальная обработка ошибок API ключа (перебрасываем дальше)
+            error_str = str(e)
+            if "API КЛЮЧА" in error_str or "leaked" in error_str.lower():
+                logger.error(f"❌ Google NER: {error_str}")
+                print(f"\n⚠️  Google NER Service не может работать: {error_str}\n")
+            raise
         except Exception as e:
+            error_str = str(e).lower()
+            # Проверяем на ошибку API ключа в сообщении об ошибке
+            if "403" in error_str or "forbidden" in error_str or "leaked" in error_str:
+                error_msg = (
+                    "❌ ОШИБКА API КЛЮЧА в Google NER: Ваш ключ Google Gemini недействителен или заблокирован.\n"
+                    "📝 РЕШЕНИЕ: Получите новый API ключ на https://aistudio.google.com/app/apikey\n"
+                    "   Обновите GEMINI_API_KEY в файле .env и перезапустите сервер."
+                )
+                logger.error(error_msg)
+                print(f"\n{error_msg}\n")
+                return []
             logger.error(f"Error in Google NER: {e}")
             return []

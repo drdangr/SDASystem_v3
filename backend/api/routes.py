@@ -853,6 +853,16 @@ async def get_init_status():
     return actors_extraction_service.get_status()
 
 
+@app.post("/api/system/init/reset")
+async def reset_initialization():
+    """Сбросить состояние процесса инициализации (для случаев когда процесс завис)"""
+    if not actors_extraction_service:
+        raise HTTPException(status_code=500, detail="ActorsExtractionService not initialized")
+    from backend.services.actors_extraction_service import InitProgress
+    actors_extraction_service.progress = InitProgress()
+    return {"message": "Initialization state reset", "status": actors_extraction_service.get_status()}
+
+
 @app.post("/api/system/init/start")
 async def start_initialization(background_tasks: fastapi.BackgroundTasks, low_conf_threshold: float = 0.75):
     if not actors_extraction_service:
@@ -863,8 +873,10 @@ async def start_initialization(background_tasks: fastapi.BackgroundTasks, low_co
 
     background_tasks.add_task(actors_extraction_service.start_initialization, low_conf_threshold=low_conf_threshold)
     
-    actors_extraction_service.progress.running = True
-    actors_extraction_service.progress.message = "Starting initialization..."
+    # Не устанавливаем running здесь - start_initialization сам устанавливает правильное состояние
+    # Небольшая задержка, чтобы background task успел установить состояние
+    import asyncio
+    await asyncio.sleep(0.1)
     
     return actors_extraction_service.get_status()
 
