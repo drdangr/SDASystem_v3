@@ -141,10 +141,11 @@
     <div id="llmSettingsModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>LLM Settings (Gemini)</h3>
+                <h3>LLM & Embedding Settings</h3>
                 <button id="llmSettingsClose" class="close-btn">×</button>
             </div>
             <div class="modal-body">
+                <h4>LLM Settings (Gemini)</h4>
                 <label>Service
                     <select id="llmServiceSelect">
                     </select>
@@ -172,6 +173,21 @@
                 <label>Max tokens
                     <input id="llmMaxTokens" type="number" min="32" max="4096" value="1024">
                 </label>
+                
+                <hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">
+                
+                <h4>Embedding Backend</h4>
+                <label>Backend
+                    <select id="embeddingBackend">
+                        <option value="local">Local (sentence-transformers)</option>
+                        <option value="gemini">Gemini API</option>
+                        <option value="mock">Mock (for testing only)</option>
+                    </select>
+                </label>
+                <div id="embeddingStatus" style="margin-top: 10px; padding: 8px; background: #f5f5f5; border-radius: 4px; font-size: 0.9em;">
+                    <div>Status: <span id="embeddingStatusText">Loading...</span></div>
+                    <div>Dimension: <span id="embeddingDimension">-</span></div>
+                </div>
             </div>
             <div class="modal-footer">
                 <button id="llmSettingsSave">Save</button>

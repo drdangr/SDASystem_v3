@@ -9,7 +9,8 @@ const DEFAULTS = {
     temperature: 0.3,
     top_p: 0.9,
     top_k: 40,
-    max_tokens: 1024
+    max_tokens: 1024,
+    embedding_backend: 'mock'
 };
 
 export class LLMSettingsModal {
@@ -33,6 +34,7 @@ export class LLMSettingsModal {
         on(saveBtn, 'click', () => this.save());
 
         this.loadServices(); // async
+        this.loadEmbeddingBackend(); // async
         this.applyToForm();
     }
 
@@ -104,6 +106,31 @@ export class LLMSettingsModal {
         }
     }
 
+    async loadEmbeddingBackend() {
+        try {
+            const response = await fetch('/api/embedding/backend');
+            const data = await response.json();
+            this.state.embedding_backend = data.backend || 'mock';
+            this.updateEmbeddingStatus(data);
+        } catch (e) {
+            console.warn('Failed to load embedding backend', e);
+            this.state.embedding_backend = 'mock';
+        }
+        this.applyToForm();
+    }
+
+    updateEmbeddingStatus(data) {
+        const statusText = qs('#embeddingStatusText');
+        const dimensionEl = qs('#embeddingDimension');
+        if (statusText) {
+            statusText.textContent = data.backend || 'unknown';
+            statusText.style.color = data.backend === 'mock' ? '#f44336' : '#4caf50';
+        }
+        if (dimensionEl) {
+            dimensionEl.textContent = data.dimension || '-';
+        }
+    }
+
     applyToForm() {
         // service/profile selects populated async
         const modelEl = qs('#llmModel');
@@ -116,6 +143,12 @@ export class LLMSettingsModal {
         if (topK) topK.setAttribute('value', this.state.top_k);
         const maxTok = qs('#llmMaxTokens');
         if (maxTok) maxTok.setAttribute('value', this.state.max_tokens);
+        
+        // Embedding backend
+        const embeddingBackendEl = qs('#embeddingBackend');
+        if (embeddingBackendEl) {
+            embeddingBackendEl.value = this.state.embedding_backend || 'mock';
+        }
     }
 
     applyProfileDefaults(profileId) {
@@ -136,8 +169,9 @@ export class LLMSettingsModal {
         const top_p = parseFloat(qs('#llmTopP')?.value) || DEFAULTS.top_p;
         const top_k = parseInt(qs('#llmTopK')?.value) || DEFAULTS.top_k;
         const max_tokens = parseInt(qs('#llmMaxTokens')?.value) || DEFAULTS.max_tokens;
+        const embedding_backend = qs('#embeddingBackend')?.value || DEFAULTS.embedding_backend;
 
-        this.state = { service_id, profile_id, model, temperature, top_p, top_k, max_tokens };
+        this.state = { service_id, profile_id, model, temperature, top_p, top_k, max_tokens, embedding_backend };
         Storage.save(this.storageKey, this.state);
         this.onSave?.(this.state);
 
@@ -148,6 +182,25 @@ export class LLMSettingsModal {
             } catch (err) {
                 console.warn('Failed to update LLM service on backend', err);
             }
+        }
+
+        // Update embedding backend
+        try {
+            const response = await fetch('/api/embedding/backend', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ backend: embedding_backend })
+            });
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.detail || 'Failed to update embedding backend');
+            }
+            const data = await response.json();
+            this.updateEmbeddingStatus(data);
+            alert(`Embedding backend updated to ${embedding_backend}. ${data.message || ''}`);
+        } catch (err) {
+            console.error('Failed to update embedding backend', err);
+            alert(`Error updating embedding backend: ${err.message}`);
         }
 
         this.hide();

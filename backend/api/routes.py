@@ -32,7 +32,6 @@ db_manager = DatabaseManager()
 
 # Initialize services
 graph_manager = GraphManager(db_manager=db_manager)
-embedding_service = EmbeddingService(use_mock=True)
 ner_service = NERService()
 event_service = EventExtractionService()
 clustering_service = ClusteringService(graph_manager)
@@ -42,6 +41,17 @@ import json
 import os
 from dotenv import load_dotenv
 load_dotenv()
+
+# Initialize embedding service after loading env
+# Note: if initialization fails, it will raise an error (no fallback to mock)
+embedding_backend = os.getenv("EMBEDDING_BACKEND", "mock")
+try:
+    embedding_service = EmbeddingService(backend=embedding_backend)
+except Exception as e:
+    print(f"ERROR: Failed to initialize embedding service with backend '{embedding_backend}': {e}")
+    print("Please check your configuration or set EMBEDDING_BACKEND=mock for testing")
+    raise
+
 # LLM registry (auto reload by mtime)
 llm_registry = ServiceRegistry(
     config_path=os.getenv("LLM_SERVICES_CONFIG", "config/llm_services.json"),
@@ -314,6 +324,43 @@ async def llm_service_update(service_id: str, req: LLMServiceUpdateRequest):
         }
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+
+# --- Embedding Settings ---
+
+class EmbeddingBackendRequest(BaseModel):
+    backend: Literal["local", "gemini", "mock"]
+
+
+@app.get("/api/embedding/backend")
+async def get_embedding_backend():
+    """Get current embedding backend"""
+    global embedding_service
+    return {
+        "backend": embedding_service.backend if embedding_service else "mock",
+        "dimension": embedding_service.get_embedding_dimension() if embedding_service else 384,
+        "model_name": embedding_service.model_name if embedding_service else None
+    }
+
+
+@app.put("/api/embedding/backend")
+async def set_embedding_backend(req: EmbeddingBackendRequest):
+    """Set embedding backend (requires restart for full effect)"""
+    global embedding_service
+    try:
+        # Try to initialize new backend
+        new_service = EmbeddingService(backend=req.backend)
+        embedding_service = new_service
+        # Update env var for persistence
+        os.environ["EMBEDDING_BACKEND"] = req.backend
+        return {
+            "backend": embedding_service.backend,
+            "dimension": embedding_service.get_embedding_dimension(),
+            "model_name": embedding_service.model_name,
+            "message": "Embedding backend updated. Some operations may require server restart."
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to set embedding backend: {str(e)}")
 
 
 @app.post("/api/llm/services/{service_id}/invoke")

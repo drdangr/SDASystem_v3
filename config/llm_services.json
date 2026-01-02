@@ -39,8 +39,8 @@
       "label": "LLM actors",
       "description": "Выделение акторов через LLM (fallback на мок).",
       "impl": "backend.services.llm_tasks.actors_service:ActorsLLMService",
-      "default_profile_id": "default_fast"
+      "default_profile_id": "default_fast",
+      "params": {}
     }
   ]
 }
-
