@@ -19,6 +19,12 @@ ENV/
 data/*.json
 !data/mock_*.json
 
+# Database
+backups/
+*.sql
+*.dump
+*.backup
+
 # Models
 models/*.bin
 models/*.pkl

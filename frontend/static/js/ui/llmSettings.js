@@ -10,7 +10,7 @@ const DEFAULTS = {
     top_p: 0.9,
     top_k: 40,
     max_tokens: 1024,
-    embedding_backend: 'mock'
+    embedding_backend: 'local'
 };
 
 export class LLMSettingsModal {
@@ -110,11 +110,11 @@ export class LLMSettingsModal {
         try {
             const response = await fetch('/api/embedding/backend');
             const data = await response.json();
-            this.state.embedding_backend = data.backend || 'mock';
+            this.state.embedding_backend = data.backend || 'local';
             this.updateEmbeddingStatus(data);
         } catch (e) {
             console.warn('Failed to load embedding backend', e);
-            this.state.embedding_backend = 'mock';
+            this.state.embedding_backend = 'local';
         }
         this.applyToForm();
     }
@@ -147,7 +147,7 @@ export class LLMSettingsModal {
         // Embedding backend
         const embeddingBackendEl = qs('#embeddingBackend');
         if (embeddingBackendEl) {
-            embeddingBackendEl.value = this.state.embedding_backend || 'mock';
+            embeddingBackendEl.value = this.state.embedding_backend || 'local';
         }
     }
 

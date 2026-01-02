@@ -44,7 +44,7 @@ load_dotenv()
 
 # Initialize embedding service after loading env
 # Note: if initialization fails, it will raise an error (no fallback to mock)
-embedding_backend = os.getenv("EMBEDDING_BACKEND", "mock")
+embedding_backend = os.getenv("EMBEDDING_BACKEND", "local")
 try:
     embedding_service = EmbeddingService(backend=embedding_backend)
 except Exception as e:

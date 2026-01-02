@@ -30,7 +30,7 @@ class EmbeddingService:
         """
         # Determine backend from env or parameter
         if backend is None:
-            backend = os.getenv("EMBEDDING_BACKEND", "mock").lower()
+            backend = os.getenv("EMBEDDING_BACKEND", "local").lower()
         
         # Legacy support: use_mock parameter
         if use_mock is True:

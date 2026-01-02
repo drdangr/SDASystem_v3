@@ -47,6 +47,19 @@
   - Производительность (массовая вставка, векторный поиск)
 - Все тесты пройдены (36/36)
 - Отчет: [docs/database_tests_report.md](../database_tests_report.md)
+- **Интеграционные тесты**: `tests/test_db_integration.py` (8 тестов)
+  - GraphManager интеграция с БД
+  - ClusteringService интеграция
+  - EventExtractionService интеграция
+  - Полный pipeline тесты
+- **Тесты производительности**: `tests/test_db_performance.py`
+  - Бенчмарк векторного поиска
+  - Бенчмарк массовой вставки
+  - Бенчмарк загрузки данных
+- **E2E тесты**: `tests/test_db_e2e.py`
+  - Полный цикл: news → embeddings → clustering → stories
+  - Тесты с акторами
+  - Тесты персистентности данных
 
 ## TODO для прототипа
 - Генерация событий при загрузке мок-данных через `EventExtractionService`, обновление `story.event_ids`.

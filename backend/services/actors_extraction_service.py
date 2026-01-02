@@ -87,8 +87,7 @@ class ActorsExtractionService:
             # self.hybrid.load_gazetteer(list(self.graph_manager.actors.values()))
             # Привести к канону и восстановить согласованность
             self.deduplicate_actors()
-            self._save_actors()
-            self._save_news()
+            # Note: _save_actors() and _save_news() are no-ops - data is saved via GraphManager
             self._update_all_story_top_actors()
 
     # ------------------------------------------------------------------ #
@@ -709,8 +708,7 @@ class ActorsExtractionService:
         self.load_gazetteer()
         self.deduplicate_actors()
         self._late_latinize_actor_names()
-        self._save_actors()
-        self._save_news()
+        # Note: Actors and news are saved via GraphManager automatically
         self._update_all_story_top_actors()
         
         self.progress.message = "Completed"
@@ -770,8 +768,7 @@ class ActorsExtractionService:
         self.deduplicate_actors()
         self._late_latinize_actor_names()
         self.load_gazetteer()
-        self._save_actors()
-        self._save_news()
+        # Note: Actors and news are saved via GraphManager automatically
         self.progress.message = "Completed"
         self.progress.running = False
 
