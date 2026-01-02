@@ -4,9 +4,14 @@
 
 Система поддерживает три режима генерации эмбеддингов:
 
-1. **Local (sentence-transformers)** - локальная модель, быстрая, бесплатная
-2. **Gemini API** - облачный сервис Google (требует API ключ)
-3. **Mock** - мок-эмбеддинги для прототипирования (по умолчанию)
+1. **Local (sentence-transformers)** - локальная модель, быстрая, бесплатная (рекомендуется для production)
+2. **Gemini API** - облачный сервис Google (требует API ключ, в разработке)
+3. **Mock** - мок-эмбеддинги для прототипирования (только для тестирования)
+
+**Статус**: ✅ Реализовано и протестировано (2026-01-02)
+- Локальный бэкенд работает стабильно
+- Настройка доступна через UI (LLM Settings)
+- Все существующие данные пересчитаны на реальные эмбеддинги
 
 ## Быстрый старт
 
@@ -207,9 +212,63 @@ pip install sentence-transformers
 
 При переключении бэкендов может потребоваться пересчет всех эмбеддингов.
 
+## UI Настройка
+
+Настройка embedding backend доступна через UI:
+
+1. Откройте приложение
+2. Нажмите кнопку **"LLM Settings"** в заголовке
+3. В секции **"Embedding Backend"** выберите нужный бэкенд:
+   - **Local (sentence-transformers)** - для production
+   - **Gemini API** - для облачного использования
+   - **Mock** - только для тестирования
+4. Нажмите **"Save"**
+
+Изменения применяются немедленно (некоторые операции могут потребовать перезапуска сервера).
+
+В модалке отображается текущий статус и размерность эмбеддингов.
+
+## API Endpoints
+
+### Получить текущий бэкенд
+```bash
+GET /api/embedding/backend
+```
+
+Ответ:
+```json
+{
+  "backend": "local",
+  "dimension": 384,
+  "model_name": "all-MiniLM-L6-v2"
+}
+```
+
+### Установить бэкенд
+```bash
+PUT /api/embedding/backend
+Content-Type: application/json
+
+{
+  "backend": "local"
+}
+```
+
+Ответ:
+```json
+{
+  "backend": "local",
+  "dimension": 384,
+  "model_name": "all-MiniLM-L6-v2",
+  "message": "Embedding backend updated. Some operations may require server restart."
+}
+```
+
+**Важно**: При ошибке инициализации (например, не установлен sentence-transformers) API вернет ошибку 500 с описанием проблемы. Fallback на mock отключен для предотвращения использования некачественных эмбеддингов.
+
 ## Рекомендации
 
-1. **Для production**: Используйте `EMBEDDING_BACKEND=local`
+1. **Для production**: Используйте `EMBEDDING_BACKEND=local` или настройте через UI
 2. **Для разработки**: Можно использовать `mock` для быстрого тестирования
 3. **Для облака**: Рассмотрите `gemini` если локальные ресурсы ограничены
 4. **При миграции**: Всегда пересчитывайте эмбеддинги при смене бэкенда
@@ -219,4 +278,5 @@ pip install sentence-transformers
 - [sentence-transformers документация](https://www.sbert.net/)
 - [Gemini API документация](https://ai.google.dev/docs)
 - [Roadmap: Задача 2.6](../roadmap.md#задача-26)
+- [Результаты бенчмарка](embeddings_benchmark_results.md)
 

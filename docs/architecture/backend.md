@@ -26,6 +26,16 @@
 - Векторный индекс на `news.embedding` для быстрого поиска похожих новостей
 - Подробнее: [docs/database_schema.md](../database_schema.md), [docs/database_setup.md](../database_setup.md)
 
+## Embedding Service
+- **Поддержка нескольких бэкендов**: local (sentence-transformers), gemini (API), mock (для тестирования)
+- **Локальный бэкенд**: использует `all-MiniLM-L6-v2` (384 размерности), скорость ~13 текстов/сек
+- **Настройка через UI**: доступна в модалке LLM Settings, переключение без перезапуска сервера
+- **API endpoints**: `GET /api/embedding/backend`, `PUT /api/embedding/backend`
+- **Без fallback**: при ошибке инициализации выбрасывается исключение (не переключается на mock)
+- **Миграция данных**: скрипт `scripts/recompute_embeddings.py` для пересчета существующих эмбеддингов
+- **Бенчмарк**: `scripts/benchmark_embeddings.py` для сравнения производительности
+- Подробнее: [docs/embeddings_setup.md](../embeddings_setup.md), [docs/embeddings_benchmark_results.md](../embeddings_benchmark_results.md)
+
 ## Тестирование
 - **DatabaseManager**: полный набор из 36 юнит-тестов (`tests/test_database_manager.py`)
   - CRUD операции для всех сущностей (News, Actor, Story, Event)
